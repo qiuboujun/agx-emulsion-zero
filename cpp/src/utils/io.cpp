@@ -1,15 +1,16 @@
 #include "io.hpp"
-#include "config.hpp" // tested
+#include "config.hpp" // Assuming a config.hpp holds SPECTRAL_SHAPE, LOG_EXPOSURE, and data paths
 #include "scipy.hpp"  // Your custom scipy wrappers
 #include "nlohmann/json.hpp" // For JSON parsing
 #include <fstream>
 #include <stdexcept>
 #include <algorithm> // For std::replace
+#include <vector>
 
 // Helper function to get the root data path.
-// For testing, this assumes the executable is run from a build directory inside cpp/
-// e.g., cpp/build/tests/io/
 std::string get_data_path() {
+    // This path needs to be correct relative to where the final executable is run.
+    // For tests in cpp/build/tests/..., this goes up to the project root.
     return "../../../";
 }
 
@@ -25,13 +26,34 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
     x = x[sorted_indices];
     y = y[sorted_indices];
 
-    auto unique_results = nc::unique<float>(x, true);
-    x = x[unique_results.second];
-    y = y[unique_results.second];
+    // FIX 3 & 4: Manually find indices of unique elements as nc::unique API is different.
+    if (x.isempty()) {
+        return nc::NdArray<float>();
+    }
+    std::vector<nc::uint32> unique_indices_vec;
+    unique_indices_vec.push_back(0); // First element is always unique
+    for (nc::uint32 i = 1; i < x.size(); ++i) {
+        if (x[i] != x[i-1]) {
+            unique_indices_vec.push_back(i);
+        }
+    }
+    auto unique_indices = nc::NdArray<nc::uint32>(unique_indices_vec);
+    x = x[unique_indices];
+    y = y[unique_indices];
 
+    // Convert float arrays to double for scipy functions
+    auto x_double = x.astype<double>();
+    auto y_double = y.astype<double>();
+    auto new_x_double = new_x.astype<double>();
+    
     // Use your custom scipy wrapper for interpolation
-    auto interpolator = scipy::interpolate::create_interpolator(x, y, method, extrapolate);
-    return interpolator(new_x);
+    auto interpolator = scipy::interpolate::create_interpolator(x_double, y_double, method, extrapolate);
+    
+    // FIX 5: Dereference the unique_ptr to call the operator()
+    auto result_double = (*interpolator)(new_x_double);
+    
+    // Convert back to float
+    return result_double.astype<float>();
 }
 
 nc::NdArray<float> load_csv(const std::string& datapkg, const std::string& filename) {
@@ -39,8 +61,6 @@ nc::NdArray<float> load_csv(const std::string& datapkg, const std::string& filen
     std::replace(full_path.begin(), full_path.end(), '.', '/');
     full_path += "/" + filename;
 
-    // This simplified version assumes clean CSVs without empty values.
-    // For production, a more robust line-by-line parser might be needed.
     return nc::fromfile<float>(full_path, ',').transpose();
 }
 
@@ -110,6 +130,7 @@ nc::NdArray<float> load_densitometer_data(const std::string& type) {
         auto data = load_csv(datapkg, filename);
         responsivities(nc::Slice(), i) = interpolate_to_common_axis(data, wavelengths, false, "linear");
     }
+    // FIX 1: Use 0.0f to avoid type mismatch with float array
     responsivities = nc::where(responsivities < 0.0f, 0.0f, responsivities);
     responsivities /= nc::nansum(responsivities, nc::Axis::ROW).reshape(-1, 1);
     return responsivities;
@@ -121,7 +142,7 @@ void save_ymc_filter_values(const FilterValues& ymc_filters) {
     if (!file.is_open()) throw std::runtime_error("Cannot open JSON file for writing: " + path);
     
     nlohmann::json j = ymc_filters;
-    file << j.dump(4); // dump with an indent of 4 for pretty printing
+    file << j.dump(4);
 }
 
 FilterValues read_neutral_ymc_filter_values() {
@@ -131,7 +152,7 @@ FilterValues read_neutral_ymc_filter_values() {
     
     nlohmann::json j;
     file >> j;
-    return j.get<FilterValues>();
+    return j; // Return the JSON object directly (matches Python behavior)
 }
 
 nc::NdArray<float> load_dichroic_filters(const nc::NdArray<float>& wavelengths, const std::string& brand) {
@@ -140,7 +161,7 @@ nc::NdArray<float> load_dichroic_filters(const nc::NdArray<float>& wavelengths, 
     for (int i = 0; i < 3; ++i) {
         std::string datapkg = "agx_emulsion.data.filters.dichroics." + brand;
         std::string filename = "filter_" + std::string(channels[i]) + ".csv";
-        auto data = load_csv(datapkg, filename).transpose(); // load_csv already transposes, so transpose back
+        auto data = load_csv(datapkg, filename).transpose();
         filters(nc::Slice(), i) = interpolate_to_common_axis(data, wavelengths);
     }
     return filters;
@@ -151,12 +172,16 @@ nc::NdArray<float> load_filter(
     const std::string& brand, const std::string& filter_type, bool percent_transmittance)
 {
     std::string datapkg = "agx_emulsion.data.filters." + filter_type + "." + brand;
-    auto data = load_csv(datapkg, name + ".csv").transpose();
+    // FIX 2: Create a mutable copy of the data to allow modification
+    auto data = load_csv(datapkg, name + ".csv").transpose().copy();
     float scale = percent_transmittance ? 100.0f : 1.0f;
     
-    // Manually scale the y-values before interpolation
+    // This operation now modifies the copy, not a temporary object
     auto scaled_data = data;
-    scaled_data(1, nc::Slice()) /= scale;
+    // Manually scale the second row (y-values)
+    for (size_t i = 0; i < scaled_data.shape().cols; ++i) {
+        scaled_data(1, i) /= scale;
+    }
 
     return interpolate_to_common_axis(scaled_data, wavelengths);
 }

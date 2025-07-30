@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <nlohmann/json.hpp>
 
 // A structure to hold the loaded emulsion data, similar to a class or dict in Python
 struct AgxEmulsionData {
@@ -53,8 +54,8 @@ nc::NdArray<float> load_densitometer_data(
 // YMC Filter Values & Profiles
 //================================================================================
 
-// Using a map to represent the JSON object
-using FilterValues = std::map<std::string, std::vector<double>>;
+// Using nlohmann::json to represent the JSON object (matches Python behavior)
+using FilterValues = nlohmann::json;
 
 void save_ymc_filter_values(const FilterValues& ymc_filters);
 

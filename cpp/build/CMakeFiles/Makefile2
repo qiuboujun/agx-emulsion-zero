@@ -157,12 +157,12 @@ pybind11_build/clean:
 CMakeFiles/agx_core.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=1,2 "Built target agx_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=1,2,3 "Built target agx_core"
 .PHONY : CMakeFiles/agx_core.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/agx_core.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/agx_core.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/agx_core.dir/rule
@@ -183,12 +183,12 @@ CMakeFiles/agx_core.dir/clean:
 CMakeFiles/fast_interp_cpp_tests.dir/all: CMakeFiles/agx_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_interp_cpp_tests.dir/build.make CMakeFiles/fast_interp_cpp_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_interp_cpp_tests.dir/build.make CMakeFiles/fast_interp_cpp_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=5,6 "Built target fast_interp_cpp_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=6,7 "Built target fast_interp_cpp_tests"
 .PHONY : CMakeFiles/fast_interp_cpp_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fast_interp_cpp_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fast_interp_cpp_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/fast_interp_cpp_tests.dir/rule
@@ -209,12 +209,12 @@ CMakeFiles/fast_interp_cpp_tests.dir/clean:
 CMakeFiles/config_cpp_tests.dir/all: CMakeFiles/agx_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=3,4 "Built target config_cpp_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=4,5 "Built target config_cpp_tests"
 .PHONY : CMakeFiles/config_cpp_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/config_cpp_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/config_cpp_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/config_cpp_tests.dir/rule
@@ -235,12 +235,12 @@ CMakeFiles/config_cpp_tests.dir/clean:
 CMakeFiles/io_cpp_tests.dir/all: CMakeFiles/agx_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=7,8 "Built target io_cpp_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=8,9 "Built target io_cpp_tests"
 .PHONY : CMakeFiles/io_cpp_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/io_cpp_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/io_cpp_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/io_cpp_tests.dir/rule

@@ -2,6 +2,7 @@ import numpy as np
 import numpy.testing as npt
 import sys
 import os
+import json
 
 # --- Path Setup ---
 script_dir = os.path.dirname(__file__)
@@ -22,13 +23,17 @@ def run_test(test_name, py_func, cpp_func, args=(), kwargs={}):
         py_result = py_func(*args, **kwargs)
         cpp_result = cpp_func(*args, **kwargs)
         
-        # Special handling for load_agx_emulsion_data which returns a tuple in python and dict in C++
+        # Special handling for different return types
         if test_name == "load_agx_emulsion_data":
             py_keys = ["log_sensitivity", "dye_density", "wavelengths", "density_curves", "log_exposure"]
             py_result_dict = dict(zip(py_keys, py_result))
             for key in py_keys:
                 print(f"  - Comparing key: {key}")
                 npt.assert_allclose(py_result_dict[key], cpp_result[key], rtol=1e-5, atol=1e-5, err_msg=f"Mismatch for key '{key}'")
+        elif test_name == "read_neutral_ymc_filter_values":
+            # C++ returns JSON string, Python returns dict - parse C++ result
+            cpp_dict = json.loads(cpp_result)
+            assert py_result == cpp_dict, f"JSON data mismatch"
         else:
              npt.assert_allclose(py_result, cpp_result, rtol=1e-5, atol=1e-5)
         print(f"[  OK  ] {test_name} passed.\n")

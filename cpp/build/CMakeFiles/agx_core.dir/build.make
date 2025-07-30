@@ -84,17 +84,33 @@ CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
+CMakeFiles/agx_core.dir/src/utils/io.cpp.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/utils/io.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp
+CMakeFiles/agx_core.dir/src/utils/io.cpp.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/agx_core.dir/src/utils/io.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/utils/io.cpp.o -MF CMakeFiles/agx_core.dir/src/utils/io.cpp.o.d -o CMakeFiles/agx_core.dir/src/utils/io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp
+
+CMakeFiles/agx_core.dir/src/utils/io.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/agx_core.dir/src/utils/io.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp > CMakeFiles/agx_core.dir/src/utils/io.cpp.i
+
+CMakeFiles/agx_core.dir/src/utils/io.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/agx_core.dir/src/utils/io.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp -o CMakeFiles/agx_core.dir/src/utils/io.cpp.s
+
 # Object files for target agx_core
 agx_core_OBJECTS = \
-"CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
+"CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o" \
+"CMakeFiles/agx_core.dir/src/utils/io.cpp.o"
 
 # External object files for target agx_core
 agx_core_EXTERNAL_OBJECTS =
 
 libagx_core.a: CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/utils/io.cpp.o
 libagx_core.a: CMakeFiles/agx_core.dir/build.make
 libagx_core.a: CMakeFiles/agx_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CUDA static library libagx_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libagx_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/agx_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/agx_core.dir/link.txt --verbose=$(VERBOSE)
 

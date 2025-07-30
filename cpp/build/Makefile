@@ -263,6 +263,30 @@ src/utils/fast_interp_lut.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.s
 .PHONY : src/utils/fast_interp_lut.cu.s
 
+src/utils/io.o: src/utils/io.cpp.o
+.PHONY : src/utils/io.o
+
+# target to build an object file
+src/utils/io.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/io.cpp.o
+.PHONY : src/utils/io.cpp.o
+
+src/utils/io.i: src/utils/io.cpp.i
+.PHONY : src/utils/io.i
+
+# target to preprocess a source file
+src/utils/io.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/io.cpp.i
+.PHONY : src/utils/io.cpp.i
+
+src/utils/io.s: src/utils/io.cpp.s
+.PHONY : src/utils/io.s
+
+# target to generate assembly for a file
+src/utils/io.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/io.cpp.s
+.PHONY : src/utils/io.cpp.s
+
 tests/config/pybind_config.o: tests/config/pybind_config.cpp.o
 .PHONY : tests/config/pybind_config.o
 
@@ -356,6 +380,9 @@ help:
 	@echo "... src/utils/fast_interp_lut.o"
 	@echo "... src/utils/fast_interp_lut.i"
 	@echo "... src/utils/fast_interp_lut.s"
+	@echo "... src/utils/io.o"
+	@echo "... src/utils/io.i"
+	@echo "... src/utils/io.s"
 	@echo "... tests/config/pybind_config.o"
 	@echo "... tests/config/pybind_config.i"
 	@echo "... tests/config/pybind_config.s"

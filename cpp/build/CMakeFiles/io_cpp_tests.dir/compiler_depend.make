@@ -497,6 +497,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
   /usr/include/c++/11/bits/mask_array.h \
   /usr/include/c++/11/bits/indirect_array.h \
   /usr/include/c++/11/variant \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include/pybind11/complex.h \
+  /usr/include/c++/11/complex \
   /usr/local/include/NumCpp.hpp \
   /usr/local/include/NumCpp/Coordinates.hpp \
   /usr/local/include/NumCpp/Coordinates/Cartesian.hpp \
@@ -527,7 +529,6 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
   /usr/include/c++/11/bits/stl_numeric.h \
   /usr/include/c++/11/pstl/glue_numeric_defs.h \
   /usr/local/include/NumCpp/Core/Constants.hpp \
-  /usr/include/c++/11/complex \
   /usr/local/include/NumCpp/Core/DtypeInfo.hpp \
   /usr/local/include/NumCpp/Core/Internal/StaticAsserts.hpp \
   /usr/local/include/NumCpp/Core/Internal/TypeTraits.hpp \
@@ -2895,7 +2896,53 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
   /usr/local/include/NumCpp/Utils/timeit.hpp \
   /usr/local/include/NumCpp/Vector.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include/pybind11/numpy.h \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include/pybind11/complex.h \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/json.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/adl_serializer.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/abi_macros.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/conversions/from_json.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/exceptions.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/value_t.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/macro_scope.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/detected.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/void_t.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/string_escape.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/position_t.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/cpp_future.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/type_traits.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/iterator_traits.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/call_std/begin.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/call_std/end.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/json_fwd.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/string_concat.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/identity_tag.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/std_fs.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/conversions/to_json.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/iteration_proxy.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/string_utils.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/byte_container_with_subtype.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/hash.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/binary_reader.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/input_adapters.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/json_sax.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/lexer.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/is_sax.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/parser.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/internal_iterator.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/primitive_iterator.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/iter_impl.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/json_custom_base_class.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/json_pointer.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/json_ref.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/output/binary_writer.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/output/output_adapters.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/output/serializer.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/conversions/to_chars.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/ordered_map.hpp \
+  /usr/include/c++/11/any \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/macro_unscope.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/io.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp
@@ -2903,7 +2950,53 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp:
 
-/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include/pybind11/complex.h:
+/usr/include/c++/11/any:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/output/output_adapters.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/output/binary_writer.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/json_pointer.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/json_custom_base_class.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley_undef.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/is_sax.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/lexer.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/json_sax.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/input_adapters.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/binary_reader.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/hash.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/byte_container_with_subtype.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/std_fs.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/string_concat.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/call_std/end.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/iterator_traits.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/type_traits.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/cpp_future.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/void_t.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/macro_scope.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/exceptions.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/conversions/from_json.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/abi_macros.hpp:
 
 /usr/local/include/NumCpp/Vector.hpp:
 
@@ -3385,6 +3478,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/predef/language/cuda.h:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/json_fwd.hpp:
+
 /usr/include/boost/predef/language/objc.h:
 
 /usr/include/boost/predef/language/stdcpp.h:
@@ -3450,6 +3545,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/phoenix/operator/detail/cpp03/preprocessed/mem_fun_ptr_eval_result_of_10.hpp:
 
 /usr/include/boost/phoenix/operator/detail/cpp03/preprocessed/mem_fun_ptr_eval_result_of.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/conversions/to_json.hpp:
 
 /usr/include/boost/phoenix/operator/detail/cpp03/preprocessed/mem_fun_ptr_gen_10.hpp:
 
@@ -3521,6 +3618,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/blank.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/ordered_map.hpp:
+
 /usr/include/boost/mpl/aux_/pop_front_impl.hpp:
 
 /usr/include/boost/mpl/pop_front.hpp:
@@ -3587,9 +3686,7 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/log/expressions/predicates/contains.hpp:
 
-/usr/include/boost/math/special_functions/detail/round_fwd.hpp:
-
-/usr/include/boost/mpl/aux_/find_if_pred.hpp:
+/usr/include/boost/log/utility/functional/ends_with.hpp:
 
 /usr/include/boost/math/special_functions/math_fwd.hpp:
 
@@ -3795,6 +3892,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/fusion/iterator/detail/segment_sequence.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/json_ref.hpp:
+
 /usr/include/boost/mpl/void.hpp:
 
 /usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp:
@@ -3891,6 +3990,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/preprocessor/seq/detail/is_empty.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/call_std/begin.hpp:
+
 /usr/include/boost/mpl/aux_/preprocessed/gcc/arg.hpp:
 
 /home/jimmyqiu/miniconda3/include/python3.13/patchlevel.h:
@@ -3920,6 +4021,10 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/mpl/if.hpp:
 
 /usr/include/boost/mpl/eval_if.hpp:
+
+/usr/include/boost/math/special_functions/detail/round_fwd.hpp:
+
+/usr/include/boost/mpl/aux_/find_if_pred.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
@@ -3954,6 +4059,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/atomic/detail/type_traits/is_floating_point.hpp:
 
 /usr/local/include/NumCpp/Linalg/solve.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/string_escape.hpp:
 
 /home/jimmyqiu/miniconda3/include/python3.13/pyconfig.h:
 
@@ -4193,6 +4300,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/date_time/gregorian/conversion.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/primitive_iterator.hpp:
+
 /usr/include/boost/date_time/gregorian/gregorian.hpp:
 
 /usr/include/boost/date_time/posix_time/time_formatters.hpp:
@@ -4385,6 +4494,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/config/stdlib/libstdcpp3.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley.hpp:
+
 /usr/include/boost/config/detail/select_stdlib_config.hpp:
 
 /usr/include/boost/utility/base_from_member.hpp:
@@ -4453,10 +4564,6 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/c++/11/stdlib.h:
 
-/usr/include/c++/11/regex:
-
-/usr/local/include/NumCpp/Coordinates/Transforms/ENUtoLLA.hpp:
-
 /usr/include/boost/type_traits/is_constructible.hpp:
 
 /usr/local/include/NumCpp/DateTime/DateTime.hpp:
@@ -4468,6 +4575,10 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/mpl/aux_/template_arity_fwd.hpp:
 
 /usr/include/boost/mpl/aux_/msvc_never_true.hpp:
+
+/usr/include/c++/11/regex:
+
+/usr/local/include/NumCpp/Coordinates/Transforms/ENUtoLLA.hpp:
 
 /usr/local/include/NumCpp/Core.hpp:
 
@@ -4575,6 +4686,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/assert.h:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/macro_unscope.hpp:
+
 /usr/include/boost/utility/result_of.hpp:
 
 /usr/include/c++/11/bits/list.tcc:
@@ -4619,6 +4732,16 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/local/include/NumCpp/Utils/essentiallyEqualComplex.hpp:
 
+/usr/include/boost/type_traits/detail/yes_no_type.hpp:
+
+/usr/include/boost/parameter/aux_/arg_list.hpp:
+
+/usr/include/c++/11/cstdint:
+
+/home/jimmyqiu/miniconda3/include/python3.13/Python.h:
+
+/usr/include/boost/mpl/aux_/clear_impl.hpp:
+
 /usr/include/boost/mpl/aux_/config/msvc.hpp:
 
 /home/jimmyqiu/miniconda3/include/python3.13/fileobject.h:
@@ -4640,16 +4763,6 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/concept/detail/concept_undef.hpp:
 
 /usr/include/c++/11/bits/uses_allocator.h:
-
-/usr/include/boost/type_traits/detail/yes_no_type.hpp:
-
-/usr/include/boost/parameter/aux_/arg_list.hpp:
-
-/usr/include/c++/11/cstdint:
-
-/home/jimmyqiu/miniconda3/include/python3.13/Python.h:
-
-/usr/include/boost/mpl/aux_/clear_impl.hpp:
 
 /usr/include/asm-generic/errno.h:
 
@@ -4712,6 +4825,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /home/jimmyqiu/miniconda3/include/python3.13/pyframe.h:
 
 /home/jimmyqiu/miniconda3/include/python3.13/cpython/odictobject.h:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include/pybind11/complex.h:
 
 /home/jimmyqiu/miniconda3/include/python3.13/cpython/funcobject.h:
 
@@ -4959,6 +5074,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/preprocessor/slot/detail/shared.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/conversions/to_chars.hpp:
+
 /usr/include/boost/phoenix/core/is_nullary.hpp:
 
 /usr/include/boost/proto/detail/poly_function.hpp:
@@ -5188,6 +5305,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/mpl/aux_/config/intel.hpp:
 
 /usr/include/boost/smart_ptr/shared_ptr.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/identity_tag.hpp:
 
 /usr/include/boost/fusion/iterator/deref_data.hpp:
 
@@ -5587,6 +5706,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/mpl/aux_/config/pp_counter.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/value_t.hpp:
+
 /usr/include/boost/date_time/parse_format_base.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
@@ -5677,6 +5798,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/json.hpp:
+
 /usr/include/boost/mpl/aux_/largest_int.hpp:
 
 /usr/local/include/NumCpp/Polynomial/laguerre.hpp:
@@ -5752,6 +5875,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/c++/11/cstring:
 
 /home/jimmyqiu/miniconda3/include/python3.13/cpython/classobject.h:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/iteration_proxy.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
@@ -6289,6 +6414,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/proto/transform/impl.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/iter_impl.hpp:
+
 /usr/include/boost/fusion/algorithm/iteration/detail/segmented_fold.hpp:
 
 /usr/include/boost/mpl/bind.hpp:
@@ -6358,6 +6485,14 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/lexical_cast/detail/converter_numeric.hpp:
 
 /usr/include/c++/11/numeric:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
+/usr/include/boost/mpl/vector/aux_/O1_size.hpp:
+
+/usr/include/boost/mpl/aux_/preprocessor/is_seq.hpp:
+
+/usr/include/c++/11/complex:
 
 /home/jimmyqiu/miniconda3/include/python3.13/cpython/pymem.h:
 
@@ -6434,14 +6569,6 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/c++/11/iomanip:
 
 /usr/include/c++/11/bits/stl_numeric.h:
-
-/usr/include/x86_64-linux-gnu/bits/sched.h:
-
-/usr/include/boost/mpl/vector/aux_/O1_size.hpp:
-
-/usr/include/boost/mpl/aux_/preprocessor/is_seq.hpp:
-
-/usr/include/c++/11/complex:
 
 /usr/local/include/NumCpp/Functions/sinc.hpp:
 
@@ -6889,6 +7016,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/checked_delete.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/position_t.hpp:
+
 /usr/local/include/NumCpp/Functions/asarray.hpp:
 
 /usr/include/boost/smart_ptr/detail/sp_disable_deprecated.hpp:
@@ -7251,6 +7380,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/local/include/NumCpp/Functions/divide.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/input/parser.hpp:
+
 /usr/include/boost/mpl/map/aux_/erase_impl.hpp:
 
 /usr/local/include/NumCpp/Functions/sign.hpp:
@@ -7260,6 +7391,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/preprocessor/selection/max.hpp:
 
 /usr/local/include/NumCpp/Functions/dump.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/internal_iterator.hpp:
 
 /usr/include/boost/type_traits/is_union.hpp:
 
@@ -7627,6 +7760,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/local/include/NumCpp/Functions/vander.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/output/serializer.hpp:
+
 /usr/include/boost/mpl/aux_/iter_apply.hpp:
 
 /usr/local/include/NumCpp/Functions/var.hpp:
@@ -7895,6 +8030,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/atomic/detail/capabilities.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/iterators/json_reverse_iterator.hpp:
+
 /usr/include/boost/fusion/iterator/detail/segmented_iterator.hpp:
 
 /home/jimmyqiu/miniconda3/include/python3.13/floatobject.h:
@@ -7918,6 +8055,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/atomic/detail/footer.hpp:
 
 /usr/include/boost/mpl/aux_/has_key_impl.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/adl_serializer.hpp:
 
 /usr/local/include/NumCpp/Functions/flatten.hpp:
 
@@ -8659,6 +8798,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 
 /usr/include/boost/log/detail/default_attribute_names.hpp:
 
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/string_utils.hpp:
+
 /usr/include/boost/log/expressions/record.hpp:
 
 /usr/include/boost/mpl/erase.hpp:
@@ -8674,6 +8815,8 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/preprocessor/repeat_from_to.hpp:
 
 /usr/include/boost/log/utility/functional/begins_with.hpp:
+
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/meta/detected.hpp:
 
 /usr/include/boost/thread/pthread/pthread_helpers.hpp:
 
@@ -8692,5 +8835,3 @@ CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o: /home/jimmyqiu/cursor/agx
 /usr/include/boost/log/utility/functional/save_result.hpp:
 
 /usr/include/boost/log/expressions/predicates/ends_with.hpp:
-
-/usr/include/boost/log/utility/functional/ends_with.hpp:

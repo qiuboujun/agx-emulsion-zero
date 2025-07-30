@@ -1,7 +1,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/complex.h>
 #include "NumCpp.hpp"
 #include "pybind11/numpy.h"
+#include <nlohmann/json.hpp>
 #include "io.hpp"       // The header we are testing
 #include "config.hpp"   // For agx::config::SPECTRAL_SHAPE
 
@@ -71,7 +73,11 @@ PYBIND11_MODULE(io_cpp_tests, m) {
         return nc_to_py(agx::utils::load_densitometer_data(type));
     }, py::arg("type") = "status_A");
 
-    m.def("read_neutral_ymc_filter_values_cpp", &agx::utils::read_neutral_ymc_filter_values);
+    m.def("read_neutral_ymc_filter_values_cpp", []() {
+        auto json_data = agx::utils::read_neutral_ymc_filter_values();
+        // Return JSON as string, let Python parse it
+        return json_data.dump();
+    });
 
     m.def("load_dichroic_filters_cpp", [](const std::string& brand) {
         agx::config::initialize_config();

@@ -13,7 +13,7 @@ find_package(CUDAToolkit REQUIRED)
 add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
-    src/utils/spectral_upsampling.cu
+    # src/utils/spectral_upsampling.cu  # Temporarily excluded due to compilation issues
     # scipy.cpp is no longer needed as scipy.hpp is header-only
     # colour.cpp doesn't exist - colour.hpp is header-only
 )
