@@ -188,6 +188,32 @@ fast_interp_cpp_tests/fast:
 .PHONY : fast_interp_cpp_tests/fast
 
 #=============================================================================
+# Target rules for targets named config_cpp_tests
+
+# Build rule for target.
+config_cpp_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 config_cpp_tests
+.PHONY : config_cpp_tests
+
+# fast build rule for target.
+config_cpp_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/build
+.PHONY : config_cpp_tests/fast
+
+#=============================================================================
+# Target rules for targets named io_cpp_tests
+
+# Build rule for target.
+io_cpp_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 io_cpp_tests
+.PHONY : io_cpp_tests
+
+# fast build rule for target.
+io_cpp_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/build
+.PHONY : io_cpp_tests/fast
+
+#=============================================================================
 # Target rules for targets named format
 
 # Build rule for target.
@@ -213,29 +239,53 @@ tidy/fast:
 	$(MAKE) $(MAKESILENT) -f numcpp_build/CMakeFiles/tidy.dir/build.make numcpp_build/CMakeFiles/tidy.dir/build
 .PHONY : tidy/fast
 
-src/fast_interp_lut.o: src/fast_interp_lut.cu.o
-.PHONY : src/fast_interp_lut.o
+src/utils/fast_interp_lut.o: src/utils/fast_interp_lut.cu.o
+.PHONY : src/utils/fast_interp_lut.o
 
 # target to build an object file
-src/fast_interp_lut.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o
-.PHONY : src/fast_interp_lut.cu.o
+src/utils/fast_interp_lut.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o
+.PHONY : src/utils/fast_interp_lut.cu.o
 
-src/fast_interp_lut.i: src/fast_interp_lut.cu.i
-.PHONY : src/fast_interp_lut.i
+src/utils/fast_interp_lut.i: src/utils/fast_interp_lut.cu.i
+.PHONY : src/utils/fast_interp_lut.i
 
 # target to preprocess a source file
-src/fast_interp_lut.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.i
-.PHONY : src/fast_interp_lut.cu.i
+src/utils/fast_interp_lut.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.i
+.PHONY : src/utils/fast_interp_lut.cu.i
 
-src/fast_interp_lut.s: src/fast_interp_lut.cu.s
-.PHONY : src/fast_interp_lut.s
+src/utils/fast_interp_lut.s: src/utils/fast_interp_lut.cu.s
+.PHONY : src/utils/fast_interp_lut.s
 
 # target to generate assembly for a file
-src/fast_interp_lut.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.s
-.PHONY : src/fast_interp_lut.cu.s
+src/utils/fast_interp_lut.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.s
+.PHONY : src/utils/fast_interp_lut.cu.s
+
+tests/config/pybind_config.o: tests/config/pybind_config.cpp.o
+.PHONY : tests/config/pybind_config.o
+
+# target to build an object file
+tests/config/pybind_config.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.o
+.PHONY : tests/config/pybind_config.cpp.o
+
+tests/config/pybind_config.i: tests/config/pybind_config.cpp.i
+.PHONY : tests/config/pybind_config.i
+
+# target to preprocess a source file
+tests/config/pybind_config.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.i
+.PHONY : tests/config/pybind_config.cpp.i
+
+tests/config/pybind_config.s: tests/config/pybind_config.cpp.s
+.PHONY : tests/config/pybind_config.s
+
+# target to generate assembly for a file
+tests/config/pybind_config.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.s
+.PHONY : tests/config/pybind_config.cpp.s
 
 tests/fast_interp_lut/pybind_fast_interp_lut.o: tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o
 .PHONY : tests/fast_interp_lut/pybind_fast_interp_lut.o
@@ -261,6 +311,30 @@ tests/fast_interp_lut/pybind_fast_interp_lut.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fast_interp_cpp_tests.dir/build.make CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.s
 .PHONY : tests/fast_interp_lut/pybind_fast_interp_lut.cpp.s
 
+tests/io/pyblind_io.o: tests/io/pyblind_io.cpp.o
+.PHONY : tests/io/pyblind_io.o
+
+# target to build an object file
+tests/io/pyblind_io.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o
+.PHONY : tests/io/pyblind_io.cpp.o
+
+tests/io/pyblind_io.i: tests/io/pyblind_io.cpp.i
+.PHONY : tests/io/pyblind_io.i
+
+# target to preprocess a source file
+tests/io/pyblind_io.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.i
+.PHONY : tests/io/pyblind_io.cpp.i
+
+tests/io/pyblind_io.s: tests/io/pyblind_io.cpp.s
+.PHONY : tests/io/pyblind_io.s
+
+# target to generate assembly for a file
+tests/io/pyblind_io.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.s
+.PHONY : tests/io/pyblind_io.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -276,13 +350,21 @@ help:
 	@echo "... format"
 	@echo "... tidy"
 	@echo "... agx_core"
+	@echo "... config_cpp_tests"
 	@echo "... fast_interp_cpp_tests"
-	@echo "... src/fast_interp_lut.o"
-	@echo "... src/fast_interp_lut.i"
-	@echo "... src/fast_interp_lut.s"
+	@echo "... io_cpp_tests"
+	@echo "... src/utils/fast_interp_lut.o"
+	@echo "... src/utils/fast_interp_lut.i"
+	@echo "... src/utils/fast_interp_lut.s"
+	@echo "... tests/config/pybind_config.o"
+	@echo "... tests/config/pybind_config.i"
+	@echo "... tests/config/pybind_config.s"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.o"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.i"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.s"
+	@echo "... tests/io/pyblind_io.o"
+	@echo "... tests/io/pyblind_io.i"
+	@echo "... tests/io/pyblind_io.s"
 .PHONY : help
 
 

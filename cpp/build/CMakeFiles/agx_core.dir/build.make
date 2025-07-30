@@ -69,29 +69,29 @@ include CMakeFiles/agx_core.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/agx_core.dir/flags.make
 
-CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o: CMakeFiles/agx_core.dir/flags.make
-CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o: CMakeFiles/agx_core.dir/includes_CUDA.rsp
-CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/fast_interp_lut.cu
-CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o: CMakeFiles/agx_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o"
-	/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o -MF CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o.d -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/fast_interp_lut.cu -o CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o
+CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o: CMakeFiles/agx_core.dir/includes_CUDA.rsp
+CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu
+CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
+	/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o -MF CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o.d -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu -o CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o
 
-CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.i"
+CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.i"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
-CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.s"
+CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 # Object files for target agx_core
 agx_core_OBJECTS = \
-"CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o"
+"CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
 
 # External object files for target agx_core
 agx_core_EXTERNAL_OBJECTS =
 
-libagx_core.a: CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o
 libagx_core.a: CMakeFiles/agx_core.dir/build.make
 libagx_core.a: CMakeFiles/agx_core.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CUDA static library libagx_core.a"

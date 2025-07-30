@@ -1,14 +1,26 @@
 [
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/fast_interp_lut.cu -o CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o",
-  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/fast_interp_lut.cu",
-  "output": "CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o"
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu -o CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu",
+  "output": "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++ -Dfast_interp_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/fast_interp_lut/pybind_fast_interp_lut.cpp",
+  "command": "/usr/bin/c++ -Dfast_interp_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/fast_interp_lut/pybind_fast_interp_lut.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/fast_interp_lut/pybind_fast_interp_lut.cpp",
   "output": "CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -Dconfig_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/config/pybind_config.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/config/pybind_config.cpp",
+  "output": "CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -Dio_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
+  "output": "CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o"
 }
 ]

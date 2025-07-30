@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o"
-  "CMakeFiles/agx_core.dir/src/fast_interp_lut.cu.o.d"
+  "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
+  "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o.d"
   "libagx_core.a"
   "libagx_core.pdb"
 )

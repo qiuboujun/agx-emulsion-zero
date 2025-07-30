@@ -28,6 +28,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/Compiler/GNU-CXX.cmake"
   "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/Compiler/GNU.cmake"
   "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/Compiler/NVIDIA-CUDA.cmake"
+  "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/ExternalProject.cmake"
   "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/FindBoost.cmake"
   "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/FindCUDAToolkit.cmake"
   "/home/jimmyqiu/.local/lib/python3.10/site-packages/cmake/data/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake"
@@ -52,6 +53,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/NumCpp/cmake/NumCppConfig.cmake.in"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/NumCpp/cmake/NumCppTools.cmake"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/NumCpp/examples/CMakeLists.txt"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/CMakeLists.txt"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/cmake/config.cmake.in"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/cmake/nlohmann_jsonConfigVersion.cmake.in"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/cmake/pkg-config.pc.in"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/CMakeLists.txt"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/tools/JoinPaths.cmake"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/tools/pybind11Common.cmake"
@@ -109,12 +114,18 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "numcpp_build/CMakeFiles/CMakeDirectoryInformation.cmake"
   "numcpp_build/examples/CMakeFiles/CMakeDirectoryInformation.cmake"
   "pybind11_build/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "json_build/nlohmann_json.pc"
+  "json_build/nlohmann_jsonConfigVersion.cmake"
+  "json_build/nlohmann_jsonConfig.cmake"
+  "json_build/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/agx_core.dir/DependInfo.cmake"
   "CMakeFiles/fast_interp_cpp_tests.dir/DependInfo.cmake"
+  "CMakeFiles/config_cpp_tests.dir/DependInfo.cmake"
+  "CMakeFiles/io_cpp_tests.dir/DependInfo.cmake"
   "numcpp_build/CMakeFiles/format.dir/DependInfo.cmake"
   "numcpp_build/CMakeFiles/tidy.dir/DependInfo.cmake"
   )

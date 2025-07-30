@@ -7,3 +7,6 @@
 [submodule "cpp/external/NumCpp"]
 	path = cpp/external/NumCpp
 	url = https://github.com/dpilger26/NumCpp.git
+[submodule "cpp/external/json"]
+	path = cpp/external/json
+	url = https://github.com/nlohmann/json.git

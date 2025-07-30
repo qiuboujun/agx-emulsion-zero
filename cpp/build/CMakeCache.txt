@@ -522,6 +522,42 @@ CUDA_nvrtc_builtins_static_LIBRARY:FILEPATH=/usr/local/cuda-11.8/targets/x86_64-
 //Path to a library.
 CUDA_nvrtc_static_LIBRARY:FILEPATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/libnvrtc_static.a
 
+//Build the unit tests when BUILD_TESTING is enabled.
+JSON_BuildTests:BOOL=OFF
+
+//Enable CI build targets.
+JSON_CI:BOOL=OFF
+
+//Enable diagnostic positions.
+JSON_Diagnostic_Positions:BOOL=OFF
+
+//Use extended diagnostic messages.
+JSON_Diagnostics:BOOL=OFF
+
+//Disable default integer enum serialization.
+JSON_DisableEnumSerialization:BOOL=OFF
+
+//Place user-defined string literals in the global namespace.
+JSON_GlobalUDLs:BOOL=ON
+
+//Enable implicit conversions.
+JSON_ImplicitConversions:BOOL=ON
+
+//Install CMake targets during install step.
+JSON_Install:BOOL=OFF
+
+//Enable legacy discarded value comparison.
+JSON_LegacyDiscardedValueComparison:BOOL=OFF
+
+//Use non-amalgamated version of the library.
+JSON_MultipleHeaders:BOOL=ON
+
+//Include as system headers (skip for clang-tidy).
+JSON_SystemInclude:BOOL=OFF
+
+//Build C++ modules support
+NLOHMANN_JSON_BUILD_MODULES:BOOL=OFF
+
 //Don't use the boost libraries
 NUMCPP_NO_USE_BOOST:BOOL=OFF
 
@@ -600,6 +636,15 @@ boost_regex_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_regex-1.74.0
 
 //The directory containing a CMake configuration file for boost_thread.
 boost_thread_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_thread-1.74.0
+
+//Value Computed by CMake
+nlohmann_json_BINARY_DIR:STATIC=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/json_build
+
+//Value Computed by CMake
+nlohmann_json_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+nlohmann_json_SOURCE_DIR:STATIC=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json
 
 //Value Computed by CMake
 pybind11_BINARY_DIR:STATIC=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/pybind11_build
@@ -746,7 +791,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -929,6 +974,7 @@ FIND_PACKAGE_MESSAGE_DETAILS_Python:INTERNAL=[/home/jimmyqiu/miniconda3/bin/pyth
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Test HAS_FLTO
 HAS_FLTO:INTERNAL=1
+NLOHMANN_JSON_CONFIG_INSTALL_DIR:INTERNAL=share/cmake/nlohmann_json
 PYBIND11_INCLUDE_DIR:INTERNAL=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include
 //Python executable during the last CMake run
 PYBIND11_PYTHON_EXECUTABLE_LAST:INTERNAL=/home/jimmyqiu/miniconda3/bin/python3

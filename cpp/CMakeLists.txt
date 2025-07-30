@@ -4,59 +4,58 @@ cmake_minimum_required(VERSION 3.18)
 project(AGX_CPP_Project LANGUAGES CXX CUDA)
 
 # --- Add Dependencies ---
-# All paths are now relative to this file's location (`cpp`), which is much cleaner.
 add_subdirectory(external/NumCpp ${CMAKE_BINARY_DIR}/numcpp_build)
 add_subdirectory(external/pybind11 ${CMAKE_BINARY_DIR}/pybind11_build)
+add_subdirectory(external/json ${CMAKE_BINARY_DIR}/json_build)
 find_package(CUDAToolkit REQUIRED)
 
 # --- Core Library Target ---
-# This library contains your actual C++ source code.
 add_library(agx_core STATIC
-    src/fast_interp_lut.cu
-    # Add other .cu/.cpp source files here as you create them
-    # e.g., src/spectral_upsampling.cu
+    src/utils/fast_interp_lut.cu
+    src/utils/io.cpp
+    src/utils/spectral_upsampling.cu
+    # scipy.cpp is no longer needed as scipy.hpp is header-only
+    # colour.cpp doesn't exist - colour.hpp is header-only
 )
-
-# **FIX**: Enable Position Independent Code (PIC) for the static library.
-# This is required when linking a static library into a shared one (like a Python module).
 set_target_properties(agx_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
 target_include_directories(agx_core PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/external/json/include"
 )
-# The necessary include paths for NumCpp and pybind11 are handled automatically.
-# Link the core library to CUDA.
 target_link_libraries(agx_core PUBLIC CUDA::cudart)
 
 
 # --- Test Module for fast_interp_lut ---
-# This builds the pybind11 wrapper into a Python module (.so or .pyd).
 pybind11_add_module(fast_interp_cpp_tests
     tests/fast_interp_lut/pybind_fast_interp_lut.cpp
 )
-# Link our core C++ library to the python module so it can access the functions.
 target_link_libraries(fast_interp_cpp_tests PRIVATE agx_core)
-
-# Set the output directory for the compiled Python module.
-# This places the .so/.pyd file right next to the test script.
 set_target_properties(fast_interp_cpp_tests PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/fast_interp_lut"
 )
 
+# --- Test Module for config ---
+pybind11_add_module(config_cpp_tests
+    tests/config/pybind_config.cpp
+)
+target_link_libraries(config_cpp_tests PRIVATE agx_core)
+set_target_properties(config_cpp_tests PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/config"
+)
 
-# --- Add other test modules here as you create them ---
-# For example, when you are ready to test spectral_upsampling:
-#
-# pybind11_add_module(spectral_upsampling_cpp_tests
-#     tests/spectral_upsampling/pybind_wrapper.cpp
-# )
-# target_link_libraries(spectral_upsampling_cpp_tests PRIVATE agx_core)
+# --- Test Module for io ---
+pybind11_add_module(io_cpp_tests
+    tests/io/pyblind_io.cpp
+)
+target_link_libraries(io_cpp_tests PRIVATE agx_core)
+set_target_properties(io_cpp_tests PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/io"
+)
 
 
-# --- New, Simplified Build Instructions ---
-# 1. cd to the `cpp` directory.
-# 2. rm -rf build && mkdir build && cd build
-# 3. cmake ..
-# 4. make fast_interp_cpp_tests  <- This builds *only* the target you need.
-# 5. cd ../tests/fast_interp_lut/ <- Go to the test directory
-# 6. python3 fast_interp_lut_test.py <- Run the test directly
+# --- Build Instructions ---
+# 1. cd cpp/build
+# 2. cmake ..
+# 3. make <target_name>  (e.g., make fast_interp_cpp_tests)
+# 4. cd ../tests/<test_name>/
+# 5. python3 <test_script>.py
