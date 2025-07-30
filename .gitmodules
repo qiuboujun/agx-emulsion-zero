@@ -1,0 +1,9 @@
+[submodule "cpp/external/cpp/external/pybind11"]
+	path = cpp/external/cpp/external/pybind11
+	url = https://github.com/pybind/pybind11.git
+[submodule "cpp/external/pybind11"]
+	path = cpp/external/pybind11
+	url = https://github.com/pybind/pybind11.git
+[submodule "cpp/external/NumCpp"]
+	path = cpp/external/NumCpp
+	url = https://github.com/dpilger26/NumCpp.git
