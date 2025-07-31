@@ -6,11 +6,11 @@ namespace colour {
 
 // A helper to get the data path, similar to the one in io.cpp
 std::string get_colour_data_path() {
-    return "../../../agx_emulsion/data/"; // Adjust if necessary
+    return "../../../cpp/data/"; // Adjust if necessary
 }
 
 nc::NdArray<float> get_cie_1931_2_degree_cmfs() {
-    std::string path = get_colour_data_path() + "cmfs/CIE_1931_2_Degree_CMFS.csv";
+    std::string path = get_colour_data_path() + "CIE_1931_2_Degree_CMFS.csv";
     // For this specific case, we can use nc::fromfile as it's a simple CSV
     return nc::fromfile<float>(path, ',');
 }

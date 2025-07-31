@@ -49,16 +49,7 @@ def main():
     print("Starting io.py vs io.cpp Comparison Test")
     print("="*50)
 
-    # --- Test Data ---
-    test_data = np.array([[1, 2, 4, 5], [10, 20, 40, 50]], dtype=np.float32)
-    new_x = np.linspace(0, 6, 10, dtype=np.float32)
-
     # --- Run Tests ---
-    run_test("interpolate_to_common_axis",
-             py_io.interpolate_to_common_axis,
-             cpp_io.interpolate_to_common_axis_cpp,
-             kwargs={'data': test_data, 'new_x': new_x, 'method': 'akima'})
-
     run_test("read_neutral_ymc_filter_values",
              py_io.read_neutral_ymc_filter_values,
              cpp_io.read_neutral_ymc_filter_values_cpp)

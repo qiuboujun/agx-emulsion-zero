@@ -51,18 +51,21 @@ public:
         : m_x(x), m_y(y), m_extrapolate(extrapolate) {}
 
     nc::NdArray<double> operator()(const nc::NdArray<double>& x_new) const override {
-        if (m_extrapolate) {
-            return nc::interp(x_new, m_x, m_y);
-        }
-        
+        // Match Python behavior: ignore extrapolate parameter and always extrapolate using edge values
+        // This mirrors Python's np.interp behavior which extrapolates using edge values
         auto result = nc::NdArray<double>(1, x_new.size());
         double x_first = m_x.front();
         double x_last = m_x.back();
 
         for(nc::uint32 i = 0; i < x_new.size(); ++i) {
-            if (x_new[i] < x_first || x_new[i] > x_last) {
-                result[i] = nc::constants::nan;
+            if (x_new[i] <= x_first) {
+                // Below range: use first value (like np.interp)
+                result[i] = m_y.front();
+            } else if (x_new[i] >= x_last) {
+                // Above range: use last value (like np.interp)
+                result[i] = m_y.back();
             } else {
+                // Within range: use nc::interp
                 result[i] = nc::interp(nc::NdArray<double>{x_new[i]}, m_x, m_y).item();
             }
         }
@@ -133,6 +136,9 @@ inline std::unique_ptr<Interpolator1D<double>> create_interpolator(
         return std::make_unique<LinearInterpolator>(x, y, extrapolate);
     }
     if (method == "akima") {
+        if (x.size() < 3) {
+            return std::make_unique<LinearInterpolator>(x, y, extrapolate);
+        }
         return std::make_unique<Akima1DInterpolator>(x, y);
     }
     // Note: A true SciPy-matching cubic spline requires a different, more complex implementation.

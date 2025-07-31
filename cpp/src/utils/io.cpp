@@ -18,8 +18,9 @@ namespace agx {
 namespace utils {
 
 nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, const nc::NdArray<float>& new_x, bool extrapolate, const std::string& method) {
-    auto x = data(0, nc::Slice());
-    auto y = data(1, nc::Slice());
+    // Extract first and second rows properly
+    auto x = data.row(0);
+    auto y = data.row(1);
 
     // Sorting and finding unique values to prevent interpolation errors
     auto sorted_indices = nc::argsort(x);
@@ -40,15 +41,18 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
     auto unique_indices = nc::NdArray<nc::uint32>(unique_indices_vec);
     x = x[unique_indices];
     y = y[unique_indices];
-
+    
     // Convert float arrays to double for scipy functions
     auto x_double = x.astype<double>();
     auto y_double = y.astype<double>();
     auto new_x_double = new_x.astype<double>();
     
     // Use your custom scipy wrapper for interpolation
-    auto interpolator = scipy::interpolate::create_interpolator(x_double, y_double, method, extrapolate);
-    
+    auto interpolator = scipy::interpolate::create_interpolator(
+        x_double, y_double,
+        method,
+        extrapolate);
+
     // FIX 5: Dereference the unique_ptr to call the operator()
     auto result_double = (*interpolator)(new_x_double);
     
@@ -57,11 +61,55 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
 }
 
 nc::NdArray<float> load_csv(const std::string& datapkg, const std::string& filename) {
-    std::string full_path = get_data_path() + datapkg;
-    std::replace(full_path.begin(), full_path.end(), '.', '/');
-    full_path += "/" + filename;
+    std::string base_path = get_data_path();
+    std::string datapkg_path = datapkg;
+    std::replace(datapkg_path.begin(), datapkg_path.end(), '.', '/');
+    
+    // Construct path properly, avoiding double slashes
+    std::string full_path;
+    if (base_path.back() == '/') {
+        full_path = base_path + datapkg_path + "/" + filename;
+    } else {
+        full_path = base_path + "/" + datapkg_path + "/" + filename;
+    }
 
-    return nc::fromfile<float>(full_path, ',').transpose();
+    // Debug: Print the constructed path (commented out for clean output)
+    // std::cout << "Loading CSV from: " << full_path << std::endl;
+
+    // Load CSV manually to handle the format correctly
+    std::ifstream file(full_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open CSV file: " + full_path);
+    }
+
+    std::vector<float> x_values, y_values;
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        
+        // Parse comma-separated values
+        size_t comma_pos = line.find(',');
+        if (comma_pos != std::string::npos) {
+            try {
+                float x = std::stof(line.substr(0, comma_pos));
+                float y = std::stof(line.substr(comma_pos + 1));
+                x_values.push_back(x);
+                y_values.push_back(y);
+            } catch (const std::exception& e) {
+                // Skip invalid lines
+                continue;
+            }
+        }
+    }
+
+    // Create 2xN array with x values in first row, y values in second row
+    auto result = nc::zeros<float>(2, x_values.size());
+    for (size_t i = 0; i < x_values.size(); ++i) {
+        result(0, i) = x_values[i];
+        result(1, i) = y_values[i];
+    }
+
+    return result;
 }
 
 AgxEmulsionData load_agx_emulsion_data(
@@ -128,11 +176,22 @@ nc::NdArray<float> load_densitometer_data(const std::string& type) {
         std::string datapkg = "agx_emulsion.data.densitometer." + type;
         std::string filename = "responsivity_" + std::string(channels[i]) + ".csv";
         auto data = load_csv(datapkg, filename);
-        responsivities(nc::Slice(), i) = interpolate_to_common_axis(data, wavelengths, false, "linear");
+        
+        auto interpolated = interpolate_to_common_axis(data, wavelengths, false, "linear");
+        
+        // Assign to the column using a different approach
+        for (size_t j = 0; j < interpolated.size(); ++j) {
+            responsivities(j, i) = interpolated[j];
+        }
     }
+    
     // FIX 1: Use 0.0f to avoid type mismatch with float array
     responsivities = nc::where(responsivities < 0.0f, 0.0f, responsivities);
-    responsivities /= nc::nansum(responsivities, nc::Axis::ROW).reshape(-1, 1);
+    
+    // Sum down each column to get one scalar per channel, then reshape to (1,3)
+    auto channelSums = nc::nansum(responsivities, nc::Axis::ROW);
+    responsivities /= channelSums.reshape(1, responsivities.shape().cols);
+
     return responsivities;
 }
 
