@@ -214,6 +214,19 @@ io_cpp_tests/fast:
 .PHONY : io_cpp_tests/fast
 
 #=============================================================================
+# Target rules for targets named scipy_test
+
+# Build rule for target.
+scipy_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 scipy_test
+.PHONY : scipy_test
+
+# fast build rule for target.
+scipy_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scipy_test.dir/build.make CMakeFiles/scipy_test.dir/build
+.PHONY : scipy_test/fast
+
+#=============================================================================
 # Target rules for targets named format
 
 # Build rule for target.
@@ -372,6 +385,7 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... format"
+	@echo "... scipy_test"
 	@echo "... tidy"
 	@echo "... agx_core"
 	@echo "... config_cpp_tests"

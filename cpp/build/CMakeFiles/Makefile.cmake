@@ -126,6 +126,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/fast_interp_cpp_tests.dir/DependInfo.cmake"
   "CMakeFiles/config_cpp_tests.dir/DependInfo.cmake"
   "CMakeFiles/io_cpp_tests.dir/DependInfo.cmake"
+  "CMakeFiles/scipy_test.dir/DependInfo.cmake"
   "numcpp_build/CMakeFiles/format.dir/DependInfo.cmake"
   "numcpp_build/CMakeFiles/tidy.dir/DependInfo.cmake"
   )

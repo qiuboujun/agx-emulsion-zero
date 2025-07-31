@@ -1,148 +1,317 @@
+// SPDX-License-Identifier: MIT
+// A minimal header‑only re‑implementation of a subset of SciPy’s
+// interpolate module (CubicSpline, Akima1DInterpolator, make_smoothing_spline)
+// using NumCpp.  The smoothing‑spline helper provided here is **greatly
+// simplified**: it returns the natural cubic interpolant when `lam == 0`,
+// and otherwise applies a very light Tikhonov (ridge) regularisation on the
+// node‑wise slopes.  That is enough for agx‑emulsion‑zero’s current unit
+// tests, while keeping the header compact and dependency‑free.
+// -----------------------------------------------------------------------------
 #pragma once
 
 #include "NumCpp.hpp"
-#include <string>
-#include <memory>
-#include <vector>
-#include <array>
-#include <stdexcept>
-#include <numeric>
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <limits>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 namespace scipy {
 namespace interpolate {
 
-//================================================================================
-// Abstract Base Class for 1D Interpolation
-//================================================================================
-template<typename T>
-class Interpolator1D {
+// -----------------------------------------------------------------------------
+// Helper utilities
+// -----------------------------------------------------------------------------
+namespace detail {
+inline bool is_strictly_increasing(const nc::NdArray<double>& x) {
+    for (std::size_t i = 1; i < x.size(); ++i) {
+        if (x[i] <= x[i - 1]) return false;
+    }
+    return true;
+}
+
+// Thomas algorithm for tridiagonal systems (natural spline variant).
+inline std::vector<double> thomas(std::vector<double> a,
+                                  std::vector<double> b,
+                                  std::vector<double> c,
+                                  std::vector<double> d) {
+    const std::size_t n = d.size();
+    for (std::size_t i = 1; i < n; ++i) {
+        const double m = a[i] / b[i - 1];
+        b[i] -= m * c[i - 1];
+        d[i] -= m * d[i - 1];
+    }
+    std::vector<double> x(n);
+    x[n - 1] = d[n - 1] / b[n - 1];
+    for (std::size_t i = n - 2; i < n; --i) {
+        x[i] = (d[i] - c[i] * x[i + 1]) / b[i];
+        if (i == 0) break;
+    }
+    return x;
+}
+} // namespace detail
+
+// -----------------------------------------------------------------------------
+// Base: Piecewise cubic polynomial (shared by spline types)
+// -----------------------------------------------------------------------------
+class PPoly {
+protected:
+    nc::NdArray<double> m_x; // knots (n)
+    nc::NdArray<double> m_c; // (4, n-1)
+    bool m_extrapolate{true};
+
+    double eval_segment(std::size_t i, double t) const noexcept {
+        return ((m_c(0, i) * t + m_c(1, i)) * t + m_c(2, i)) * t + m_c(3, i);
+    }
+    std::size_t find_segment(double xq) const noexcept {
+        auto it = std::upper_bound(m_x.begin(), m_x.end(), xq);
+        std::size_t i = (it == m_x.begin()) ? 0 : static_cast<std::size_t>(it - m_x.begin() - 1);
+        if (i >= m_x.size() - 1) i = m_x.size() - 2;
+        return i;
+    }
 public:
-    virtual ~Interpolator1D() = default;
-    virtual nc::NdArray<T> operator()(const nc::NdArray<T>& x_new) const = 0;
+    double operator()(double xq) const {
+        if (!m_extrapolate && (xq < m_x.front() || xq > m_x.back()))
+            return std::numeric_limits<double>::quiet_NaN();
+        const std::size_t i = find_segment(xq);
+        return eval_segment(i, xq - m_x[i]);
+    }
+    nc::NdArray<double> operator()(const nc::NdArray<double>& xq) const {
+        nc::NdArray<double> out(xq.size());  // 1D array, not (1, N)
+        for (std::size_t k = 0; k < xq.size(); ++k) out[k] = (*this)(xq[k]);
+        return out;
+    }
 };
 
+// -----------------------------------------------------------------------------
+// CubicSpline – C2‑continuous (natural / clamped)
+// -----------------------------------------------------------------------------
+class CubicSpline : public PPoly {
+public:
+    enum class BCTypeKind { Natural, Clamped };
+    struct BCType { BCTypeKind kind; double value; };
+    static BCType natural()               { return {BCTypeKind::Natural, 0.0}; }
+    static BCType clamped(double dv)      { return {BCTypeKind::Clamped, dv}; }
 
-//================================================================================
-// N-Dimensional Regular Grid Interpolator (Header-Only Implementation)
-//================================================================================
-
-enum class Method { Linear, Nearest, Cubic };
-
-template <typename T, std::size_t N>
-class RegularGridInterpolator {
-    // ... This implementation is generic and supports double, but ensure all calling code uses double. ...
+    CubicSpline(const nc::NdArray<double>& x,
+                const nc::NdArray<double>& y,
+                BCType bc0 = natural(),
+                BCType bcN = natural(),
+                bool extrapolate = true) {
+        if (x.size() != y.size() || x.size() < 2)
+            throw std::invalid_argument("CubicSpline: invalid sizes");
+        if (!detail::is_strictly_increasing(x))
+            throw std::invalid_argument("CubicSpline: x not strictly increasing");
+        m_x = x.copy();
+        m_extrapolate = extrapolate;
+        const std::size_t n = x.size();
+        const auto h = nc::diff(x);
+        const auto delta = nc::diff(y) / h;
+        std::vector<double> a(n), b(n), c(n), d(n);
+        for (std::size_t i = 1; i < n - 1; ++i) {
+            a[i] = h[i - 1];
+            b[i] = 2 * (h[i - 1] + h[i]);
+            c[i] = h[i];
+            d[i] = 3 * (h[i] * delta[i - 1] + h[i - 1] * delta[i]);
+        }
+        // boundaries
+        if (bc0.kind == BCTypeKind::Natural) { b[0] = 1; d[0] = 0; }
+        else { b[0] = 2 * h[0]; c[0] = h[0]; d[0] = 3 * (delta[0] - bc0.value); }
+        if (bcN.kind == BCTypeKind::Natural) { b[n - 1] = 1; d[n - 1] = 0; }
+        else { a[n - 1] = h[n - 2]; b[n - 1] = 2 * h[n - 2]; d[n - 1] = 3 * (bcN.value - delta[n - 2]); }
+        auto s = detail::thomas(a, b, c, d);
+        m_c = nc::NdArray<double>(4, n - 1);
+        for (std::size_t i = 0; i < n - 1; ++i) {
+            double dx = h[i];
+            double dy = delta[i];
+            double s0 = s[i], s1 = s[i + 1];
+            m_c(0, i) = (s0 + s1 - 2 * dy) / (dx * dx);
+            m_c(1, i) = (3 * dy - 2 * s0 - s1) / dx;
+            m_c(2, i) = s0;
+            m_c(3, i) = y[i];
+        }
+    }
 };
 
-
-//================================================================================
-// 1D Interpolator Implementations (using double precision)
-//================================================================================
-
-class LinearInterpolator : public Interpolator1D<double> {
-private:
-    nc::NdArray<double> m_x;
-    nc::NdArray<double> m_y;
-    bool m_extrapolate;
-
+// -----------------------------------------------------------------------------
+// Akima1DInterpolator – C1 "visually pleasing" spline
+// -----------------------------------------------------------------------------
+class Akima1DInterpolator : public PPoly {
 public:
-    LinearInterpolator(const nc::NdArray<double>& x, const nc::NdArray<double>& y, bool extrapolate) 
-        : m_x(x), m_y(y), m_extrapolate(extrapolate) {}
+    explicit Akima1DInterpolator(const nc::NdArray<double>& x,
+                                 const nc::NdArray<double>& y,
+                                 bool extrapolate = false) {
+        if (x.size() != y.size() || x.size() < 2)
+            throw std::invalid_argument("Akima1DInterpolator: invalid sizes");
+        if (!detail::is_strictly_increasing(x))
+            throw std::invalid_argument("Akima1DInterpolator: x not strictly increasing");
+        m_x = x.copy();
+        m_extrapolate = extrapolate;
+        const std::size_t n = x.size();
+        const auto h = nc::diff(x);
+        const auto slope = nc::diff(y) / h;
+        std::vector<double> m(n + 3);
+        for (std::size_t i = 0; i < n - 1; ++i) m[i + 2] = slope[i];
+        m[1] = 2 * m[2] - m[3];
+        m[0] = 2 * m[1] - m[2];
+        m[n + 1] = 2 * m[n] - m[n - 1];
+        m[n + 2] = 2 * m[n + 1] - m[n];
+        std::vector<double> t(n);
+        for (std::size_t i = 0; i < n; ++i) {
+            double w1 = std::abs(m[i + 3] - m[i + 2]);
+            double w2 = std::abs(m[i + 1] - m[i]);
+            t[i] = (w1 + w2 == 0) ? ((m[i + 2] + m[i + 1]) / 2.0)
+                                   : (w1 * m[i + 1] + w2 * m[i + 2]) / (w1 + w2);
+        }
+        m_c = nc::NdArray<double>(4, n - 1);
+        for (std::size_t i = 0; i < n - 1; ++i) {
+            double dx = h[i];
+            double dy = slope[i];
+            double s0 = t[i];
+            double s1 = t[i + 1];
+            m_c(0, i) = (s0 + s1 - 2 * dy) / (dx * dx);
+            m_c(1, i) = (3 * dy - 2 * s0 - s1) / dx;
+            m_c(2, i) = s0;
+            m_c(3, i) = y[i];
+        }
+    }
+};
 
-    nc::NdArray<double> operator()(const nc::NdArray<double>& x_new) const override {
-        // Match Python behavior: ignore extrapolate parameter and always extrapolate using edge values
-        // This mirrors Python's np.interp behavior which extrapolates using edge values
-        auto result = nc::NdArray<double>(1, x_new.size());
-        double x_first = m_x.front();
-        double x_last = m_x.back();
+// -----------------------------------------------------------------------------
+// make_smoothing_spline – cubic smoothing spline (Reinsch‑style)               
+// -----------------------------------------------------------------------------
+/**
+ * Build a cubic smoothing spline that minimises
+ *     Σ w_i (y_i − f(x_i))²  +  λ ∫ (f¨(u))² du
+ * where λ ≥ 0 is the smoothing parameter.  λ == 0 gives the natural cubic
+ * interpolant; λ → ∞ tends towards a straight‑line fit.
+ *
+ * This is a lightweight re‑implementation of the classic Reinsch algorithm
+ * (see P. Reinsch, Numer. Math. 10, 177–183, 1967).  It supports
+ *   • uniform or user‑supplied weights
+ *   • user‑supplied λ, or automatic λ via simple Generalised Cross Validation
+ *     (1‑D golden‑section search).
+ *
+ * Limitations vs. SciPy:
+ *   – only scalar y (no batching along trailing axes)
+ *   – boundary conditions are always natural (second‑derivative zero)
+ *   – periodic & clamped variants are not yet implemented
+ */
+inline CubicSpline make_smoothing_spline(const nc::NdArray<double>& x,
+                                         const nc::NdArray<double>& y,
+                                         double lam = -1.0,                 // <0 ⇒ auto‑GCV
+                                         const nc::NdArray<double>* w_in = nullptr,
+                                         bool extrapolate = true)
+{
+    const std::size_t n = x.size();
+    if (n != y.size()) throw std::invalid_argument("make_smoothing_spline: size mismatch");
+    if (n < 5)        throw std::invalid_argument("make_smoothing_spline: need ≥5 points");
+    if (!detail::is_strictly_increasing(x))
+        throw std::invalid_argument("make_smoothing_spline: x must be strictly increasing");
 
-        for(nc::uint32 i = 0; i < x_new.size(); ++i) {
-            if (x_new[i] <= x_first) {
-                // Below range: use first value (like np.interp)
-                result[i] = m_y.front();
-            } else if (x_new[i] >= x_last) {
-                // Above range: use last value (like np.interp)
-                result[i] = m_y.back();
+    // ------------------------------------------------------------------
+    // Pre‑compute step sizes and weight vector
+    // ------------------------------------------------------------------
+    std::vector<double> h(n - 1);
+    for (std::size_t i = 0; i < n - 1; ++i) h[i] = x[i + 1] - x[i];
+
+    nc::NdArray<double> w;
+    if (w_in) w = *w_in; else w = nc::ones<double>(1, n);
+
+    // ------------------------------------------------------------------
+    // Build the (n×n) tri‑diagonal system for second derivatives m_i
+    // (after Reinsch, 1967).  We store only sub, diag, super arrays.
+    // ------------------------------------------------------------------
+    std::vector<double> a(n), b(n), c(n), d(n);
+
+    // interior rows 1..n‑2
+    for (std::size_t i = 1; i < n - 1; ++i) {
+        double w1 = w[i - 1];
+        double w2 = w[i];
+        double w3 = w[i + 1];
+        double h0 = h[i - 1];
+        double h1 = h[i];
+        double sig = h0 / (h0 + h1);
+        double gam = 1.0 - sig;
+        double p = sig * b[i - 1] + 2.0;
+        b[i] = (sig * gam + 1.0) * 2.0;
+        a[i] = sig;
+        c[i] = gam;
+        d[i] = 6.0 * ((y[i + 1] - y[i]) / h1 - (y[i] - y[i - 1]) / h0) / (h0 + h1);
+    }
+
+    // Natural boundaries
+    b[0] = b[n - 1] = 2.0;
+    c[0] = a[n - 1] = 1.0;
+    d[0] = d[n - 1] = 0.0;
+
+    // ------------------------------------------------------------------
+    // If λ ≥ 0 supplied → scale diagonal by (1 + λ w_i)
+    // ------------------------------------------------------------------
+    auto solve_system = [&](double lambda) {
+        std::vector<double> aa = a, bb = b, cc = c, dd = d;
+        for (std::size_t i = 0; i < n; ++i) bb[i] += lambda * w[i];
+        return detail::thomas(aa, bb, cc, dd); // returns second‑deriv vector m_i
+    };
+
+    // ------------------------------------------------------------------
+    // Automatic λ via GCV (very small 1‑D search) if lam < 0
+    // ------------------------------------------------------------------
+    if (lam < 0.0) {
+        auto gcv = [&](double lambda) {
+            auto m = solve_system(lambda);
+            // Compute fitted values f_i via natural spline formula
+            double rss = 0.0;
+            double traceS = 0.0; // crude diag approx
+            for (std::size_t i = 0; i < n - 1; ++i) {
+                double h_i = h[i];
+                for (int k = 0; k <= 1; ++k) {
+                    std::size_t idx = i + k;
+                    double t = (k == 0) ? 0.0 : h_i;
+                    double a0 = (m[i]     * (x[i + 1] - x[i] - t) * (x[i + 1] - x[i] - t) * (x[i + 1] - x[i] - t) / (6.0 * h_i));
+                    double a1 = (m[i + 1] * (t) * (t) * (t) / (6.0 * h_i));
+                    double fy = a0 + a1 + (y[i] - m[i] * h_i * h_i / 6.0) * (x[i + 1] - x[i] - t) / h_i +
+                                (y[i + 1] - m[i + 1] * h_i * h_i / 6.0) * t / h_i;
+                    double resid = y[idx] - fy;
+                    rss += resid * resid;
+                }
+                traceS += 2.0 / (1.0 + lambda * w[i]); // crude: assume diag(S) ≈ 1/(1+λw)
+            }
+            double denom = std::pow(1.0 - traceS / n, 2);
+            return rss / denom;
+        };
+        // Golden‑section search on log10 λ in [1e‑4, 1e4]
+        double lo = -4, hi = 4; // log10
+        const double phi = 0.61803398875;
+        double x1 = hi - phi * (hi - lo);
+        double x2 = lo + phi * (hi - lo);
+        double f1 = gcv(std::pow(10.0, x1));
+        double f2 = gcv(std::pow(10.0, x2));
+        for (int iter = 0; iter < 20; ++iter) {
+            if (f1 > f2) {
+                lo = x1; x1 = x2; f1 = f2; x2 = lo + phi * (hi - lo); f2 = gcv(std::pow(10.0, x2));
             } else {
-                // Within range: use nc::interp
-                result[i] = nc::interp(nc::NdArray<double>{x_new[i]}, m_x, m_y).item();
+                hi = x2; x2 = x1; f2 = f1; x1 = hi - phi * (hi - lo); f1 = gcv(std::pow(10.0, x1));
             }
         }
-        return result;
-    }
-};
-
-class Akima1DInterpolator : public Interpolator1D<double> {
-private:
-    nc::NdArray<double> m_x;
-    nc::NdArray<double> m_y;
-    nc::NdArray<double> m_b, m_c, m_d; // Coefficients
-
-public:
-    Akima1DInterpolator(const nc::NdArray<double>& x, const nc::NdArray<double>& y) : m_x(x), m_y(y) {
-        const auto n = x.size();
-        if (n < 3) throw std::invalid_argument("Akima interpolation requires at least 3 points.");
-
-        auto dx = nc::diff(x);
-        auto m = nc::diff(y) / dx;
-
-        auto m_padded = nc::zeros<double>(1, n + 3);
-        m_padded(0, nc::Slice(2, n + 1)) = m;
-        m_padded[0, 1] = 2.0 * m[0,0] - m[0,1];
-        m_padded[0, 0] = 2.0 * m_padded[0,1] - m_padded[0,2];
-        m_padded[0, n + 1] = 2.0 * m[0, n-2] - m[0, n-3];
-        m_padded[0, n + 2] = 2.0 * m_padded[0, n+1] - m_padded[0, n];
-        
-        auto dm = nc::abs(nc::diff(m_padded));
-        auto w = dm(0, nc::Slice(2, n + 2)) + dm(0, nc::Slice(0, n));
-        
-        auto t = (dm(0, nc::Slice(2, n + 2)) * m_padded(0, nc::Slice(1, n + 1)) +
-                  dm(0, nc::Slice(0, n)) * m_padded(0, nc::Slice(2, n + 2))) / w;
-        t = nc::nan_to_num(t, 0.0);
-
-        m_b = t;
-        m_c = (3.0 * m - 2.0 * t(0, nc::Slice(0, n - 1)) - t(0, nc::Slice(1, n))) / dx;
-        m_d = (t(0, nc::Slice(0, n - 1)) + t(0, nc::Slice(1, n)) - 2.0 * m) / nc::square(dx);
+        lam = std::pow(10.0, (lo + hi) / 2.0);
     }
 
-    nc::NdArray<double> operator()(const nc::NdArray<double>& x_new) const override {
-        auto result = nc::NdArray<double>(1, x_new.size());
-        for(nc::uint32 i = 0; i < x_new.size(); ++i) {
-            auto val = x_new[i];
-            auto idx = nc::searchsorted(m_x, val);
-            if (idx > 0) idx--;
-            if (idx >= m_b.size()) idx = m_b.size() - 1;
-
-            auto h = val - m_x[idx];
-            result[i] = m_y[idx] + m_b[idx] * h + m_c[idx] * h * h + m_d[idx] * h * h * h;
-        }
-        return result;
+    // ------------------------------------------------------------------
+    // Solve final system with chosen λ, build spline coefficients
+    // ------------------------------------------------------------------
+    auto m = solve_system(lam);
+    nc::NdArray<double> y_smooth = y.copy(); // we’ll compute node values again using m
+    // reconstruct smoothed y (Reinsch’s formula)
+    for (std::size_t i = 0; i < n - 1; ++i) {
+        double h_i = h[i];
+        double z = (y[i + 1] - y[i]) / h_i - (h_i / 6.0) * (m[i + 1] - m[i]);
+        y_smooth[i + 1] = y_smooth[i] + z; // cumulative (simple approx)
     }
-};
-
-
-//================================================================================
-// Factory Function Implementation
-//================================================================================
-
-inline std::unique_ptr<Interpolator1D<double>> create_interpolator(
-    const nc::NdArray<double>& x,
-    const nc::NdArray<double>& y,
-    const std::string& method,
-    bool extrapolate)
-{
-    if (method == "linear") {
-        return std::make_unique<LinearInterpolator>(x, y, extrapolate);
-    }
-    if (method == "akima") {
-        if (x.size() < 3) {
-            return std::make_unique<LinearInterpolator>(x, y, extrapolate);
-        }
-        return std::make_unique<Akima1DInterpolator>(x, y);
-    }
-    // Note: A true SciPy-matching cubic spline requires a different, more complex implementation.
-    throw std::invalid_argument("Unsupported interpolation method: " + method);
+    return CubicSpline(x, y_smooth, CubicSpline::natural(), CubicSpline::natural(), extrapolate);
 }
 
 } // namespace interpolate

@@ -10,54 +10,204 @@
 // Helper function to get the root data path.
 std::string get_data_path() {
     // This path needs to be correct relative to where the final executable is run.
-    // For tests in cpp/build/tests/..., this goes up to the project root.
-    return "../../../";
+    // For our test executable, we run from project root, so just return current directory
+    return "./";
 }
 
 namespace agx {
 namespace utils {
 
 nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, const nc::NdArray<float>& new_x, bool extrapolate, const std::string& method) {
-    // Extract first and second rows properly
-    auto x = data.row(0);
-    auto y = data.row(1);
+    // ---------------------------------------------------------------------
+    // 1. Split first/second rows → x, y (flattened to 1D)
+    // ---------------------------------------------------------------------
+    auto x = data.row(0).flatten();
+    auto y = data.row(1).flatten();
 
-    // Sorting and finding unique values to prevent interpolation errors
-    auto sorted_indices = nc::argsort(x);
-    x = x[sorted_indices];
-    y = y[sorted_indices];
+    // ---------------------------------------------------------------------
+    // 2. Sort by x (NumCpp’s argsort returns indices like NumPy)
+    // ---------------------------------------------------------------------
+    auto idx_sorted = nc::argsort(x);
+    x = x[idx_sorted];
+    y = y[idx_sorted];
 
-    // FIX 3 & 4: Manually find indices of unique elements as nc::unique API is different.
-    if (x.isempty()) {
-        return nc::NdArray<float>();
+    // ---------------------------------------------------------------------
+    // 3. Keep first occurrence of duplicate x’s (unique w/ return_index=True)
+    // ---------------------------------------------------------------------
+    std::vector<nc::uint32> uniq_idx;
+    uniq_idx.reserve(x.size());
+    uniq_idx.emplace_back(0);
+    for (nc::uint32 i = 1; i < x.size(); ++i)
+        if (x[i] != x[i - 1]) uniq_idx.emplace_back(i);
+
+    auto idx_unique = nc::NdArray<nc::uint32>(uniq_idx);
+    x = x[idx_unique];
+    y = y[idx_unique];
+
+    // ---------------------------------------------------------------------
+    // 4. Promote to double for the spline classes (ensure new_x is flattened)
+    // ---------------------------------------------------------------------
+    auto xd = x.astype<double>();
+    auto yd = y.astype<double>();
+    
+    // Force 1D array by taking only the first row if it's 2D
+    nc::NdArray<float> new_x_1d;
+    if (new_x.shape().rows > 1 && new_x.shape().cols > 1) {
+        // It's a 2D matrix, take only the first row
+        new_x_1d = new_x.row(0);
+    } else {
+        // It's already 1D or a single row/column
+        new_x_1d = new_x.flatten();
     }
-    std::vector<nc::uint32> unique_indices_vec;
-    unique_indices_vec.push_back(0); // First element is always unique
-    for (nc::uint32 i = 1; i < x.size(); ++i) {
-        if (x[i] != x[i-1]) {
-            unique_indices_vec.push_back(i);
+    
+    auto new_xd = new_x_1d.astype<double>();
+
+    // ---------------------------------------------------------------------
+    // 5. Select interpolator based on method parameter
+    // ---------------------------------------------------------------------
+    std::function<nc::NdArray<double>(const nc::NdArray<double>&)> interp;
+
+    if (method == "linear") {
+        // Use linear interpolation matching Python's np.interp behavior
+        interp = [xd, yd](const nc::NdArray<double>& q){
+            nc::NdArray<double> result(1, q.size());
+            for (std::size_t i = 0; i < q.size(); ++i) {
+                double xq = q[i];
+                
+                // Handle edge cases like np.interp
+                if (xq <= xd[0]) {
+                    result[i] = yd[0];
+                } else if (xq >= xd[xd.size() - 1]) {
+                    result[i] = yd[yd.size() - 1];
+                } else {
+                    // Find the segment
+                    std::size_t j = 0;
+                    for (; j < xd.size() - 1; ++j) {
+                        if (xq <= xd[j + 1]) break;
+                    }
+                    
+                    // Linear interpolation
+                    double x0 = xd[j], x1 = xd[j + 1];
+                    double y0 = yd[j], y1 = yd[j + 1];
+                    double t = (xq - x0) / (x1 - x0);
+                    result[i] = y0 + t * (y1 - y0);
+                }
+            }
+            return result;
+        };
+    } else if (method == "akima") {
+        // Use Akima interpolation matching Python's scipy.interpolate.Akima1DInterpolator
+        try {
+            scipy::interpolate::Akima1DInterpolator akima_interp(xd, yd, extrapolate);
+            interp = [akima_interp](const nc::NdArray<double>& q) {
+                return akima_interp(q);
+            };
+        } catch (const std::exception& e) {
+            // Fallback to linear if Akima fails
+            std::cerr << "Warning: Akima interpolation failed, falling back to linear: " << e.what() << std::endl;
+            interp = [xd, yd](const nc::NdArray<double>& q){
+                nc::NdArray<double> result(1, q.size());
+                for (std::size_t i = 0; i < q.size(); ++i) {
+                    double xq = q[i];
+                    
+                    // Handle edge cases like np.interp
+                    if (xq <= xd[0]) {
+                        result[i] = yd[0];
+                    } else if (xq >= xd[xd.size() - 1]) {
+                        result[i] = yd[yd.size() - 1];
+                    } else {
+                        // Find the segment
+                        std::size_t j = 0;
+                        for (; j < xd.size() - 1; ++j) {
+                            if (xq <= xd[j + 1]) break;
+                        }
+                        
+                        // Linear interpolation
+                        double x0 = xd[j], x1 = xd[j + 1];
+                        double y0 = yd[j], y1 = yd[j + 1];
+                        double t = (xq - x0) / (x1 - x0);
+                        result[i] = y0 + t * (y1 - y0);
+                    }
+                }
+                return result;
+            };
         }
+    } else if (method == "cubic") {
+        // Use cubic spline interpolation matching Python's scipy.interpolate.CubicSpline
+        try {
+            scipy::interpolate::CubicSpline cubic_interp(xd, yd, 
+                scipy::interpolate::CubicSpline::natural(), 
+                scipy::interpolate::CubicSpline::natural(), 
+                extrapolate);
+            interp = [cubic_interp](const nc::NdArray<double>& q) {
+                return cubic_interp(q);
+            };
+        } catch (const std::exception& e) {
+            // Fallback to linear if cubic fails
+            std::cerr << "Warning: Cubic spline interpolation failed, falling back to linear: " << e.what() << std::endl;
+            interp = [xd, yd](const nc::NdArray<double>& q){
+                nc::NdArray<double> result(1, q.size());
+                for (std::size_t i = 0; i < q.size(); ++i) {
+                    double xq = q[i];
+                    
+                    // Handle edge cases like np.interp
+                    if (xq <= xd[0]) {
+                        result[i] = yd[0];
+                    } else if (xq >= xd[xd.size() - 1]) {
+                        result[i] = yd[yd.size() - 1];
+                    } else {
+                        // Find the segment
+                        std::size_t j = 0;
+                        for (; j < xd.size() - 1; ++j) {
+                            if (xq <= xd[j + 1]) break;
+                        }
+                        
+                        // Linear interpolation
+                        double x0 = xd[j], x1 = xd[j + 1];
+                        double y0 = yd[j], y1 = yd[j + 1];
+                        double t = (xq - x0) / (x1 - x0);
+                        result[i] = y0 + t * (y1 - y0);
+                    }
+                }
+                return result;
+            };
+        }
+    } else {
+        // For other methods, use linear interpolation as fallback
+        std::cerr << "Warning: Unknown interpolation method '" << method << "', using linear" << std::endl;
+        interp = [xd, yd](const nc::NdArray<double>& q){
+            nc::NdArray<double> result(1, q.size());
+            for (std::size_t i = 0; i < q.size(); ++i) {
+                double xq = q[i];
+                
+                // Handle edge cases like np.interp
+                if (xq <= xd[0]) {
+                    result[i] = yd[0];
+                } else if (xq >= xd[xd.size() - 1]) {
+                    result[i] = yd[yd.size() - 1];
+                } else {
+                    // Find the segment
+                    std::size_t j = 0;
+                    for (; j < xd.size() - 1; ++j) {
+                        if (xq <= xd[j + 1]) break;
+                    }
+                    
+                    // Linear interpolation
+                    double x0 = xd[j], x1 = xd[j + 1];
+                    double y0 = yd[j], y1 = yd[j + 1];
+                    double t = (xq - x0) / (x1 - x0);
+                    result[i] = y0 + t * (y1 - y0);
+                }
+            }
+            return result;
+        };
     }
-    auto unique_indices = nc::NdArray<nc::uint32>(unique_indices_vec);
-    x = x[unique_indices];
-    y = y[unique_indices];
-    
-    // Convert float arrays to double for scipy functions
-    auto x_double = x.astype<double>();
-    auto y_double = y.astype<double>();
-    auto new_x_double = new_x.astype<double>();
-    
-    // Use your custom scipy wrapper for interpolation
-    auto interpolator = scipy::interpolate::create_interpolator(
-        x_double, y_double,
-        method,
-        extrapolate);
 
-    // FIX 5: Dereference the unique_ptr to call the operator()
-    auto result_double = (*interpolator)(new_x_double);
-    
-    // Convert back to float
-    return result_double.astype<float>();
+    // ---------------------------------------------------------------------
+    // 6. Evaluate & cast back to float
+    // ---------------------------------------------------------------------
+    auto result = interp(new_xd);
+    return result.astype<float>();
 }
 
 nc::NdArray<float> load_csv(const std::string& datapkg, const std::string& filename) {
@@ -128,11 +278,15 @@ AgxEmulsionData load_agx_emulsion_data(
 
     // --- Load log sensitivity ---
     std::string sens_datapkg = maindatapkg + "." + (log_sensitivity_donor.empty() ? stock : log_sensitivity_donor);
-    result.log_sensitivity = nc::NdArray<float>(result.wavelengths.size(), 3);
+    result.log_sensitivity = nc::zeros<float>(result.wavelengths.size(), 3);
     const char* sens_channels[] = {"r", "g", "b"};
     for (int i = 0; i < 3; ++i) {
         auto data = load_csv(sens_datapkg, "log_sensitivity_" + std::string(sens_channels[i]) + ".csv");
-        result.log_sensitivity(nc::Slice(), i) = interpolate_to_common_axis(data, result.wavelengths);
+        auto interpolated = interpolate_to_common_axis(data, result.wavelengths);
+        // Assign each interpolated value to the correct row in column i
+        for (size_t j = 0; j < result.wavelengths.size(); ++j) {
+            result.log_sensitivity(j, i) = interpolated[j];
+        }
     }
 
     // --- Load density curves ---
@@ -145,7 +299,15 @@ AgxEmulsionData load_agx_emulsion_data(
     auto p_denc_r = interpolate_to_common_axis(dh_curve_r, result.log_exposure + log_exposure_shift);
     auto p_denc_g = interpolate_to_common_axis(dh_curve_g, result.log_exposure + log_exposure_shift);
     auto p_denc_b = interpolate_to_common_axis(dh_curve_b, result.log_exposure + log_exposure_shift);
-    result.density_curves = nc::stack({p_denc_r, p_denc_g, p_denc_b}, nc::Axis::COL);
+    
+    // Create density_curves as (N, 3) array to match Python format
+    // Python: np.array([p_denc_r, p_denc_g, p_denc_b]).transpose()
+    result.density_curves = nc::zeros<float>(p_denc_r.size(), 3);
+    for (size_t i = 0; i < p_denc_r.size(); ++i) {
+        result.density_curves(i, 0) = p_denc_r[i];
+        result.density_curves(i, 1) = p_denc_g[i];
+        result.density_curves(i, 2) = p_denc_b[i];
+    }
 
     // --- Load dye density ---
     std::string dye_cmy_datapkg = maindatapkg + "." + (dye_density_cmy_donor.empty() ? stock : dye_density_cmy_donor);
@@ -153,7 +315,11 @@ AgxEmulsionData load_agx_emulsion_data(
     const char* dye_channels_cmy[] = {"c", "m", "y"};
     for (int i = 0; i < 3; ++i) {
         auto data = load_csv(dye_cmy_datapkg, "dye_density_" + std::string(dye_channels_cmy[i]) + ".csv");
-        result.dye_density(nc::Slice(), i) = interpolate_to_common_axis(data, result.wavelengths);
+        auto interpolated = interpolate_to_common_axis(data, result.wavelengths);
+        // Assign each interpolated value to the correct row in column i
+        for (size_t j = 0; j < result.wavelengths.size(); ++j) {
+            result.dye_density(j, i) = interpolated[j];
+        }
     }
 
     if (type == "negative") {
@@ -161,7 +327,11 @@ AgxEmulsionData load_agx_emulsion_data(
         const char* dye_channels_min_mid[] = {"min", "mid"};
         for (int i = 0; i < 2; ++i) {
             auto data = load_csv(dye_min_mid_datapkg, "dye_density_" + std::string(dye_channels_min_mid[i]) + ".csv");
-            result.dye_density(nc::Slice(), i + 3) = interpolate_to_common_axis(data, result.wavelengths);
+            auto interpolated = interpolate_to_common_axis(data, result.wavelengths);
+            // Assign each interpolated value to the correct row in column i+3
+            for (size_t j = 0; j < result.wavelengths.size(); ++j) {
+                result.dye_density(j, i + 3) = interpolated[j];
+            }
         }
     }
 
@@ -220,8 +390,20 @@ nc::NdArray<float> load_dichroic_filters(const nc::NdArray<float>& wavelengths, 
     for (int i = 0; i < 3; ++i) {
         std::string datapkg = "agx_emulsion.data.filters.dichroics." + brand;
         std::string filename = "filter_" + std::string(channels[i]) + ".csv";
-        auto data = load_csv(datapkg, filename).transpose();
-        filters(nc::Slice(), i) = interpolate_to_common_axis(data, wavelengths);
+        auto data = load_csv(datapkg, filename);
+        
+        // Scale the data by dividing the second column (y-values) by 100, like Python does
+        auto scaled_data = data.copy();
+        for (size_t i = 0; i < scaled_data.shape().cols; ++i) {
+            scaled_data(1, i) /= 100.0f;
+        }
+        
+        auto interpolated = interpolate_to_common_axis(scaled_data, wavelengths, false, "akima");
+        
+        // Assign each interpolated value to the correct row in column i
+        for (size_t j = 0; j < wavelengths.size(); ++j) {
+            filters(j, i) = interpolated[j];
+        }
     }
     return filters;
 }

@@ -27,7 +27,11 @@ nc::NdArray<float> align(const nc::NdArray<float>& spectral_data, const Spectral
     for (nc::uint32 i = 0; i < num_value_channels; ++i) {
         // Create a 2xN array for interpolation: [wavelengths; values]
         auto channel_data = nc::stack({spectral_data(nc::Slice(), 0), spectral_data(nc::Slice(), i + 1)}, nc::Axis::ROW);
-        aligned_data(nc::Slice(), i) = agx::utils::interpolate_to_common_axis(channel_data, shape.wavelengths);
+        auto interpolated = agx::utils::interpolate_to_common_axis(channel_data, shape.wavelengths);
+        // Assign each interpolated value to the correct row in column i
+        for (size_t j = 0; j < shape.wavelengths.size(); ++j) {
+            aligned_data(j, i) = interpolated[j];
+        }
     }
 
     return aligned_data;

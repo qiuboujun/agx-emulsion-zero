@@ -73,7 +73,7 @@ def main():
     run_test("load_agx_emulsion_data",
              py_io.load_agx_emulsion_data,
              cpp_io.load_agx_emulsion_data_cpp,
-             kwargs={'stock': 'kodak_gold_200'})
+             kwargs={'stock': 'kodak_vision3_500t'})
     
     print("="*50)
     print("Comparison Test Finished")

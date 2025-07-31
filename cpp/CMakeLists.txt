@@ -52,6 +52,17 @@ set_target_properties(io_cpp_tests PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/io"
 )
 
+# Add scipy test target
+add_custom_target(scipy_test
+    COMMAND ${CMAKE_COMMAND} -E echo "Running scipy interpolation test..."
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/io/pybind_scipy_test.py
+    DEPENDS io_cpp_tests
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/io
+    COMMENT "Running scipy interpolation test"
+)
+
+
+
 
 # --- Build Instructions ---
 # 1. cd cpp/build

@@ -1,0 +1,3 @@
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/build/CMakeFiles/independent_io_test.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/build/CMakeFiles/edit_cache.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/build/CMakeFiles/rebuild_cache.dir

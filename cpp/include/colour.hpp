@@ -32,7 +32,7 @@ struct SpectralShape {
  * @return An nc::NdArray of shape [N, 4] with columns [wavelength, x, y, z].
  */
 inline nc::NdArray<float> get_cie_1931_2_degree_cmfs() {
-    std::string filename = "../../data/CIE_1931_2_Degree_CMFS.csv";
+    std::string filename = "./cpp/data/CIE_1931_2_Degree_CMFS.csv";
     std::ifstream file(filename);
     
     if (!file.is_open()) {

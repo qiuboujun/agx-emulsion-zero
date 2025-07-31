@@ -17,7 +17,8 @@ nc::NdArray<T> py_to_nc(py::array_t<T, py::array::c_style | py::array::forcecast
     
     // Handle different dimensions
     if (info.ndim == 1) {
-        nc::NdArray<T> nc_arr(info.shape[0]);
+        // For 1D arrays, create a 1D NumCpp array using Shape constructor
+        nc::NdArray<T> nc_arr(nc::Shape(info.shape[0]));
         std::memcpy(nc_arr.data(), info.ptr, sizeof(T) * nc_arr.size());
         return nc_arr;
     } else if (info.ndim == 2) {
@@ -72,6 +73,19 @@ PYBIND11_MODULE(io_cpp_tests, m) {
         agx::config::initialize_config();
         return nc_to_py(agx::utils::load_densitometer_data(type));
     }, py::arg("type") = "status_A");
+    
+    m.def("load_csv_cpp", [](const std::string& datapkg, const std::string& filename) {
+        return nc_to_py(agx::utils::load_csv(datapkg, filename));
+    }, py::arg("datapkg"), py::arg("filename"));
+    
+    m.def("interpolate_to_common_axis_cpp", [](const py::array_t<float, py::array::c_style | py::array::forcecast>& data, 
+                                                const py::array_t<float, py::array::c_style | py::array::forcecast>& new_x) {
+        return nc_to_py(agx::utils::interpolate_to_common_axis(py_to_nc(data), py_to_nc(new_x)));
+    }, py::arg("data"), py::arg("new_x"));
+    
+    m.def("get_spectral_shape_wavelengths_cpp", []() {
+        return nc_to_py(agx::config::SPECTRAL_SHAPE.wavelengths);
+    });
 
     m.def("read_neutral_ymc_filter_values_cpp", []() {
         auto json_data = agx::utils::read_neutral_ymc_filter_values();
