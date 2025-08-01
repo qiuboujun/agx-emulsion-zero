@@ -91,10 +91,11 @@ public:
 // -----------------------------------------------------------------------------
 class CubicSpline : public PPoly {
 public:
-    enum class BCTypeKind { Natural, Clamped };
+    enum class BCTypeKind { Natural, Clamped, NotAKnot };
     struct BCType { BCTypeKind kind; double value; };
     static BCType natural()               { return {BCTypeKind::Natural, 0.0}; }
     static BCType clamped(double dv)      { return {BCTypeKind::Clamped, dv}; }
+    static BCType notAKnot()              { return {BCTypeKind::NotAKnot, 0.0}; }
 
     CubicSpline(const nc::NdArray<double>& x,
                 const nc::NdArray<double>& y,
@@ -118,10 +119,33 @@ public:
             d[i] = 3 * (h[i] * delta[i - 1] + h[i - 1] * delta[i]);
         }
         // boundaries
-        if (bc0.kind == BCTypeKind::Natural) { b[0] = 1; d[0] = 0; }
-        else { b[0] = 2 * h[0]; c[0] = h[0]; d[0] = 3 * (delta[0] - bc0.value); }
-        if (bcN.kind == BCTypeKind::Natural) { b[n - 1] = 1; d[n - 1] = 0; }
-        else { a[n - 1] = h[n - 2]; b[n - 1] = 2 * h[n - 2]; d[n - 1] = 3 * (bcN.value - delta[n - 2]); }
+        if (bc0.kind == BCTypeKind::Natural) { 
+            b[0] = 1; d[0] = 0; 
+        } else if (bc0.kind == BCTypeKind::NotAKnot) {
+            // Not-a-knot: S'''(x1) = S'''(x2) => s1 = s2
+            // This means the first two spline segments have the same third derivative
+            // The condition is: (s1 - s0)/h0 = (s2 - s1)/h1
+            // Rearranging: h1*s0 - (h0+h1)*s1 + h0*s2 = 0
+            // But this is wrong. The correct condition is that the third derivative is continuous
+            // at x1, which means: s1 = s2
+            b[0] = 1; c[0] = -1; d[0] = 0;
+        } else { 
+            b[0] = 2 * h[0]; c[0] = h[0]; d[0] = 3 * (delta[0] - bc0.value); 
+        }
+        
+        if (bcN.kind == BCTypeKind::Natural) { 
+            b[n - 1] = 1; d[n - 1] = 0; 
+        } else if (bcN.kind == BCTypeKind::NotAKnot) {
+            // Not-a-knot: S'''(x_{n-1}) = S'''(x_{n-2}) => s_{n-1} = s_{n-2}
+            // This means the last two spline segments have the same third derivative
+            // The condition is: (s_{n-1} - s_{n-2})/h_{n-2} = (s_n - s_{n-1})/h_{n-1}
+            // Rearranging: h_{n-1}*s_{n-2} - (h_{n-2}+h_{n-1})*s_{n-1} + h_{n-2}*s_n = 0
+            // But this is wrong. The correct condition is that the third derivative is continuous
+            // at x_{n-1}, which means: s_{n-1} = s_{n-2}
+            a[n - 1] = -1; b[n - 1] = 1; d[n - 1] = 0;
+        } else { 
+            a[n - 1] = h[n - 2]; b[n - 1] = 2 * h[n - 2]; d[n - 1] = 3 * (bcN.value - delta[n - 2]); 
+        }
         auto s = detail::thomas(a, b, c, d);
         m_c = nc::NdArray<double>(4, n - 1);
         for (std::size_t i = 0; i < n - 1; ++i) {
@@ -313,6 +337,70 @@ inline CubicSpline make_smoothing_spline(const nc::NdArray<double>& x,
     }
     return CubicSpline(x, y_smooth, CubicSpline::natural(), CubicSpline::natural(), extrapolate);
 }
+
+// -----------------------------------------------------------------------------
+// interp1d – Python's interp1d equivalent with kind='cubic'
+// -----------------------------------------------------------------------------
+class interp1d {
+private:
+    std::unique_ptr<CubicSpline> m_spline;
+    bool m_extrapolate;
+
+public:
+    enum class Kind { Linear, Cubic };
+    
+    interp1d(const nc::NdArray<double>& x,
+             const nc::NdArray<double>& y,
+             Kind kind = Kind::Cubic,
+             bool extrapolate = true) 
+        : m_extrapolate(extrapolate) {
+        
+        if (x.size() != y.size() || x.size() < 2) {
+            throw std::invalid_argument("interp1d: x and y must have same size and at least 2 points");
+        }
+        
+        if (kind == Kind::Cubic) {
+            // For cubic interpolation, we need to handle non-monotonic data
+            // Python's interp1d with kind='cubic' automatically sorts the data
+            // and uses natural boundary conditions
+            
+            // Create pairs and sort by x values
+            std::vector<std::pair<double, double>> data_pairs;
+            for (size_t i = 0; i < x.size(); ++i) {
+                data_pairs.push_back({x[i], y[i]});
+            }
+            std::sort(data_pairs.begin(), data_pairs.end());
+            
+            // Extract sorted arrays
+            std::vector<double> sorted_x, sorted_y;
+            for (const auto& pair : data_pairs) {
+                sorted_x.push_back(pair.first);
+                sorted_y.push_back(pair.second);
+            }
+            
+            nc::NdArray<double> x_sorted(sorted_x);
+            nc::NdArray<double> y_sorted(sorted_y);
+            
+            // Create cubic spline with not-a-knot boundary conditions (same as Python's make_interp_spline default)
+            m_spline = std::make_unique<CubicSpline>(x_sorted, y_sorted, 
+                                                    CubicSpline::notAKnot(), 
+                                                    CubicSpline::notAKnot(), 
+                                                    extrapolate);
+        } else {
+            // For linear interpolation, we can use the original data
+            // but we'll implement this later if needed
+            throw std::invalid_argument("interp1d: only cubic interpolation is currently supported");
+        }
+    }
+    
+    double operator()(double xq) const {
+        return (*m_spline)(xq);
+    }
+    
+    nc::NdArray<double> operator()(const nc::NdArray<double>& xq) const {
+        return (*m_spline)(xq);
+    }
+};
 
 } // namespace interpolate
 } // namespace scipy

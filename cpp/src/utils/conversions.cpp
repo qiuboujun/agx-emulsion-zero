@@ -24,25 +24,40 @@ namespace utils {
  */
 inline nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc::NdArray<float>& light) {
     // Compute transmittance = 10^(-density)
-    nc::NdArray<float> transmitted = nc::power(10.0f, -density);
+    nc::NdArray<float> transmitted = density.copy();
+    for (auto it = transmitted.begin(); it != transmitted.end(); ++it) {
+        *it = std::pow(10.0f, -(*it));
+    }
+    
     // Multiply by light (broadcast if necessary)
     if (light.shape().rows == 1 && light.shape().cols == density.shape().cols) {
         // Light is 1xN, broadcast across all rows of density
-        for (size_t j = 0; j < density.shape().cols; ++j) {
-            transmitted(nc::Slice(), j) *= light(0, j);
+        for (size_t i = 0; i < density.shape().rows; ++i) {
+            for (size_t j = 0; j < density.shape().cols; ++j) {
+                transmitted(i, j) *= light(0, j);
+            }
         }
     } else if (light.shape().cols == 1 && light.shape().rows == density.shape().cols) {
         // Light is Nx1, broadcast across columns
-        for (size_t j = 0; j < density.shape().cols; ++j) {
-            transmitted(nc::Slice(), j) *= light(j, 0);
+        for (size_t i = 0; i < density.shape().rows; ++i) {
+            for (size_t j = 0; j < density.shape().cols; ++j) {
+                transmitted(i, j) *= light(j, 0);
+            }
         }
     } else if (light.size() == 1) {
         // Light is a scalar in an NdArray
-        transmitted *= light[0];
+        for (auto it = transmitted.begin(); it != transmitted.end(); ++it) {
+            *it *= light[0];
+        }
     } else {
         // Shapes match or are already aligned
-        transmitted *= light;
+        for (size_t i = 0; i < density.shape().rows; ++i) {
+            for (size_t j = 0; j < density.shape().cols; ++j) {
+                transmitted(i, j) *= light(i, j);
+            }
+        }
     }
+    
     // Replace NaN values with 0
     for (auto it = transmitted.begin(); it != transmitted.end(); ++it) {
         if (std::isnan(*it)) {
@@ -202,7 +217,9 @@ rgb_to_raw_aces_idt(const nc::NdArray<float>& RGB,
     // Divide by mid-gray (normalize such that input mid-gray maps to [1,1,1])
     if (raw.shape().cols == 3) {
         for (size_t j = 0; j < 3; ++j) {
-            raw(nc::Slice(), j) /= midgray_val;
+            for (size_t i = 0; i < raw.shape().rows; ++i) {
+                raw(i, j) /= midgray_val;
+            }
         }
     } else {
         // If raw is a single 1x3 vector
