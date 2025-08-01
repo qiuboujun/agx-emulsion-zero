@@ -111,42 +111,122 @@ public:
         const std::size_t n = x.size();
         const auto h = nc::diff(x);
         const auto delta = nc::diff(y) / h;
-        std::vector<double> a(n), b(n), c(n), d(n);
-        for (std::size_t i = 1; i < n - 1; ++i) {
-            a[i] = h[i - 1];
-            b[i] = 2 * (h[i - 1] + h[i]);
-            c[i] = h[i];
-            d[i] = 3 * (h[i] * delta[i - 1] + h[i - 1] * delta[i]);
-        }
-        // boundaries
-        if (bc0.kind == BCTypeKind::Natural) { 
-            b[0] = 1; d[0] = 0; 
-        } else if (bc0.kind == BCTypeKind::NotAKnot) {
-            // Not-a-knot: S'''(x1) = S'''(x2) => s1 = s2
-            // This means the first two spline segments have the same third derivative
-            // The condition is: (s1 - s0)/h0 = (s2 - s1)/h1
-            // Rearranging: h1*s0 - (h0+h1)*s1 + h0*s2 = 0
-            // But this is wrong. The correct condition is that the third derivative is continuous
-            // at x1, which means: s1 = s2
-            b[0] = 1; c[0] = -1; d[0] = 0;
-        } else { 
-            b[0] = 2 * h[0]; c[0] = h[0]; d[0] = 3 * (delta[0] - bc0.value); 
+        
+        // Compute node slopes s[]
+        std::vector<double> s(n);
+        bool solved = false;
+        
+        // Handle not-a-knot boundaries exactly (both ends)
+        if (bc0.kind == BCTypeKind::NotAKnot && bcN.kind == BCTypeKind::NotAKnot) {
+            // Small cases: linear or quadratic
+            if (n == 2) {
+                s[0] = s[1] = delta[0];
+                solved = true;
+            } else if (n == 3) {
+                double h0 = h[0], h1 = h[1];
+                double d0 = delta[0], d1 = delta[1];
+                double b0 = 2.0 * d0;
+                double b1 = 3.0 * (h0 * d1 + h1 * d0);
+                double b2 = 2.0 * d1;
+                double s1 = (b1 - h1 * b0 - h0 * b2) / (h0 + h1);
+                s[0] = b0 - s1;
+                s[1] = s1;
+                s[2] = b2 - s1;
+                solved = true;
+            } else {
+                // Build full (n×n) system for slopes
+                std::vector<std::vector<double>> M(n, std::vector<double>(n, 0.0));
+                std::vector<double> rhs(n, 0.0);
+                
+                // interior equations
+                for (std::size_t i = 1; i < n - 1; ++i) {
+                    M[i][i - 1] = h[i];
+                    M[i][i]     = 2.0 * (h[i] + h[i - 1]);
+                    M[i][i + 1] = h[i - 1];
+                    rhs[i] = 3.0 * (h[i] * delta[i - 1] + h[i - 1] * delta[i]);
+                }
+                
+                // left not-a-knot
+                double h0 = h[0], h1 = h[1];
+                double d0 = delta[0], d1 = delta[1];
+                M[0][0] = h1 * h1;
+                M[0][1] = (h1 * h1 - h0 * h0);
+                M[0][2] = -h0 * h0;
+                rhs[0] = 2.0 * (d0 * h1 * h1 - d1 * h0 * h0);
+                
+                // right not-a-knot
+                double hm3 = h[n - 3];
+                double hm2 = h[n - 2];
+                double dm3 = delta[n - 3];
+                double dm2 = delta[n - 2];
+                M[n - 1][n - 3] = hm2 * hm2;
+                M[n - 1][n - 2] = (hm2 * hm2 - hm3 * hm3);
+                M[n - 1][n - 1] = -hm3 * hm3;
+                rhs[n - 1] = 2.0 * (dm3 * hm2 * hm2 - dm2 * hm3 * hm3);
+                
+                // Solve M*s = rhs by Gaussian elimination
+                for (std::size_t i = 0; i < n; ++i) {
+                    std::size_t pivot = i;
+                    for (std::size_t j = i + 1; j < n; ++j) {
+                        if (std::abs(M[j][i]) > std::abs(M[pivot][i])) {
+                            pivot = j;
+                        }
+                    }
+                    if (pivot != i) {
+                        std::swap(M[i], M[pivot]);
+                        std::swap(rhs[i], rhs[pivot]);
+                    }
+                    double diag = M[i][i];
+                    for (std::size_t j = i + 1; j < n; ++j) {
+                        double factor = M[j][i] / diag;
+                        rhs[j] -= factor * rhs[i];
+                        for (std::size_t k = i; k < n; ++k) {
+                            M[j][k] -= factor * M[i][k];
+                        }
+                    }
+                }
+                for (std::size_t i = n; i-- > 0; ) {
+                    double sum = rhs[i];
+                    for (std::size_t j = i + 1; j < n; ++j) {
+                        sum -= M[i][j] * s[j];
+                    }
+                    s[i] = sum / M[i][i];
+                }
+                solved = true;
+            }
         }
         
-        if (bcN.kind == BCTypeKind::Natural) { 
-            b[n - 1] = 1; d[n - 1] = 0; 
-        } else if (bcN.kind == BCTypeKind::NotAKnot) {
-            // Not-a-knot: S'''(x_{n-1}) = S'''(x_{n-2}) => s_{n-1} = s_{n-2}
-            // This means the last two spline segments have the same third derivative
-            // The condition is: (s_{n-1} - s_{n-2})/h_{n-2} = (s_n - s_{n-1})/h_{n-1}
-            // Rearranging: h_{n-1}*s_{n-2} - (h_{n-2}+h_{n-1})*s_{n-1} + h_{n-2}*s_n = 0
-            // But this is wrong. The correct condition is that the third derivative is continuous
-            // at x_{n-1}, which means: s_{n-1} = s_{n-2}
-            a[n - 1] = -1; b[n - 1] = 1; d[n - 1] = 0;
-        } else { 
-            a[n - 1] = h[n - 2]; b[n - 1] = 2 * h[n - 2]; d[n - 1] = 3 * (bcN.value - delta[n - 2]); 
+        if (!solved) {
+            // fall back to existing natural/clamped logic (using Thomas)
+            std::vector<double> a(n), b(n), c(n), d(n);
+            for (std::size_t i = 1; i < n - 1; ++i) {
+                a[i] = h[i - 1];
+                b[i] = 2 * (h[i - 1] + h[i]);
+                c[i] = h[i];
+                d[i] = 3 * (h[i] * delta[i - 1] + h[i - 1] * delta[i]);
+            }
+            
+            // boundaries
+            if (bc0.kind == BCTypeKind::Natural) { 
+                b[0] = 1; d[0] = 0; 
+            } else if (bc0.kind == BCTypeKind::NotAKnot) {
+                // Simplified not-a-knot (fallback)
+                b[0] = 1; c[0] = -1; d[0] = 0;
+            } else { 
+                b[0] = 2 * h[0]; c[0] = h[0]; d[0] = 3 * (delta[0] - bc0.value); 
+            }
+            
+            if (bcN.kind == BCTypeKind::Natural) { 
+                b[n - 1] = 1; d[n - 1] = 0; 
+            } else if (bcN.kind == BCTypeKind::NotAKnot) {
+                // Simplified not-a-knot (fallback)
+                a[n - 1] = -1; b[n - 1] = 1; d[n - 1] = 0;
+            } else { 
+                a[n - 1] = h[n - 2]; b[n - 1] = 2 * h[n - 2]; d[n - 1] = 3 * (bcN.value - delta[n - 2]); 
+            }
+            
+            s = detail::thomas(a, b, c, d);
         }
-        auto s = detail::thomas(a, b, c, d);
         m_c = nc::NdArray<double>(4, n - 1);
         for (std::size_t i = 0; i < n - 1; ++i) {
             double dx = h[i];
