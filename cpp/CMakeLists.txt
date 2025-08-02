@@ -13,6 +13,7 @@ find_package(CUDAToolkit REQUIRED)
 add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
+    src/model/color_filters.cpp
     # src/utils/spectral_upsampling.cu  # Temporarily excluded due to compilation issues
     # scipy.cpp is no longer needed as scipy.hpp is header-only
     # colour.cpp doesn't exist - colour.hpp is header-only
@@ -59,6 +60,15 @@ add_custom_target(scipy_test
     DEPENDS io_cpp_tests
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/io
     COMMENT "Running scipy interpolation test"
+)
+
+# --- Test Executable for color_filters ---
+add_executable(test_color_filters_cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../test_color_filters_cpp.cpp
+)
+target_link_libraries(test_color_filters_cpp PRIVATE agx_core)
+set_target_properties(test_color_filters_cpp PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
 )
 
 

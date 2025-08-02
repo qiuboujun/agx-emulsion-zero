@@ -27,6 +27,94 @@ struct SpectralShape {
 };
 
 /**
+ * @brief A C++ class to replicate colour.SpectralDistribution.
+ * It represents spectral data with wavelengths and corresponding values.
+ */
+class SpectralDistribution {
+public:
+    /**
+     * @brief Constructor
+     * @param values Spectral values
+     * @param domain Spectral shape defining the wavelength domain
+     */
+    SpectralDistribution(const nc::NdArray<float>& values, const SpectralShape& domain)
+        : m_values(values), m_domain(domain) {
+        // Ensure values match the domain wavelengths
+        if (values.size() != domain.wavelengths.size()) {
+            throw std::runtime_error("SpectralDistribution: values size must match domain wavelengths size");
+        }
+    }
+
+    /**
+     * @brief Get the spectral values
+     * @return Spectral values array
+     */
+    const nc::NdArray<float>& values() const { return m_values; }
+
+    /**
+     * @brief Get the wavelengths
+     * @return Wavelengths array
+     */
+    const nc::NdArray<float>& wavelengths() const { return m_domain.wavelengths; }
+
+    /**
+     * @brief Get the spectral shape
+     * @return Spectral shape
+     */
+    const SpectralShape& shape() const { return m_domain; }
+
+    /**
+     * @brief Multiplication operator with array
+     * @param other Array to multiply with
+     * @return New SpectralDistribution with multiplied values
+     */
+    SpectralDistribution operator*(const nc::NdArray<float>& other) const {
+        if (other.size() != m_values.size()) {
+            throw std::runtime_error("SpectralDistribution multiplication: size mismatch");
+        }
+        return SpectralDistribution(m_values * other, m_domain);
+    }
+
+    /**
+     * @brief Multiplication operator with scalar
+     * @param scalar Scalar to multiply with
+     * @return New SpectralDistribution with multiplied values
+     */
+    SpectralDistribution operator*(float scalar) const {
+        return SpectralDistribution(m_values * scalar, m_domain);
+    }
+
+    /**
+     * @brief Array-like access operator
+     * @param index Index to access
+     * @return Value at index
+     */
+    float operator[](size_t index) const {
+        return m_values[index];
+    }
+
+    /**
+     * @brief Get the size of the spectral distribution
+     * @return Number of spectral points
+     */
+    size_t size() const { return m_values.size(); }
+
+private:
+    nc::NdArray<float> m_values;
+    SpectralShape m_domain;
+};
+
+/**
+ * @brief Multiplication operator for array * SpectralDistribution
+ * @param array Array to multiply with
+ * @param sd SpectralDistribution to multiply
+ * @return New SpectralDistribution with multiplied values
+ */
+inline SpectralDistribution operator*(const nc::NdArray<float>& array, const SpectralDistribution& sd) {
+    return sd * array;
+}
+
+/**
  * @brief Color space transformation matrices and parameters
  */
 struct RGBColourspace {
