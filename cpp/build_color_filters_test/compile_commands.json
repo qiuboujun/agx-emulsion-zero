@@ -37,8 +37,8 @@
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build_color_filters_test",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include  -o CMakeFiles/test_color_filters_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_cpp.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_cpp.cpp",
-  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_cpp.cpp",
-  "output": "CMakeFiles/test_color_filters_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_cpp.cpp.o"
+  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include  -o CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp",
+  "output": "CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o"
 }
 ]

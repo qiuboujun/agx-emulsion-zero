@@ -62,12 +62,12 @@ add_custom_target(scipy_test
     COMMENT "Running scipy interpolation test"
 )
 
-# --- Test Executable for color_filters ---
-add_executable(test_color_filters_cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../test_color_filters_cpp.cpp
+# --- Final Test Executable for color_filters comparison ---
+add_executable(test_color_filters_final_cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../test_color_filters_final_cpp.cpp
 )
-target_link_libraries(test_color_filters_cpp PRIVATE agx_core)
-set_target_properties(test_color_filters_cpp PROPERTIES
+target_link_libraries(test_color_filters_final_cpp PRIVATE agx_core)
+set_target_properties(test_color_filters_final_cpp PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
 )
 
