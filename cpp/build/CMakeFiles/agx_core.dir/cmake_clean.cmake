@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o"
+  "CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o.d"
   "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
   "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o.d"
   "CMakeFiles/agx_core.dir/src/utils/io.cpp.o"

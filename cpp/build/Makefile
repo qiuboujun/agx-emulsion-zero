@@ -227,6 +227,19 @@ scipy_test/fast:
 .PHONY : scipy_test/fast
 
 #=============================================================================
+# Target rules for targets named test_color_filters_final_cpp
+
+# Build rule for target.
+test_color_filters_final_cpp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_color_filters_final_cpp
+.PHONY : test_color_filters_final_cpp
+
+# fast build rule for target.
+test_color_filters_final_cpp/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/build
+.PHONY : test_color_filters_final_cpp/fast
+
+#=============================================================================
 # Target rules for targets named format
 
 # Build rule for target.
@@ -251,6 +264,54 @@ tidy: cmake_check_build_system
 tidy/fast:
 	$(MAKE) $(MAKESILENT) -f numcpp_build/CMakeFiles/tidy.dir/build.make numcpp_build/CMakeFiles/tidy.dir/build
 .PHONY : tidy/fast
+
+home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.o: home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o
+.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.o
+
+# target to build an object file
+home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o
+.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o
+
+home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.i: home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i
+.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.i
+
+# target to preprocess a source file
+home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i
+.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i
+
+home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.s: home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s
+.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.s
+
+# target to generate assembly for a file
+home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s
+.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s
+
+src/model/color_filters.o: src/model/color_filters.cpp.o
+.PHONY : src/model/color_filters.o
+
+# target to build an object file
+src/model/color_filters.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o
+.PHONY : src/model/color_filters.cpp.o
+
+src/model/color_filters.i: src/model/color_filters.cpp.i
+.PHONY : src/model/color_filters.i
+
+# target to preprocess a source file
+src/model/color_filters.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/color_filters.cpp.i
+.PHONY : src/model/color_filters.cpp.i
+
+src/model/color_filters.s: src/model/color_filters.cpp.s
+.PHONY : src/model/color_filters.s
+
+# target to generate assembly for a file
+src/model/color_filters.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/color_filters.cpp.s
+.PHONY : src/model/color_filters.cpp.s
 
 src/utils/fast_interp_lut.o: src/utils/fast_interp_lut.cu.o
 .PHONY : src/utils/fast_interp_lut.o
@@ -391,6 +452,13 @@ help:
 	@echo "... config_cpp_tests"
 	@echo "... fast_interp_cpp_tests"
 	@echo "... io_cpp_tests"
+	@echo "... test_color_filters_final_cpp"
+	@echo "... home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.o"
+	@echo "... home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.i"
+	@echo "... home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.s"
+	@echo "... src/model/color_filters.o"
+	@echo "... src/model/color_filters.i"
+	@echo "... src/model/color_filters.s"
 	@echo "... src/utils/fast_interp_lut.o"
 	@echo "... src/utils/fast_interp_lut.i"
 	@echo "... src/utils/fast_interp_lut.s"

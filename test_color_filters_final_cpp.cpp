@@ -76,8 +76,10 @@ void test_create_combined_dichroic_filter() {
 void test_filterset() {
     std::cout << "=== Testing filterset ===" << std::endl;
     
-    // Test data - same as Python
-    nc::NdArray<float> illuminant = nc::ones<float>({7});
+    // Test data - same as Python, using the correct spectral shape
+    // Create a 1D array with the correct size
+    auto wl_size = agx::config::SPECTRAL_SHAPE.wavelengths.size();
+    nc::NdArray<float> illuminant = nc::ones<float>({wl_size}).flatten();
     std::array<float, 3> values = {25.0f, 15.0f, 10.0f};
     std::array<float, 4> edges = {510.0f, 495.0f, 605.0f, 590.0f};
     std::array<float, 4> transitions = {10.0f, 10.0f, 10.0f, 10.0f};
@@ -139,7 +141,8 @@ void test_dichroic_filters() {
     agx::model::DichroicFilters filters("thorlabs");
     
     // Test data - same as Python
-    nc::NdArray<float> illuminant = nc::ones<float>({agx::config::SPECTRAL_SHAPE.wavelengths.size()});
+    auto wl_size = agx::config::SPECTRAL_SHAPE.wavelengths.size();
+    nc::NdArray<float> illuminant = nc::ones<float>({wl_size}).flatten();
     std::array<float, 3> values = {0.5f, 0.3f, 0.2f};
     
     // C++ implementation
@@ -172,7 +175,8 @@ void test_generic_filter() {
     agx::model::GenericFilter filter_obj("KG3", "heat_absorbing", "schott");
     
     // Test data - same as Python
-    nc::NdArray<float> illuminant = nc::ones<float>({agx::config::SPECTRAL_SHAPE.wavelengths.size()});
+    auto wl_size = agx::config::SPECTRAL_SHAPE.wavelengths.size();
+    nc::NdArray<float> illuminant = nc::ones<float>({wl_size}).flatten();
     float value = 0.7f;
     
     // C++ implementation
@@ -202,7 +206,8 @@ void test_color_enlarger() {
     std::cout << "=== Testing color_enlarger ===" << std::endl;
     
     // Test data - same as Python
-    nc::NdArray<float> light_source = nc::ones<float>({agx::config::SPECTRAL_SHAPE.wavelengths.size()});
+    auto wl_size = agx::config::SPECTRAL_SHAPE.wavelengths.size();
+    nc::NdArray<float> light_source = nc::ones<float>({wl_size}).flatten();
     float y_filter_value = 85.0f;
     float m_filter_value = 45.0f;
     float c_filter_value = 25.0f;

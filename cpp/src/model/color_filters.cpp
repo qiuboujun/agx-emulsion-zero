@@ -97,11 +97,15 @@ nc::NdArray<float> sigmoid_erf(const nc::NdArray<float>& x, float center, float 
     // Handle width of zero: return step function around centre
     // to match Python's floating‑point behaviour.  Dividing by zero
     // will yield INF which when passed through erf tends to ±1.
-    auto xf = x.flatten();
-    nc::NdArray<float> result(xf.size());
-    for (std::size_t i = 0; i < xf.size(); ++i) {
-        const float t = (xf[i] - center) / width;
-        result[i] = std::erf(t) * 0.5f + 0.5f;
+    
+    // Preserve the input shape to match Python behavior
+    nc::NdArray<float> result(x.shape());
+    auto x_flat = x.flatten();
+    auto result_flat = result.flatten();
+    
+    for (std::size_t i = 0; i < x_flat.size(); ++i) {
+        const float t = (x_flat[i] - center) / width;
+        result_flat[i] = std::erf(t) * 0.5f + 0.5f;
     }
     return result;
 }
@@ -119,18 +123,27 @@ nc::NdArray<float> compute_band_pass_filter(
     float wl_ir   = filter_ir[1];
     float width_ir = filter_ir[2];
 
-    // Wavelength grid
+    // Wavelength grid - ensure it's 1D
     const auto& wl = agx::config::SPECTRAL_SHAPE.wavelengths;
+    auto wl_flat = wl.flatten();
     
     // Precompute sigmoid for UV (positive width) and IR (negative width yields descending edge)
-    auto sigmoid_uv = sigmoid_erf(wl, wl_uv, width_uv);
-    auto sigmoid_ir = sigmoid_erf(wl, wl_ir, -width_ir);
+    auto sigmoid_uv_raw = sigmoid_erf(wl, wl_uv, width_uv);
+    auto sigmoid_ir_raw = sigmoid_erf(wl, wl_ir, -width_ir);
+    
+    // Convert to truly 1D arrays
+    nc::NdArray<float> sigmoid_uv(wl_flat.size());
+    nc::NdArray<float> sigmoid_ir(wl_flat.size());
+    for (std::size_t i = 0; i < wl_flat.size(); ++i) {
+        sigmoid_uv[i] = sigmoid_uv_raw[i];
+        sigmoid_ir[i] = sigmoid_ir_raw[i];
+    }
 
     // Allocate result and compute each element manually to avoid NumCpp broadcasting issues
-    nc::NdArray<float> band_pass(wl.size());
-    for (std::size_t idx = 0; idx < wl.size(); ++idx) {
-        float uv_val = (1.0f - amp_uv) + amp_uv * static_cast<float>(sigmoid_uv[idx]);
-        float ir_val = (1.0f - amp_ir) + amp_ir * static_cast<float>(sigmoid_ir[idx]);
+    nc::NdArray<float> band_pass(wl_flat.size());
+    for (std::size_t idx = 0; idx < wl_flat.size(); ++idx) {
+        float uv_val = (1.0f - amp_uv) + amp_uv * sigmoid_uv[idx];
+        float ir_val = (1.0f - amp_ir) + amp_ir * sigmoid_ir[idx];
         band_pass[idx] = uv_val * ir_val;
     }
     return band_pass;
