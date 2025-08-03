@@ -223,8 +223,7 @@ nc::NdArray<float> load_csv(const std::string& datapkg, const std::string& filen
         full_path = base_path + "/" + datapkg_path + "/" + filename;
     }
 
-    // Debug: Print the constructed path (commented out for clean output)
-    // std::cout << "Loading CSV from: " << full_path << std::endl;
+
 
     // Load CSV manually to handle the format correctly
     std::ifstream file(full_path);
@@ -385,7 +384,9 @@ FilterValues read_neutral_ymc_filter_values() {
 }
 
 nc::NdArray<float> load_dichroic_filters(const nc::NdArray<float>& wavelengths, const std::string& brand) {
-    auto filters = nc::zeros<float>(wavelengths.size(), 3);
+    // Ensure wavelengths is 1D
+    auto wl_flat = wavelengths.flatten();
+    auto filters = nc::zeros<float>(wl_flat.size(), 3);
     const char* channels[] = {"y", "m", "c"};
     for (int i = 0; i < 3; ++i) {
         std::string datapkg = "agx_emulsion.data.filters.dichroics." + brand;
@@ -398,10 +399,10 @@ nc::NdArray<float> load_dichroic_filters(const nc::NdArray<float>& wavelengths, 
             scaled_data(1, i) /= 100.0f;
         }
         
-        auto interpolated = interpolate_to_common_axis(scaled_data, wavelengths, false, "akima");
+        auto interpolated = interpolate_to_common_axis(scaled_data, wl_flat, false, "akima");
         
         // Assign each interpolated value to the correct row in column i
-        for (size_t j = 0; j < wavelengths.size(); ++j) {
+        for (size_t j = 0; j < wl_flat.size(); ++j) {
             filters(j, i) = interpolated[j];
         }
     }
@@ -424,7 +425,9 @@ nc::NdArray<float> load_filter(
         scaled_data(1, i) /= scale;
     }
 
-    return interpolate_to_common_axis(scaled_data, wavelengths);
+    // Ensure wavelengths is 1D
+    auto wl_flat = wavelengths.flatten();
+    return interpolate_to_common_axis(scaled_data, wl_flat);
 }
 
 } // namespace utils

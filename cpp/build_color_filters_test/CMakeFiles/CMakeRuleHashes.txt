@@ -1,4 +1,0 @@
-# Hashes of file build rules.
-09f3ef270ff9c5c027134b6b63caf6c5 CMakeFiles/scipy_test
-fabe7a75a5d74c08c3d59ee3dae02e85 numcpp_build/CMakeFiles/format
-2429d6ad48d9d0f00fd1aeed29edb6b7 numcpp_build/CMakeFiles/tidy

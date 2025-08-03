@@ -81,13 +81,15 @@ nc::NdArray<float> filterset(
 {
     // Build the combined filter on the project's wavelength grid
     const auto& wl = agx::config::SPECTRAL_SHAPE.wavelengths;
-    auto total_filter = create_combined_dichroic_filter(wl, values, transitions, edges);
+    auto wl_flat = wl.flatten();
+    auto total_filter = create_combined_dichroic_filter(wl_flat, values, transitions, edges);
 
     // Multiply illuminant element‑wise by the filter
     auto illum_flat = illuminant.flatten();
+    auto total_filter_flat = total_filter.flatten();
     nc::NdArray<float> result(illum_flat.shape());
     for (std::size_t i = 0; i < illum_flat.size(); ++i) {
-        result[i] = illum_flat[i] * total_filter[i];
+        result[i] = illum_flat[i] * total_filter_flat[i];
     }
     return result;
 }
@@ -98,14 +100,13 @@ nc::NdArray<float> sigmoid_erf(const nc::NdArray<float>& x, float center, float 
     // to match Python's floating‑point behaviour.  Dividing by zero
     // will yield INF which when passed through erf tends to ±1.
     
-    // Preserve the input shape to match Python behavior
-    nc::NdArray<float> result(x.shape());
+    // Always work with 1D arrays to avoid shape issues
     auto x_flat = x.flatten();
-    auto result_flat = result.flatten();
+    nc::NdArray<float> result(x_flat.size());
     
     for (std::size_t i = 0; i < x_flat.size(); ++i) {
         const float t = (x_flat[i] - center) / width;
-        result_flat[i] = std::erf(t) * 0.5f + 0.5f;
+        result[i] = std::erf(t) * 0.5f + 0.5f;
     }
     return result;
 }
@@ -125,23 +126,21 @@ nc::NdArray<float> compute_band_pass_filter(
 
     // Wavelength grid - ensure it's 1D
     const auto& wl = agx::config::SPECTRAL_SHAPE.wavelengths;
-    auto wl_flat = wl.flatten();
+    // Manually create a 1D array using a vector to avoid NumCpp shape issues
+    std::vector<float> wl_vec;
+    for (float w = agx::config::SPECTRAL_SHAPE.start; w <= agx::config::SPECTRAL_SHAPE.end; w += agx::config::SPECTRAL_SHAPE.interval) {
+        wl_vec.push_back(w);
+    }
+    nc::NdArray<float> wl_1d(wl_vec);
     
     // Precompute sigmoid for UV (positive width) and IR (negative width yields descending edge)
-    auto sigmoid_uv_raw = sigmoid_erf(wl, wl_uv, width_uv);
-    auto sigmoid_ir_raw = sigmoid_erf(wl, wl_ir, -width_ir);
-    
-    // Convert to truly 1D arrays
-    nc::NdArray<float> sigmoid_uv(wl_flat.size());
-    nc::NdArray<float> sigmoid_ir(wl_flat.size());
-    for (std::size_t i = 0; i < wl_flat.size(); ++i) {
-        sigmoid_uv[i] = sigmoid_uv_raw[i];
-        sigmoid_ir[i] = sigmoid_ir_raw[i];
-    }
+    // Pass the 1D wavelength array to ensure 1D operation
+    auto sigmoid_uv = sigmoid_erf(wl_1d, wl_uv, width_uv);
+    auto sigmoid_ir = sigmoid_erf(wl_1d, wl_ir, -width_ir);
 
     // Allocate result and compute each element manually to avoid NumCpp broadcasting issues
-    nc::NdArray<float> band_pass(wl_flat.size());
-    for (std::size_t idx = 0; idx < wl_flat.size(); ++idx) {
+    nc::NdArray<float> band_pass(wl_1d.size());
+    for (std::size_t idx = 0; idx < wl_1d.size(); ++idx) {
         float uv_val = (1.0f - amp_uv) + amp_uv * sigmoid_uv[idx];
         float ir_val = (1.0f - amp_ir) + amp_ir * sigmoid_ir[idx];
         band_pass[idx] = uv_val * ir_val;
@@ -155,10 +154,11 @@ nc::NdArray<float> compute_band_pass_filter(
 
 DichroicFilters::DichroicFilters(const std::string& brand)
 {
-    // Copy the global wavelength sampling
-    wavelengths = agx::config::SPECTRAL_SHAPE.wavelengths;
-    // Load the filters for the given brand
-    filters = agx::utils::load_dichroic_filters(wavelengths, brand);
+    // Copy the global wavelength sampling and ensure it's 1D
+    wavelengths = agx::config::SPECTRAL_SHAPE.wavelengths.flatten();
+    // Load the filters for the given brand - ensure wavelengths is 1D
+    auto wl_flat = wavelengths.flatten();
+    filters = agx::utils::load_dichroic_filters(wl_flat, brand);
 }
 
 nc::NdArray<float> DichroicFilters::apply(
@@ -214,11 +214,12 @@ GenericFilter::GenericFilter(
     : type(filter_type)
     , brand(brand_name)
 {
-    wavelengths = agx::config::SPECTRAL_SHAPE.wavelengths;
+    wavelengths = agx::config::SPECTRAL_SHAPE.wavelengths.flatten();
     transmittance = nc::zeros_like<float>(wavelengths);
     if (load_from_database) {
         // Note: load_filter expects (wavelengths, name, brand, filter_type, percent_transmittance)
-        transmittance = agx::utils::load_filter(wavelengths, name, brand_name, filter_type, data_in_percentage);
+        auto wl_flat = wavelengths.flatten();
+        transmittance = agx::utils::load_filter(wl_flat, name, brand_name, filter_type, data_in_percentage).flatten();
     }
 }
 
@@ -254,22 +255,37 @@ nc::NdArray<float> color_enlarger(
         c_filter_value / static_cast<float>(enlarger_steps)
     };
     // Select filter set: default to durst digital light if null
-    const DichroicFilters* filt = filters ? filters : &durst_digital_light_dichroic_filters;
+    const DichroicFilters* filt = filters ? filters : durst_digital_light_dichroic_filters;
     return filt->apply(light_source, ymc);
 }
 
 // -----------------------------------------------------------------------------
-// Global variables definitions
+// Global variables definitions (lazy-initialized)
 // -----------------------------------------------------------------------------
 
-DichroicFilters dichroic_filters{};
-DichroicFilters thorlabs_dichroic_filters{ "thorlabs" };
-DichroicFilters edmund_optics_dichroic_filters{ "edmund_optics" };
-DichroicFilters durst_digital_light_dichroic_filters{ "durst_digital_light" };
-GenericFilter schott_kg1_heat_filter{ "KG1", "heat_absorbing", "schott" };
-GenericFilter schott_kg3_heat_filter{ "KG3", "heat_absorbing", "schott" };
-GenericFilter schott_kg5_heat_filter{ "KG5", "heat_absorbing", "schott" };
-GenericFilter generic_lens_transmission{ "canon_24_f28_is", "lens_transmission", "canon", true };
+DichroicFilters* dichroic_filters = nullptr;
+DichroicFilters* thorlabs_dichroic_filters = nullptr;
+DichroicFilters* edmund_optics_dichroic_filters = nullptr;
+DichroicFilters* durst_digital_light_dichroic_filters = nullptr;
+GenericFilter* schott_kg1_heat_filter = nullptr;
+GenericFilter* schott_kg3_heat_filter = nullptr;
+GenericFilter* schott_kg5_heat_filter = nullptr;
+GenericFilter* generic_lens_transmission = nullptr;
+
+// -----------------------------------------------------------------------------
+// Initialization function
+// -----------------------------------------------------------------------------
+
+void initialize_global_filters() {
+    if (!dichroic_filters) dichroic_filters = new DichroicFilters{};
+    if (!thorlabs_dichroic_filters) thorlabs_dichroic_filters = new DichroicFilters{ "thorlabs" };
+    if (!edmund_optics_dichroic_filters) edmund_optics_dichroic_filters = new DichroicFilters{ "edmund_optics" };
+    if (!durst_digital_light_dichroic_filters) durst_digital_light_dichroic_filters = new DichroicFilters{ "durst_digital_light" };
+    if (!schott_kg1_heat_filter) schott_kg1_heat_filter = new GenericFilter{ "KG1", "heat_absorbing", "schott" };
+    if (!schott_kg3_heat_filter) schott_kg3_heat_filter = new GenericFilter{ "KG3", "heat_absorbing", "schott" };
+    if (!schott_kg5_heat_filter) schott_kg5_heat_filter = new GenericFilter{ "KG5", "heat_absorbing", "schott" };
+    if (!generic_lens_transmission) generic_lens_transmission = new GenericFilter{ "canon_24_f28_is", "lens_transmission", "canon", true };
+}
 
 } // namespace model
 } // namespace agx

@@ -229,20 +229,30 @@ nc::NdArray<float> color_enlarger(
 // Global filter instances
 //
 // The following variables correspond to the module‑level instances in the
-// original Python file.  They are defined in the translation unit
+// original Python file.  They are defined as pointers in the translation unit
 // ``color_filters.cpp`` and declared here as extern so that users may
 // reference them.  Construction of these objects will load filter data
 // from disk via agx::utils::load_dichroic_filters and load_filter.
+// These are lazy-initialized to ensure the spectral shape is properly set up.
 // -----------------------------------------------------------------------------
 
-extern DichroicFilters dichroic_filters;
-extern DichroicFilters thorlabs_dichroic_filters;
-extern DichroicFilters edmund_optics_dichroic_filters;
-extern DichroicFilters durst_digital_light_dichroic_filters;
-extern GenericFilter schott_kg1_heat_filter;
-extern GenericFilter schott_kg3_heat_filter;
-extern GenericFilter schott_kg5_heat_filter;
-extern GenericFilter generic_lens_transmission;
+extern DichroicFilters* dichroic_filters;
+extern DichroicFilters* thorlabs_dichroic_filters;
+extern DichroicFilters* edmund_optics_dichroic_filters;
+extern DichroicFilters* durst_digital_light_dichroic_filters;
+extern GenericFilter* schott_kg1_heat_filter;
+extern GenericFilter* schott_kg3_heat_filter;
+extern GenericFilter* schott_kg5_heat_filter;
+extern GenericFilter* generic_lens_transmission;
+
+/**
+ * @brief Initialize global filter instances.
+ * 
+ * This function should be called after agx::config::initialize_config()
+ * to ensure the spectral shape is properly set up before creating
+ * the global filter instances.
+ */
+void initialize_global_filters();
 
 } // namespace model
 } // namespace agx

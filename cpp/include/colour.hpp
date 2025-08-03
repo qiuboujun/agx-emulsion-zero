@@ -126,7 +126,7 @@ struct RGBColourspace {
     bool has_cctf;
     
     RGBColourspace(const std::string& n, 
-                   const std::array<std::array<float, 3>, 3>& rgb_tao_xyz,
+                   const std::array<std::array<float, 3>, 3>& rgb_to_xyz,
                    const std::array<std::array<float, 3>, 3>& xyz_to_rgb,
                    const std::array<float, 2>& wp,
                    float g = 2.2f,
