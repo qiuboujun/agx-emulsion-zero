@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <algorithm> // For std::replace
 #include <vector>
+#include <iostream> // For debug output
+#include <cmath> // For std::min
 
 // Helper function to get the root data path.
 std::string get_data_path() {
@@ -70,7 +72,7 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
     if (method == "linear") {
         // Use linear interpolation matching Python's np.interp behavior
         interp = [xd, yd](const nc::NdArray<double>& q){
-            nc::NdArray<double> result(1, q.size());
+            nc::NdArray<double> result = nc::zeros<double>({1, q.size()}).flatten();
             for (std::size_t i = 0; i < q.size(); ++i) {
                 double xq = q[i];
                 
@@ -106,7 +108,7 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
             // Fallback to linear if Akima fails
             std::cerr << "Warning: Akima interpolation failed, falling back to linear: " << e.what() << std::endl;
             interp = [xd, yd](const nc::NdArray<double>& q){
-                nc::NdArray<double> result(1, q.size());
+                nc::NdArray<double> result = nc::zeros<double>({1, q.size()}).flatten();
                 for (std::size_t i = 0; i < q.size(); ++i) {
                     double xq = q[i];
                     
@@ -146,7 +148,7 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
             // Fallback to linear if cubic fails
             std::cerr << "Warning: Cubic spline interpolation failed, falling back to linear: " << e.what() << std::endl;
             interp = [xd, yd](const nc::NdArray<double>& q){
-                nc::NdArray<double> result(1, q.size());
+                nc::NdArray<double> result = nc::zeros<double>({1, q.size()}).flatten();
                 for (std::size_t i = 0; i < q.size(); ++i) {
                     double xq = q[i];
                     
@@ -176,7 +178,7 @@ nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, co
         // For other methods, use linear interpolation as fallback
         std::cerr << "Warning: Unknown interpolation method '" << method << "', using linear" << std::endl;
         interp = [xd, yd](const nc::NdArray<double>& q){
-            nc::NdArray<double> result(1, q.size());
+            nc::NdArray<double> result = nc::zeros<double>({1, q.size()}).flatten();
             for (std::size_t i = 0; i < q.size(); ++i) {
                 double xq = q[i];
                 
@@ -413,9 +415,12 @@ nc::NdArray<float> load_filter(
     const nc::NdArray<float>& wavelengths, const std::string& name,
     const std::string& brand, const std::string& filter_type, bool percent_transmittance)
 {
-    std::string datapkg = "agx_emulsion.data.filters." + filter_type + "." + brand;
+    std::string datapkg = "agx_emulsion.data.filters." + filter_type;
+    std::string filename = brand + "/" + name + ".csv";
+    
     // FIX 2: Create a mutable copy of the data to allow modification
-    auto data = load_csv(datapkg, name + ".csv").transpose().copy();
+    auto data = load_csv(datapkg, filename).copy();
+    
     float scale = percent_transmittance ? 100.0f : 1.0f;
     
     // This operation now modifies the copy, not a temporary object
@@ -427,7 +432,10 @@ nc::NdArray<float> load_filter(
 
     // Ensure wavelengths is 1D
     auto wl_flat = wavelengths.flatten();
-    return interpolate_to_common_axis(scaled_data, wl_flat);
+    
+    auto result = interpolate_to_common_axis(scaled_data, wl_flat);
+    
+    return result;
 }
 
 } // namespace utils

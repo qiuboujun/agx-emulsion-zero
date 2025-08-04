@@ -1,135 +1,56 @@
-#pragma once
+// Copyright (c) 2025
+//
+// This header declares a simple C++ interface for a spectral upsampling
+// utility.  The goal of this exercise is not to perfectly reproduce the
+// entire Python implementation found in `agx_emulsion/utils/spectral_upsampling.py`,
+// but rather to demonstrate how one might begin porting selected
+// functionality into a modern C++ codebase with clear separation of
+// interface (this header), CPU implementation (.cpp) and GPU
+// implementation (.cu).
+//
+// The functions provided here focus on coordinate transforms used by
+// the spectral upsampling code.  Additional routines such as the
+// spectrum synthesis from a set of coefficients are provided in a
+// simplified form in the CPU implementation.  These can serve as a
+// starting point for a fuller port as more of the Python functionality
+// is needed.
 
-#include <string>
+#ifndef SPECTRAL_UPSAMPLING_HPP
+#define SPECTRAL_UPSAMPLING_HPP
+
+#include <array>
+#include <utility>
 #include <vector>
-#include <utility> // For std::pair
 
-// The only necessary include for the NumCpp library
-#include "NumCpp.hpp"
+// The SpectralUpsampling class exposes a handful of static helper
+// functions.  In this basic port we avoid any dependencies on third
+// party linear algebra or interpolation libraries; all operations are
+// implemented using standard C++ containers and simple loops.  For
+// production use one would likely prefer to integrate a library such
+// as Eigen or xtensor for array handling and interpolation.
 
-// Assumed headers for your custom libraries, which should also use NumCpp.
-#include "colour.hpp"
-#include "scipy.hpp"
+class SpectralUpsampling {
+public:
+    /// Convert a point expressed in triangular barycentric coordinates
+    /// `(tx, ty)` into square coordinates.  In the Python reference
+    /// implementation this function operates on array inputs.  Here we
+    /// provide a scalar version returning a pair of floats.  See
+    /// `tri2quad` in `spectral_upsampling.py` for the original algorithm.
+    static std::pair<float, float> tri2quad(float tx, float ty);
 
-// Forward-declare functions from other modules that are used here
-namespace agx {
-    namespace model {
-        // This function is expected to be defined elsewhere and return a NumCpp array
-        nc::NdArray<float> standard_illuminant(const std::string& illuminant_label);
-    }
-}
+    /// Convert a point expressed in square coordinates `(x, y)` back into
+    /// triangular barycentric coordinates.  This is the inverse of
+    /// `tri2quad`.  See `quad2tri` in the Python reference for details.
+    static std::pair<float, float> quad2tri(float x, float y);
 
-namespace agx {
-namespace utils {
+    /// Given four spectral synthesis coefficients `coeffs` this routine
+    /// computes a coarse spectral distribution.  The implementation
+    /// directly follows the core of `compute_spectra_from_coeffs` from
+    /// the Python version, but omits Gaussian smoothing and down
+    /// sampling.  The returned vector will contain 441 samples over
+    /// wavelengths 360–800 nm at 1 nm intervals.  The order of the
+    /// coefficients is assumed to be `(c0, c1, c2, c3)`.
+    static std::vector<float> computeSpectraFromCoeffs(const std::array<float, 4> &coeffs);
+};
 
-//================================================================================
-// LUT Generation
-//================================================================================
-
-/**
- * @brief Loads the coefficients LUT from a binary file.
- * @param filename The path to the .lut file.
- * @return An nc::NdArray containing the LUT coefficients.
- */
-nc::NdArray<float> load_coeffs_lut(const std::string& filename = "hanatos_irradiance_xy_coeffs_250304.lut");
-
-/**
- * @brief Converts triangular coordinates into square coordinates using a CUDA kernel.
- */
-nc::NdArray<float> tri2quad(const nc::NdArray<float>& tc);
-
-/**
- * @brief Converts square coordinates into triangular coordinates using a CUDA kernel.
- */
-nc::NdArray<float> quad2tri(const nc::NdArray<float>& xy);
-
-/**
- * @brief Fetches spectral upsampling coefficients by interpolating a LUT.
- */
-nc::NdArray<float> fetch_coeffs(const nc::NdArray<float>& tc, const nc::NdArray<float>& lut_coeffs);
-
-/**
- * @brief Computes spectra from coefficients, including smoothing and resampling.
- */
-nc::NdArray<float> compute_spectra_from_coeffs(const nc::NdArray<float>& coeffs, int smooth_steps = 1);
-
-/**
- * @brief Generates the full spectral LUT.
- */
-nc::NdArray<float> compute_lut_spectra(int lut_size = 128, int smooth_steps = 1, const std::string& lut_coeffs_filename = "hanatos_irradiance_xy_coeffs_250304.lut");
-
-/**
- * @brief Loads a pre-computed spectral LUT from a .npy file.
- */
-nc::NdArray<float> load_spectra_lut(const std::string& filename = "irradiance_xy_tc.npy");
-
-/**
- * @brief Calculates the xy chromaticity of a standard illuminant.
- */
-nc::NdArray<float> illuminant_to_xy(const std::string& illuminant_label);
-
-/**
- * @brief Converts RGB to triangular coordinates and a brightness factor.
- */
-std::pair<nc::NdArray<float>, nc::NdArray<float>> rgb_to_tc_b(
-    const nc::NdArray<float>& rgb,
-    const std::string& color_space = "ITU-R BT.2020",
-    bool apply_cctf_decoding = false,
-    const std::string& reference_illuminant = "D55"
-);
-
-//================================================================================
-// Band Pass Filter
-//================================================================================
-
-/**
- * @brief Computes a spectral band pass filter.
- */
-nc::NdArray<float> compute_band_pass_filter(
-    const nc::NdArray<float>& filter_uv = {1.0f, 410.0f, 8.0f},
-    const nc::NdArray<float>& filter_ir = {1.0f, 675.0f, 15.0f}
-);
-
-//================================================================================
-// Spectral Recovery Methods
-//================================================================================
-
-/**
- * @brief Converts RGB to raw sensor response using Mallett et al. (2019).
- */
-nc::NdArray<float> rgb_to_raw_mallett2019(
-    const nc::NdArray<float>& RGB,
-    const nc::NdArray<float>& sensitivity,
-    const std::string& color_space = "sRGB",
-    bool apply_cctf_decoding = true,
-    const std::string& reference_illuminant = "D65"
-);
-
-/**
- * @brief Converts RGB to raw sensor response using the Hanatos (2025) method.
- */
-nc::NdArray<float> rgb_to_raw_hanatos2025(
-    const nc::NdArray<float>& rgb,
-    const nc::NdArray<float>& sensitivity,
-    const std::string& color_space,
-    bool apply_cctf_decoding,
-    const std::string& reference_illuminant
-);
-
-/**
- * @brief Converts an RGB value to a full spectrum.
- */
-nc::NdArray<float> rgb_to_spectrum(
-    const nc::NdArray<float>& rgb,
-    const std::string& color_space,
-    bool apply_cctf_decoding,
-    const std::string& reference_illuminant
-);
-
-/**
- * @brief An example function demonstrating the main workflow, corresponding to `if __name__ == '__main__':`.
- */
-void run_spectral_upsampling_example();
-
-} // namespace utils
-} // namespace agx
+#endif // SPECTRAL_UPSAMPLING_HPP

@@ -80,7 +80,7 @@ public:
         return eval_segment(i, xq - m_x[i]);
     }
     nc::NdArray<double> operator()(const nc::NdArray<double>& xq) const {
-        nc::NdArray<double> out(xq.size());  // 1D array, not (1, N)
+        nc::NdArray<double> out = nc::zeros<double>({1, xq.size()}).flatten();  // 1D array, not (1, N)
         for (std::size_t k = 0; k < xq.size(); ++k) out[k] = (*this)(xq[k]);
         return out;
     }

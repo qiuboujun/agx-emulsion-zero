@@ -214,6 +214,19 @@ io_cpp_tests/fast:
 .PHONY : io_cpp_tests/fast
 
 #=============================================================================
+# Target rules for targets named couplers_cpp_tests
+
+# Build rule for target.
+couplers_cpp_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 couplers_cpp_tests
+.PHONY : couplers_cpp_tests
+
+# fast build rule for target.
+couplers_cpp_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/couplers_cpp_tests.dir/build.make CMakeFiles/couplers_cpp_tests.dir/build
+.PHONY : couplers_cpp_tests/fast
+
+#=============================================================================
 # Target rules for targets named scipy_test
 
 # Build rule for target.
@@ -225,19 +238,6 @@ scipy_test: cmake_check_build_system
 scipy_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/scipy_test.dir/build.make CMakeFiles/scipy_test.dir/build
 .PHONY : scipy_test/fast
-
-#=============================================================================
-# Target rules for targets named test_color_filters_final_cpp
-
-# Build rule for target.
-test_color_filters_final_cpp: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_color_filters_final_cpp
-.PHONY : test_color_filters_final_cpp
-
-# fast build rule for target.
-test_color_filters_final_cpp/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/build
-.PHONY : test_color_filters_final_cpp/fast
 
 #=============================================================================
 # Target rules for targets named format
@@ -265,30 +265,6 @@ tidy/fast:
 	$(MAKE) $(MAKESILENT) -f numcpp_build/CMakeFiles/tidy.dir/build.make numcpp_build/CMakeFiles/tidy.dir/build
 .PHONY : tidy/fast
 
-home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.o: home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o
-.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.o
-
-# target to build an object file
-home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o
-.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.o
-
-home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.i: home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i
-.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.i
-
-# target to preprocess a source file
-home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i
-.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.i
-
-home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.s: home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s
-.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.s
-
-# target to generate assembly for a file
-home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_color_filters_final_cpp.dir/build.make CMakeFiles/test_color_filters_final_cpp.dir/home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s
-.PHONY : home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.cpp.s
-
 src/model/color_filters.o: src/model/color_filters.cpp.o
 .PHONY : src/model/color_filters.o
 
@@ -312,6 +288,126 @@ src/model/color_filters.s: src/model/color_filters.cpp.s
 src/model/color_filters.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/color_filters.cpp.s
 .PHONY : src/model/color_filters.cpp.s
+
+src/model/couplers.o: src/model/couplers.cpp.o
+.PHONY : src/model/couplers.o
+
+# target to build an object file
+src/model/couplers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/couplers.cpp.o
+.PHONY : src/model/couplers.cpp.o
+
+src/model/couplers.i: src/model/couplers.cpp.i
+.PHONY : src/model/couplers.i
+
+# target to preprocess a source file
+src/model/couplers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/couplers.cpp.i
+.PHONY : src/model/couplers.cpp.i
+
+src/model/couplers.s: src/model/couplers.cpp.s
+.PHONY : src/model/couplers.s
+
+# target to generate assembly for a file
+src/model/couplers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/couplers.cpp.s
+.PHONY : src/model/couplers.cpp.s
+
+src/model/couplers.o: src/model/couplers.cu.o
+.PHONY : src/model/couplers.o
+
+# target to build an object file
+src/model/couplers.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/couplers.cu.o
+.PHONY : src/model/couplers.cu.o
+
+src/model/couplers.i: src/model/couplers.cu.i
+.PHONY : src/model/couplers.i
+
+# target to preprocess a source file
+src/model/couplers.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/couplers.cu.i
+.PHONY : src/model/couplers.cu.i
+
+src/model/couplers.s: src/model/couplers.cu.s
+.PHONY : src/model/couplers.s
+
+# target to generate assembly for a file
+src/model/couplers.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/couplers.cu.s
+.PHONY : src/model/couplers.cu.s
+
+src/model/density_curves.o: src/model/density_curves.cpp.o
+.PHONY : src/model/density_curves.o
+
+# target to build an object file
+src/model/density_curves.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o
+.PHONY : src/model/density_curves.cpp.o
+
+src/model/density_curves.i: src/model/density_curves.cpp.i
+.PHONY : src/model/density_curves.i
+
+# target to preprocess a source file
+src/model/density_curves.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cpp.i
+.PHONY : src/model/density_curves.cpp.i
+
+src/model/density_curves.s: src/model/density_curves.cpp.s
+.PHONY : src/model/density_curves.s
+
+# target to generate assembly for a file
+src/model/density_curves.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cpp.s
+.PHONY : src/model/density_curves.cpp.s
+
+src/model/density_curves.o: src/model/density_curves.cu.o
+.PHONY : src/model/density_curves.o
+
+# target to build an object file
+src/model/density_curves.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cu.o
+.PHONY : src/model/density_curves.cu.o
+
+src/model/density_curves.i: src/model/density_curves.cu.i
+.PHONY : src/model/density_curves.i
+
+# target to preprocess a source file
+src/model/density_curves.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cu.i
+.PHONY : src/model/density_curves.cu.i
+
+src/model/density_curves.s: src/model/density_curves.cu.s
+.PHONY : src/model/density_curves.s
+
+# target to generate assembly for a file
+src/model/density_curves.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cu.s
+.PHONY : src/model/density_curves.cu.s
+
+src/model/illuminants.o: src/model/illuminants.cpp.o
+.PHONY : src/model/illuminants.o
+
+# target to build an object file
+src/model/illuminants.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o
+.PHONY : src/model/illuminants.cpp.o
+
+src/model/illuminants.i: src/model/illuminants.cpp.i
+.PHONY : src/model/illuminants.i
+
+# target to preprocess a source file
+src/model/illuminants.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/illuminants.cpp.i
+.PHONY : src/model/illuminants.cpp.i
+
+src/model/illuminants.s: src/model/illuminants.cpp.s
+.PHONY : src/model/illuminants.s
+
+# target to generate assembly for a file
+src/model/illuminants.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/illuminants.cpp.s
+.PHONY : src/model/illuminants.cpp.s
 
 src/utils/fast_interp_lut.o: src/utils/fast_interp_lut.cu.o
 .PHONY : src/utils/fast_interp_lut.o
@@ -385,6 +481,30 @@ tests/config/pybind_config.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.s
 .PHONY : tests/config/pybind_config.cpp.s
 
+tests/coupler/pybind_couplers.o: tests/coupler/pybind_couplers.cpp.o
+.PHONY : tests/coupler/pybind_couplers.o
+
+# target to build an object file
+tests/coupler/pybind_couplers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/couplers_cpp_tests.dir/build.make CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.o
+.PHONY : tests/coupler/pybind_couplers.cpp.o
+
+tests/coupler/pybind_couplers.i: tests/coupler/pybind_couplers.cpp.i
+.PHONY : tests/coupler/pybind_couplers.i
+
+# target to preprocess a source file
+tests/coupler/pybind_couplers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/couplers_cpp_tests.dir/build.make CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.i
+.PHONY : tests/coupler/pybind_couplers.cpp.i
+
+tests/coupler/pybind_couplers.s: tests/coupler/pybind_couplers.cpp.s
+.PHONY : tests/coupler/pybind_couplers.s
+
+# target to generate assembly for a file
+tests/coupler/pybind_couplers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/couplers_cpp_tests.dir/build.make CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.s
+.PHONY : tests/coupler/pybind_couplers.cpp.s
+
 tests/fast_interp_lut/pybind_fast_interp_lut.o: tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o
 .PHONY : tests/fast_interp_lut/pybind_fast_interp_lut.o
 
@@ -450,15 +570,27 @@ help:
 	@echo "... tidy"
 	@echo "... agx_core"
 	@echo "... config_cpp_tests"
+	@echo "... couplers_cpp_tests"
 	@echo "... fast_interp_cpp_tests"
 	@echo "... io_cpp_tests"
-	@echo "... test_color_filters_final_cpp"
-	@echo "... home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.o"
-	@echo "... home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.i"
-	@echo "... home/jimmyqiu/cursor/agx-emulsion-zero/test_color_filters_final_cpp.s"
 	@echo "... src/model/color_filters.o"
 	@echo "... src/model/color_filters.i"
 	@echo "... src/model/color_filters.s"
+	@echo "... src/model/couplers.o"
+	@echo "... src/model/couplers.i"
+	@echo "... src/model/couplers.s"
+	@echo "... src/model/couplers.o"
+	@echo "... src/model/couplers.i"
+	@echo "... src/model/couplers.s"
+	@echo "... src/model/density_curves.o"
+	@echo "... src/model/density_curves.i"
+	@echo "... src/model/density_curves.s"
+	@echo "... src/model/density_curves.o"
+	@echo "... src/model/density_curves.i"
+	@echo "... src/model/density_curves.s"
+	@echo "... src/model/illuminants.o"
+	@echo "... src/model/illuminants.i"
+	@echo "... src/model/illuminants.s"
 	@echo "... src/utils/fast_interp_lut.o"
 	@echo "... src/utils/fast_interp_lut.i"
 	@echo "... src/utils/fast_interp_lut.s"
@@ -468,6 +600,9 @@ help:
 	@echo "... tests/config/pybind_config.o"
 	@echo "... tests/config/pybind_config.i"
 	@echo "... tests/config/pybind_config.s"
+	@echo "... tests/coupler/pybind_couplers.o"
+	@echo "... tests/coupler/pybind_couplers.i"
+	@echo "... tests/coupler/pybind_couplers.s"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.o"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.i"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.s"

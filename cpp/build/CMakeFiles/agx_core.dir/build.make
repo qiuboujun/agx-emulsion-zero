@@ -112,11 +112,88 @@ CMakeFiles/agx_core.dir/src/model/color_filters.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/agx_core.dir/src/model/color_filters.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/color_filters.cpp -o CMakeFiles/agx_core.dir/src/model/color_filters.cpp.s
 
+CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp
+CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o -MF CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o.d -o CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp
+
+CMakeFiles/agx_core.dir/src/model/illuminants.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/agx_core.dir/src/model/illuminants.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp > CMakeFiles/agx_core.dir/src/model/illuminants.cpp.i
+
+CMakeFiles/agx_core.dir/src/model/illuminants.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/agx_core.dir/src/model/illuminants.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp -o CMakeFiles/agx_core.dir/src/model/illuminants.cpp.s
+
+CMakeFiles/agx_core.dir/src/model/couplers.cpp.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/model/couplers.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp
+CMakeFiles/agx_core.dir/src/model/couplers.cpp.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/agx_core.dir/src/model/couplers.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/model/couplers.cpp.o -MF CMakeFiles/agx_core.dir/src/model/couplers.cpp.o.d -o CMakeFiles/agx_core.dir/src/model/couplers.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp
+
+CMakeFiles/agx_core.dir/src/model/couplers.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/agx_core.dir/src/model/couplers.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp > CMakeFiles/agx_core.dir/src/model/couplers.cpp.i
+
+CMakeFiles/agx_core.dir/src/model/couplers.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/agx_core.dir/src/model/couplers.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp -o CMakeFiles/agx_core.dir/src/model/couplers.cpp.s
+
+CMakeFiles/agx_core.dir/src/model/couplers.cu.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/model/couplers.cu.o: CMakeFiles/agx_core.dir/includes_CUDA.rsp
+CMakeFiles/agx_core.dir/src/model/couplers.cu.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cu
+CMakeFiles/agx_core.dir/src/model/couplers.cu.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CUDA object CMakeFiles/agx_core.dir/src/model/couplers.cu.o"
+	/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/model/couplers.cu.o -MF CMakeFiles/agx_core.dir/src/model/couplers.cu.o.d -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cu -o CMakeFiles/agx_core.dir/src/model/couplers.cu.o
+
+CMakeFiles/agx_core.dir/src/model/couplers.cu.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/agx_core.dir/src/model/couplers.cu.i"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
+
+CMakeFiles/agx_core.dir/src/model/couplers.cu.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/agx_core.dir/src/model/couplers.cu.s"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
+
+CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp
+CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o -MF CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o.d -o CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp
+
+CMakeFiles/agx_core.dir/src/model/density_curves.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/agx_core.dir/src/model/density_curves.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp > CMakeFiles/agx_core.dir/src/model/density_curves.cpp.i
+
+CMakeFiles/agx_core.dir/src/model/density_curves.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/agx_core.dir/src/model/density_curves.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp -o CMakeFiles/agx_core.dir/src/model/density_curves.cpp.s
+
+CMakeFiles/agx_core.dir/src/model/density_curves.cu.o: CMakeFiles/agx_core.dir/flags.make
+CMakeFiles/agx_core.dir/src/model/density_curves.cu.o: CMakeFiles/agx_core.dir/includes_CUDA.rsp
+CMakeFiles/agx_core.dir/src/model/density_curves.cu.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cu
+CMakeFiles/agx_core.dir/src/model/density_curves.cu.o: CMakeFiles/agx_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CUDA object CMakeFiles/agx_core.dir/src/model/density_curves.cu.o"
+	/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/agx_core.dir/src/model/density_curves.cu.o -MF CMakeFiles/agx_core.dir/src/model/density_curves.cu.o.d -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cu -o CMakeFiles/agx_core.dir/src/model/density_curves.cu.o
+
+CMakeFiles/agx_core.dir/src/model/density_curves.cu.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/agx_core.dir/src/model/density_curves.cu.i"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
+
+CMakeFiles/agx_core.dir/src/model/density_curves.cu.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/agx_core.dir/src/model/density_curves.cu.s"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
+
 # Object files for target agx_core
 agx_core_OBJECTS = \
 "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o" \
 "CMakeFiles/agx_core.dir/src/utils/io.cpp.o" \
-"CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o"
+"CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o" \
+"CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o" \
+"CMakeFiles/agx_core.dir/src/model/couplers.cpp.o" \
+"CMakeFiles/agx_core.dir/src/model/couplers.cu.o" \
+"CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o" \
+"CMakeFiles/agx_core.dir/src/model/density_curves.cu.o"
 
 # External object files for target agx_core
 agx_core_EXTERNAL_OBJECTS =
@@ -124,9 +201,14 @@ agx_core_EXTERNAL_OBJECTS =
 libagx_core.a: CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o
 libagx_core.a: CMakeFiles/agx_core.dir/src/utils/io.cpp.o
 libagx_core.a: CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/model/couplers.cpp.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/model/couplers.cu.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o
+libagx_core.a: CMakeFiles/agx_core.dir/src/model/density_curves.cu.o
 libagx_core.a: CMakeFiles/agx_core.dir/build.make
 libagx_core.a: CMakeFiles/agx_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libagx_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library libagx_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/agx_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/agx_core.dir/link.txt --verbose=$(VERBOSE)
 

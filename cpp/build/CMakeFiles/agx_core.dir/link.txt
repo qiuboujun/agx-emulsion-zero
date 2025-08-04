@@ -1,2 +1,2 @@
-/usr/bin/ar qc libagx_core.a CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o CMakeFiles/agx_core.dir/src/utils/io.cpp.o CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o
+/usr/bin/ar qc libagx_core.a CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o CMakeFiles/agx_core.dir/src/utils/io.cpp.o CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o CMakeFiles/agx_core.dir/src/model/couplers.cpp.o CMakeFiles/agx_core.dir/src/model/couplers.cu.o CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o CMakeFiles/agx_core.dir/src/model/density_curves.cu.o
 /usr/bin/ranlib libagx_core.a

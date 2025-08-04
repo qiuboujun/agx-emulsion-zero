@@ -14,6 +14,13 @@ add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
     src/model/color_filters.cpp
+    src/model/illuminants.cpp
+    src/model/couplers.cpp
+    src/model/couplers.cu
+    src/model/density_curves.cpp
+    src/model/density_curves.cu
+    src/model/diffusion.cpp
+    src/model/diffusion.cu
     # src/utils/spectral_upsampling.cu  # Temporarily excluded due to compilation issues
     # scipy.cpp is no longer needed as scipy.hpp is header-only
     # colour.cpp doesn't exist - colour.hpp is header-only
@@ -53,6 +60,15 @@ set_target_properties(io_cpp_tests PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/io"
 )
 
+# --- Test Module for couplers ---
+pybind11_add_module(couplers_cpp_tests
+    tests/coupler/pybind_couplers.cpp
+)
+target_link_libraries(couplers_cpp_tests PRIVATE agx_core)
+set_target_properties(couplers_cpp_tests PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/coupler"
+)
+
 # Add scipy test target
 add_custom_target(scipy_test
     COMMAND ${CMAKE_COMMAND} -E echo "Running scipy interpolation test..."
@@ -62,14 +78,15 @@ add_custom_target(scipy_test
     COMMENT "Running scipy interpolation test"
 )
 
-# --- Final Test Executable for color_filters comparison ---
-add_executable(test_color_filters_final_cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../test_color_filters_final_cpp.cpp
-)
-target_link_libraries(test_color_filters_final_cpp PRIVATE agx_core)
-set_target_properties(test_color_filters_final_cpp PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
-)
+# --- Test Executable for illuminants comparison ---
+# Commented out as the source file doesn't exist
+# add_executable(test_illuminants_cpp
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../test_illuminants_cpp.cpp
+# )
+# target_link_libraries(test_illuminants_cpp PRIVATE agx_core)
+# set_target_properties(test_illuminants_cpp PROPERTIES
+#     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
+# )
 
 
 

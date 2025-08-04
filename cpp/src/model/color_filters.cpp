@@ -227,7 +227,7 @@ nc::NdArray<float> GenericFilter::apply(const nc::NdArray<float>& illuminant, fl
 {
     auto illum_flat = illuminant.flatten();
     const std::size_t n = illum_flat.size();
-    nc::NdArray<float> result(n);
+    nc::NdArray<float> result = nc::zeros<float>({1, n}).flatten();
     for (std::size_t i = 0; i < n; ++i) {
         // Equivalent to 1 - (1 - transmittance[i]) * value
         float dimmed = 1.0f - (1.0f - transmittance[i]) * value;
