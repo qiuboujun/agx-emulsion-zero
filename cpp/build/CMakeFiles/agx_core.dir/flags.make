@@ -7,11 +7,11 @@ CUDA_DEFINES =
 
 CUDA_INCLUDES = --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp
 
-CUDA_FLAGS = -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC
+CUDA_FLAGS = -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC
 
 CXX_DEFINES = 
 
 CXX_INCLUDES = -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include
 
-CXX_FLAGS = -fPIC
+CXX_FLAGS = -O3 -DNDEBUG -fPIC
 

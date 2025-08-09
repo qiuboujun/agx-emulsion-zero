@@ -175,6 +175,19 @@ agx_core/fast:
 .PHONY : agx_core/fast
 
 #=============================================================================
+# Target rules for targets named independent_profile_io_test
+
+# Build rule for target.
+independent_profile_io_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 independent_profile_io_test
+.PHONY : independent_profile_io_test
+
+# fast build rule for target.
+independent_profile_io_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_profile_io_test.dir/build.make CMakeFiles/independent_profile_io_test.dir/build
+.PHONY : independent_profile_io_test/fast
+
+#=============================================================================
 # Target rules for targets named fast_interp_cpp_tests
 
 # Build rule for target.
@@ -199,6 +212,19 @@ config_cpp_tests: cmake_check_build_system
 config_cpp_tests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/config_cpp_tests.dir/build.make CMakeFiles/config_cpp_tests.dir/build
 .PHONY : config_cpp_tests/fast
+
+#=============================================================================
+# Target rules for targets named balance_cpp_tests
+
+# Build rule for target.
+balance_cpp_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 balance_cpp_tests
+.PHONY : balance_cpp_tests
+
+# fast build rule for target.
+balance_cpp_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/balance_cpp_tests.dir/build.make CMakeFiles/balance_cpp_tests.dir/build
+.PHONY : balance_cpp_tests/fast
 
 #=============================================================================
 # Target rules for targets named io_cpp_tests
@@ -264,6 +290,30 @@ tidy: cmake_check_build_system
 tidy/fast:
 	$(MAKE) $(MAKESILENT) -f numcpp_build/CMakeFiles/tidy.dir/build.make numcpp_build/CMakeFiles/tidy.dir/build
 .PHONY : tidy/fast
+
+src/model/balance.o: src/model/balance.cpp.o
+.PHONY : src/model/balance.o
+
+# target to build an object file
+src/model/balance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/balance.cpp.o
+.PHONY : src/model/balance.cpp.o
+
+src/model/balance.i: src/model/balance.cpp.i
+.PHONY : src/model/balance.i
+
+# target to preprocess a source file
+src/model/balance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/balance.cpp.i
+.PHONY : src/model/balance.cpp.i
+
+src/model/balance.s: src/model/balance.cpp.s
+.PHONY : src/model/balance.s
+
+# target to generate assembly for a file
+src/model/balance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/balance.cpp.s
+.PHONY : src/model/balance.cpp.s
 
 src/model/color_filters.o: src/model/color_filters.cpp.o
 .PHONY : src/model/color_filters.o
@@ -385,6 +435,54 @@ src/model/density_curves.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/density_curves.cu.s
 .PHONY : src/model/density_curves.cu.s
 
+src/model/diffusion.o: src/model/diffusion.cpp.o
+.PHONY : src/model/diffusion.o
+
+# target to build an object file
+src/model/diffusion.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cpp.o
+.PHONY : src/model/diffusion.cpp.o
+
+src/model/diffusion.i: src/model/diffusion.cpp.i
+.PHONY : src/model/diffusion.i
+
+# target to preprocess a source file
+src/model/diffusion.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cpp.i
+.PHONY : src/model/diffusion.cpp.i
+
+src/model/diffusion.s: src/model/diffusion.cpp.s
+.PHONY : src/model/diffusion.s
+
+# target to generate assembly for a file
+src/model/diffusion.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cpp.s
+.PHONY : src/model/diffusion.cpp.s
+
+src/model/diffusion.o: src/model/diffusion.cu.o
+.PHONY : src/model/diffusion.o
+
+# target to build an object file
+src/model/diffusion.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cu.o
+.PHONY : src/model/diffusion.cu.o
+
+src/model/diffusion.i: src/model/diffusion.cu.i
+.PHONY : src/model/diffusion.i
+
+# target to preprocess a source file
+src/model/diffusion.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cu.i
+.PHONY : src/model/diffusion.cu.i
+
+src/model/diffusion.s: src/model/diffusion.cu.s
+.PHONY : src/model/diffusion.s
+
+# target to generate assembly for a file
+src/model/diffusion.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cu.s
+.PHONY : src/model/diffusion.cu.s
+
 src/model/illuminants.o: src/model/illuminants.cpp.o
 .PHONY : src/model/illuminants.o
 
@@ -456,6 +554,54 @@ src/utils/io.s: src/utils/io.cpp.s
 src/utils/io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/io.cpp.s
 .PHONY : src/utils/io.cpp.s
+
+src/utils/profile_io.o: src/utils/profile_io.cpp.o
+.PHONY : src/utils/profile_io.o
+
+# target to build an object file
+src/utils/profile_io.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.o
+.PHONY : src/utils/profile_io.cpp.o
+
+src/utils/profile_io.i: src/utils/profile_io.cpp.i
+.PHONY : src/utils/profile_io.i
+
+# target to preprocess a source file
+src/utils/profile_io.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.i
+.PHONY : src/utils/profile_io.cpp.i
+
+src/utils/profile_io.s: src/utils/profile_io.cpp.s
+.PHONY : src/utils/profile_io.s
+
+# target to generate assembly for a file
+src/utils/profile_io.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.s
+.PHONY : src/utils/profile_io.cpp.s
+
+tests/balance/pybind_balance.o: tests/balance/pybind_balance.cpp.o
+.PHONY : tests/balance/pybind_balance.o
+
+# target to build an object file
+tests/balance/pybind_balance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/balance_cpp_tests.dir/build.make CMakeFiles/balance_cpp_tests.dir/tests/balance/pybind_balance.cpp.o
+.PHONY : tests/balance/pybind_balance.cpp.o
+
+tests/balance/pybind_balance.i: tests/balance/pybind_balance.cpp.i
+.PHONY : tests/balance/pybind_balance.i
+
+# target to preprocess a source file
+tests/balance/pybind_balance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/balance_cpp_tests.dir/build.make CMakeFiles/balance_cpp_tests.dir/tests/balance/pybind_balance.cpp.i
+.PHONY : tests/balance/pybind_balance.cpp.i
+
+tests/balance/pybind_balance.s: tests/balance/pybind_balance.cpp.s
+.PHONY : tests/balance/pybind_balance.s
+
+# target to generate assembly for a file
+tests/balance/pybind_balance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/balance_cpp_tests.dir/build.make CMakeFiles/balance_cpp_tests.dir/tests/balance/pybind_balance.cpp.s
+.PHONY : tests/balance/pybind_balance.cpp.s
 
 tests/config/pybind_config.o: tests/config/pybind_config.cpp.o
 .PHONY : tests/config/pybind_config.o
@@ -553,6 +699,30 @@ tests/io/pyblind_io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.s
 .PHONY : tests/io/pyblind_io.cpp.s
 
+tests/io/test_profile_io.o: tests/io/test_profile_io.cpp.o
+.PHONY : tests/io/test_profile_io.o
+
+# target to build an object file
+tests/io/test_profile_io.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_profile_io_test.dir/build.make CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.o
+.PHONY : tests/io/test_profile_io.cpp.o
+
+tests/io/test_profile_io.i: tests/io/test_profile_io.cpp.i
+.PHONY : tests/io/test_profile_io.i
+
+# target to preprocess a source file
+tests/io/test_profile_io.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_profile_io_test.dir/build.make CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.i
+.PHONY : tests/io/test_profile_io.cpp.i
+
+tests/io/test_profile_io.s: tests/io/test_profile_io.cpp.s
+.PHONY : tests/io/test_profile_io.s
+
+# target to generate assembly for a file
+tests/io/test_profile_io.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_profile_io_test.dir/build.make CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.s
+.PHONY : tests/io/test_profile_io.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -569,10 +739,15 @@ help:
 	@echo "... scipy_test"
 	@echo "... tidy"
 	@echo "... agx_core"
+	@echo "... balance_cpp_tests"
 	@echo "... config_cpp_tests"
 	@echo "... couplers_cpp_tests"
 	@echo "... fast_interp_cpp_tests"
+	@echo "... independent_profile_io_test"
 	@echo "... io_cpp_tests"
+	@echo "... src/model/balance.o"
+	@echo "... src/model/balance.i"
+	@echo "... src/model/balance.s"
 	@echo "... src/model/color_filters.o"
 	@echo "... src/model/color_filters.i"
 	@echo "... src/model/color_filters.s"
@@ -588,6 +763,12 @@ help:
 	@echo "... src/model/density_curves.o"
 	@echo "... src/model/density_curves.i"
 	@echo "... src/model/density_curves.s"
+	@echo "... src/model/diffusion.o"
+	@echo "... src/model/diffusion.i"
+	@echo "... src/model/diffusion.s"
+	@echo "... src/model/diffusion.o"
+	@echo "... src/model/diffusion.i"
+	@echo "... src/model/diffusion.s"
 	@echo "... src/model/illuminants.o"
 	@echo "... src/model/illuminants.i"
 	@echo "... src/model/illuminants.s"
@@ -597,6 +778,12 @@ help:
 	@echo "... src/utils/io.o"
 	@echo "... src/utils/io.i"
 	@echo "... src/utils/io.s"
+	@echo "... src/utils/profile_io.o"
+	@echo "... src/utils/profile_io.i"
+	@echo "... src/utils/profile_io.s"
+	@echo "... tests/balance/pybind_balance.o"
+	@echo "... tests/balance/pybind_balance.i"
+	@echo "... tests/balance/pybind_balance.s"
 	@echo "... tests/config/pybind_config.o"
 	@echo "... tests/config/pybind_config.i"
 	@echo "... tests/config/pybind_config.s"
@@ -609,6 +796,9 @@ help:
 	@echo "... tests/io/pyblind_io.o"
 	@echo "... tests/io/pyblind_io.i"
 	@echo "... tests/io/pyblind_io.s"
+	@echo "... tests/io/test_profile_io.o"
+	@echo "... tests/io/test_profile_io.i"
+	@echo "... tests/io/test_profile_io.s"
 .PHONY : help
 
 

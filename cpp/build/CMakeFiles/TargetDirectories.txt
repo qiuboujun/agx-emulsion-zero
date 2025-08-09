@@ -1,6 +1,8 @@
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/agx_core.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_profile_io_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/fast_interp_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/config_cpp_tests.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/balance_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/io_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/couplers_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/scipy_test.dir

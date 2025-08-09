@@ -193,7 +193,16 @@ inline RGBColourspace get_rgb_colourspace(const std::string& name) {
  * @brief Convert xy chromaticity to XYZ tristimulus values
  */
 inline std::array<float, 3> xy_to_XYZ(const std::array<float, 2>& xy) {
-    return {xy[0], xy[1], 1.0f - xy[0] - xy[1]};
+    // Normalised so that Y = 1.0
+    const float x = xy[0];
+    const float y = xy[1];
+    if (y <= 0.0f) {
+        return {0.0f, 1.0f, 0.0f};
+    }
+    const float X = x / y;
+    const float Y = 1.0f;
+    const float Z = (1.0f - x - y) / y;
+    return {X, Y, Z};
 }
 
 /**
@@ -511,15 +520,18 @@ inline nc::NdArray<float> XYZ_to_RGB(const nc::NdArray<float>& xyz,
     auto xyz_adapted = xyz.copy();
     
     // Apply chromatic adaptation if illuminant is provided
-    if (illuminant_xy.size() > 0 && adaptation_transform == "Bradford") {
+    if (illuminant_xy.size() > 0) {
         auto cs = get_rgb_colourspace(color_space);
-        auto adaptation_matrix = get_bradford_adaptation_matrix({illuminant_xy[0], illuminant_xy[1]}, cs.whitepoint_xy);
-        
+        std::array<std::array<float, 3>, 3> adaptation_matrix;
+        if (adaptation_transform == "CAT02") {
+            adaptation_matrix = get_cat02_adaptation_matrix({illuminant_xy[0], illuminant_xy[1]}, cs.whitepoint_xy);
+        } else { // default to Bradford
+            adaptation_matrix = get_bradford_adaptation_matrix({illuminant_xy[0], illuminant_xy[1]}, cs.whitepoint_xy);
+        }
         for (uint32_t i = 0; i < xyz_adapted.shape().rows; ++i) {
             float x = xyz_adapted(i, 0);
             float y = xyz_adapted(i, 1);
             float z = xyz_adapted(i, 2);
-            
             xyz_adapted(i, 0) = adaptation_matrix[0][0] * x + adaptation_matrix[0][1] * y + adaptation_matrix[0][2] * z;
             xyz_adapted(i, 1) = adaptation_matrix[1][0] * x + adaptation_matrix[1][1] * y + adaptation_matrix[1][2] * z;
             xyz_adapted(i, 2) = adaptation_matrix[2][0] * x + adaptation_matrix[2][1] * y + adaptation_matrix[2][2] * z;

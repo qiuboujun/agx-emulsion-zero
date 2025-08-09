@@ -6,5 +6,5 @@ CXX_DEFINES = -Dio_cpp_tests_EXPORTS
 
 CXX_INCLUDES = -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include
 
-CXX_FLAGS = -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects
+CXX_FLAGS = -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects
 

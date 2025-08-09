@@ -13,8 +13,10 @@ find_package(CUDAToolkit REQUIRED)
 add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
+    src/utils/profile_io.cpp
     src/model/color_filters.cpp
     src/model/illuminants.cpp
+    src/model/balance.cpp
     src/model/couplers.cpp
     src/model/couplers.cu
     src/model/density_curves.cpp
@@ -31,6 +33,12 @@ target_include_directories(agx_core PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/external/json/include"
 )
 target_link_libraries(agx_core PUBLIC CUDA::cudart)
+# --- Standalone test for profile I/O ---
+add_executable(independent_profile_io_test tests/io/test_profile_io.cpp)
+target_link_libraries(independent_profile_io_test PRIVATE agx_core)
+set_target_properties(independent_profile_io_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
 
 
 # --- Test Module for fast_interp_lut ---
@@ -49,6 +57,15 @@ pybind11_add_module(config_cpp_tests
 target_link_libraries(config_cpp_tests PRIVATE agx_core)
 set_target_properties(config_cpp_tests PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/config"
+)
+
+# --- Test Module for balance ---
+pybind11_add_module(balance_cpp_tests
+    tests/balance/pybind_balance.cpp
+)
+target_link_libraries(balance_cpp_tests PRIVATE agx_core)
+set_target_properties(balance_cpp_tests PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/balance"
 )
 
 # --- Test Module for io ---
