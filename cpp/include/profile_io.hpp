@@ -13,6 +13,14 @@ namespace profiles {
 
 struct ProfileInfo {
     std::string stock;
+    std::string name;
+    std::string type;
+    bool color;
+    std::string densitometer;
+    float log_sensitivity_density_over_min;
+    std::string reference_illuminant;
+    std::string viewing_illuminant;
+    std::array<float, 3> density_midscale_neutral;
 };
 
 struct ProfileData {
@@ -40,6 +48,9 @@ public:
 
 // Utility: exact element-wise equality (shape and contents)
 bool arrays_equal(const nc::NdArray<float>& a, const nc::NdArray<float>& b);
+
+// Helper function for other parts of the codebase to use sanitized JSON parsing
+nlohmann::json parse_json_with_specials(const std::string& json_path);
 
 } // namespace profiles
 } // namespace agx

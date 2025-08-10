@@ -227,6 +227,19 @@ balance_cpp_tests/fast:
 .PHONY : balance_cpp_tests/fast
 
 #=============================================================================
+# Target rules for targets named debug_balance
+
+# Build rule for target.
+debug_balance: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 debug_balance
+.PHONY : debug_balance
+
+# fast build rule for target.
+debug_balance/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/debug_balance.dir/build.make CMakeFiles/debug_balance.dir/build
+.PHONY : debug_balance/fast
+
+#=============================================================================
 # Target rules for targets named io_cpp_tests
 
 # Build rule for target.
@@ -579,6 +592,30 @@ src/utils/profile_io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.s
 .PHONY : src/utils/profile_io.cpp.s
 
+tests/balance/debug_balance.o: tests/balance/debug_balance.cpp.o
+.PHONY : tests/balance/debug_balance.o
+
+# target to build an object file
+tests/balance/debug_balance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/debug_balance.dir/build.make CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.o
+.PHONY : tests/balance/debug_balance.cpp.o
+
+tests/balance/debug_balance.i: tests/balance/debug_balance.cpp.i
+.PHONY : tests/balance/debug_balance.i
+
+# target to preprocess a source file
+tests/balance/debug_balance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/debug_balance.dir/build.make CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.i
+.PHONY : tests/balance/debug_balance.cpp.i
+
+tests/balance/debug_balance.s: tests/balance/debug_balance.cpp.s
+.PHONY : tests/balance/debug_balance.s
+
+# target to generate assembly for a file
+tests/balance/debug_balance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/debug_balance.dir/build.make CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.s
+.PHONY : tests/balance/debug_balance.cpp.s
+
 tests/balance/pybind_balance.o: tests/balance/pybind_balance.cpp.o
 .PHONY : tests/balance/pybind_balance.o
 
@@ -742,6 +779,7 @@ help:
 	@echo "... balance_cpp_tests"
 	@echo "... config_cpp_tests"
 	@echo "... couplers_cpp_tests"
+	@echo "... debug_balance"
 	@echo "... fast_interp_cpp_tests"
 	@echo "... independent_profile_io_test"
 	@echo "... io_cpp_tests"
@@ -781,6 +819,9 @@ help:
 	@echo "... src/utils/profile_io.o"
 	@echo "... src/utils/profile_io.i"
 	@echo "... src/utils/profile_io.s"
+	@echo "... tests/balance/debug_balance.o"
+	@echo "... tests/balance/debug_balance.i"
+	@echo "... tests/balance/debug_balance.s"
 	@echo "... tests/balance/pybind_balance.o"
 	@echo "... tests/balance/pybind_balance.i"
 	@echo "... tests/balance/pybind_balance.s"

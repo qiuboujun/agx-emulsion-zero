@@ -2,12 +2,14 @@
 #include "config.hpp" // Assuming a config.hpp holds SPECTRAL_SHAPE, LOG_EXPOSURE, and data paths
 #include "scipy.hpp"  // Your custom scipy wrappers
 #include "nlohmann/json.hpp" // For JSON parsing
+#include "profile_io.hpp" // For sanitized JSON parsing
 #include <fstream>
 #include <stdexcept>
 #include <algorithm> // For std::replace
 #include <vector>
 #include <iostream> // For debug output
 #include <cmath> // For std::min
+#include <limits>
 
 // Helper function to get the root data path.
 std::string get_data_path() {
@@ -18,6 +20,54 @@ std::string get_data_path() {
 
 namespace agx {
 namespace utils {
+
+// Recursively convert non-finite numbers in JSON to string tokens "NaN"/"Infinity"/"-Infinity"
+static nlohmann::json convert_nonfinite_to_strings(const nlohmann::json& j) {
+    using json = nlohmann::json;
+    if (j.is_array()) {
+        json out = json::array();
+        for (const auto& el : j) {
+            out.push_back(convert_nonfinite_to_strings(el));
+        }
+        return out;
+    } else if (j.is_object()) {
+        json out = json::object();
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            out[it.key()] = convert_nonfinite_to_strings(it.value());
+        }
+        return out;
+    } else if (j.is_number_float()) {
+        double v = j.get<double>();
+        if (std::isnan(v)) return json("NaN");
+        if (std::isinf(v)) return json(std::signbit(v) ? "-Infinity" : "Infinity");
+        return j;
+    } else {
+        return j;
+    }
+}
+
+// Unquote exact string values "NaN"/"Infinity"/"-Infinity" in a JSON string
+static std::string unquote_python_specials(const std::string& json_str) {
+    std::string out;
+    out.reserve(json_str.size());
+    for (std::size_t i = 0; i < json_str.size(); ++i) {
+        char c = json_str[i];
+        if (c != '"') { out.push_back(c); continue; }
+        std::size_t j = i + 1; bool escape = false; bool closed = false; std::string content; content.reserve(8);
+        for (; j < json_str.size(); ++j) {
+            char cj = json_str[j];
+            if (escape) { content.push_back(cj); escape = false; continue; }
+            if (cj == '\\') { content.push_back(cj); escape = true; continue; }
+            if (cj == '"') { closed = true; break; }
+            content.push_back(cj);
+        }
+        if (!closed) { out.push_back(c); continue; }
+        if (content == "NaN" || content == "Infinity" || content == "-Infinity") { out += content; }
+        else { out.append(json_str, i, (j - i + 1)); }
+        i = j;
+    }
+    return out;
+}
 
 nc::NdArray<float> interpolate_to_common_axis(const nc::NdArray<float>& data, const nc::NdArray<float>& new_x, bool extrapolate, const std::string& method) {
     // ---------------------------------------------------------------------
@@ -371,18 +421,17 @@ void save_ymc_filter_values(const FilterValues& ymc_filters) {
     std::ofstream file(path);
     if (!file.is_open()) throw std::runtime_error("Cannot open JSON file for writing: " + path);
     
-    nlohmann::json j = ymc_filters;
-    file << j.dump(4);
+    // Convert any non-finite numbers to Python-compatible special tokens and unquote them
+    nlohmann::json j = convert_nonfinite_to_strings(ymc_filters);
+    std::string dumped = j.dump(4);
+    std::string python_compatible = unquote_python_specials(dumped);
+    file << python_compatible;
 }
 
 FilterValues read_neutral_ymc_filter_values() {
     std::string path = get_data_path() + "agx_emulsion/data/profiles/enlarger_neutral_ymc_filters.json";
-    std::ifstream file(path);
-    if (!file.is_open()) throw std::runtime_error("Cannot open JSON file: " + path);
-    
-    nlohmann::json j;
-    file >> j;
-    return j; // Return the JSON object directly (matches Python behavior)
+    // Use sanitized JSON parsing to handle NaN/Infinity/-Infinity tokens
+    return agx::profiles::parse_json_with_specials(path);
 }
 
 nc::NdArray<float> load_dichroic_filters(const nc::NdArray<float>& wavelengths, const std::string& brand) {

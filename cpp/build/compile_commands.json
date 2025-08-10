@@ -97,6 +97,12 @@
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/debug_balance.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/debug_balance.cpp",
+  "output": "CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
   "command": "/usr/bin/c++ -Dio_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
   "output": "CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o"

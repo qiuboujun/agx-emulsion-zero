@@ -68,6 +68,15 @@ set_target_properties(balance_cpp_tests PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/balance"
 )
 
+# --- Debug executable for balance ---
+add_executable(debug_balance
+    tests/balance/debug_balance.cpp
+)
+target_link_libraries(debug_balance PRIVATE agx_core)
+set_target_properties(debug_balance PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+
 # --- Test Module for io ---
 pybind11_add_module(io_cpp_tests
     tests/io/pyblind_io.cpp
