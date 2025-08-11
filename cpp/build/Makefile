@@ -175,6 +175,45 @@ agx_core/fast:
 .PHONY : agx_core/fast
 
 #=============================================================================
+# Target rules for targets named independent_parametric_test
+
+# Build rule for target.
+independent_parametric_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 independent_parametric_test
+.PHONY : independent_parametric_test
+
+# fast build rule for target.
+independent_parametric_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_parametric_test.dir/build.make CMakeFiles/independent_parametric_test.dir/build
+.PHONY : independent_parametric_test/fast
+
+#=============================================================================
+# Target rules for targets named independent_autoexposure_test
+
+# Build rule for target.
+independent_autoexposure_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 independent_autoexposure_test
+.PHONY : independent_autoexposure_test
+
+# fast build rule for target.
+independent_autoexposure_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_autoexposure_test.dir/build.make CMakeFiles/independent_autoexposure_test.dir/build
+.PHONY : independent_autoexposure_test/fast
+
+#=============================================================================
+# Target rules for targets named independent_crop_resize_test
+
+# Build rule for target.
+independent_crop_resize_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 independent_crop_resize_test
+.PHONY : independent_crop_resize_test
+
+# fast build rule for target.
+independent_crop_resize_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_crop_resize_test.dir/build.make CMakeFiles/independent_crop_resize_test.dir/build
+.PHONY : independent_crop_resize_test/fast
+
+#=============================================================================
 # Target rules for targets named independent_profile_io_test
 
 # Build rule for target.
@@ -251,6 +290,19 @@ io_cpp_tests: cmake_check_build_system
 io_cpp_tests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/io_cpp_tests.dir/build.make CMakeFiles/io_cpp_tests.dir/build
 .PHONY : io_cpp_tests/fast
+
+#=============================================================================
+# Target rules for targets named independent_reconstruct_test
+
+# Build rule for target.
+independent_reconstruct_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 independent_reconstruct_test
+.PHONY : independent_reconstruct_test
+
+# fast build rule for target.
+independent_reconstruct_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_reconstruct_test.dir/build.make CMakeFiles/independent_reconstruct_test.dir/build
+.PHONY : independent_reconstruct_test/fast
 
 #=============================================================================
 # Target rules for targets named couplers_cpp_tests
@@ -520,6 +572,174 @@ src/model/illuminants.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/illuminants.cpp.s
 .PHONY : src/model/illuminants.cpp.s
 
+src/model/parametric.o: src/model/parametric.cpp.o
+.PHONY : src/model/parametric.o
+
+# target to build an object file
+src/model/parametric.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cpp.o
+.PHONY : src/model/parametric.cpp.o
+
+src/model/parametric.i: src/model/parametric.cpp.i
+.PHONY : src/model/parametric.i
+
+# target to preprocess a source file
+src/model/parametric.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cpp.i
+.PHONY : src/model/parametric.cpp.i
+
+src/model/parametric.s: src/model/parametric.cpp.s
+.PHONY : src/model/parametric.s
+
+# target to generate assembly for a file
+src/model/parametric.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cpp.s
+.PHONY : src/model/parametric.cpp.s
+
+src/model/parametric.o: src/model/parametric.cu.o
+.PHONY : src/model/parametric.o
+
+# target to build an object file
+src/model/parametric.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cu.o
+.PHONY : src/model/parametric.cu.o
+
+src/model/parametric.i: src/model/parametric.cu.i
+.PHONY : src/model/parametric.i
+
+# target to preprocess a source file
+src/model/parametric.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cu.i
+.PHONY : src/model/parametric.cu.i
+
+src/model/parametric.s: src/model/parametric.cu.s
+.PHONY : src/model/parametric.s
+
+# target to generate assembly for a file
+src/model/parametric.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cu.s
+.PHONY : src/model/parametric.cu.s
+
+src/model/reconstruct.o: src/model/reconstruct.cpp.o
+.PHONY : src/model/reconstruct.o
+
+# target to build an object file
+src/model/reconstruct.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.o
+.PHONY : src/model/reconstruct.cpp.o
+
+src/model/reconstruct.i: src/model/reconstruct.cpp.i
+.PHONY : src/model/reconstruct.i
+
+# target to preprocess a source file
+src/model/reconstruct.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.i
+.PHONY : src/model/reconstruct.cpp.i
+
+src/model/reconstruct.s: src/model/reconstruct.cpp.s
+.PHONY : src/model/reconstruct.s
+
+# target to generate assembly for a file
+src/model/reconstruct.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.s
+.PHONY : src/model/reconstruct.cpp.s
+
+src/utils/autoexposure.o: src/utils/autoexposure.cpp.o
+.PHONY : src/utils/autoexposure.o
+
+# target to build an object file
+src/utils/autoexposure.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.o
+.PHONY : src/utils/autoexposure.cpp.o
+
+src/utils/autoexposure.i: src/utils/autoexposure.cpp.i
+.PHONY : src/utils/autoexposure.i
+
+# target to preprocess a source file
+src/utils/autoexposure.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.i
+.PHONY : src/utils/autoexposure.cpp.i
+
+src/utils/autoexposure.s: src/utils/autoexposure.cpp.s
+.PHONY : src/utils/autoexposure.s
+
+# target to generate assembly for a file
+src/utils/autoexposure.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.s
+.PHONY : src/utils/autoexposure.cpp.s
+
+src/utils/autoexposure.o: src/utils/autoexposure.cu.o
+.PHONY : src/utils/autoexposure.o
+
+# target to build an object file
+src/utils/autoexposure.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.o
+.PHONY : src/utils/autoexposure.cu.o
+
+src/utils/autoexposure.i: src/utils/autoexposure.cu.i
+.PHONY : src/utils/autoexposure.i
+
+# target to preprocess a source file
+src/utils/autoexposure.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.i
+.PHONY : src/utils/autoexposure.cu.i
+
+src/utils/autoexposure.s: src/utils/autoexposure.cu.s
+.PHONY : src/utils/autoexposure.s
+
+# target to generate assembly for a file
+src/utils/autoexposure.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.s
+.PHONY : src/utils/autoexposure.cu.s
+
+src/utils/crop_resize.o: src/utils/crop_resize.cpp.o
+.PHONY : src/utils/crop_resize.o
+
+# target to build an object file
+src/utils/crop_resize.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.o
+.PHONY : src/utils/crop_resize.cpp.o
+
+src/utils/crop_resize.i: src/utils/crop_resize.cpp.i
+.PHONY : src/utils/crop_resize.i
+
+# target to preprocess a source file
+src/utils/crop_resize.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.i
+.PHONY : src/utils/crop_resize.cpp.i
+
+src/utils/crop_resize.s: src/utils/crop_resize.cpp.s
+.PHONY : src/utils/crop_resize.s
+
+# target to generate assembly for a file
+src/utils/crop_resize.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.s
+.PHONY : src/utils/crop_resize.cpp.s
+
+src/utils/crop_resize.o: src/utils/crop_resize.cu.o
+.PHONY : src/utils/crop_resize.o
+
+# target to build an object file
+src/utils/crop_resize.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.o
+.PHONY : src/utils/crop_resize.cu.o
+
+src/utils/crop_resize.i: src/utils/crop_resize.cu.i
+.PHONY : src/utils/crop_resize.i
+
+# target to preprocess a source file
+src/utils/crop_resize.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.i
+.PHONY : src/utils/crop_resize.cu.i
+
+src/utils/crop_resize.s: src/utils/crop_resize.cu.s
+.PHONY : src/utils/crop_resize.s
+
+# target to generate assembly for a file
+src/utils/crop_resize.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.s
+.PHONY : src/utils/crop_resize.cu.s
+
 src/utils/fast_interp_lut.o: src/utils/fast_interp_lut.cu.o
 .PHONY : src/utils/fast_interp_lut.o
 
@@ -568,6 +788,30 @@ src/utils/io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/io.cpp.s
 .PHONY : src/utils/io.cpp.s
 
+src/utils/measure.o: src/utils/measure.cpp.o
+.PHONY : src/utils/measure.o
+
+# target to build an object file
+src/utils/measure.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/measure.cpp.o
+.PHONY : src/utils/measure.cpp.o
+
+src/utils/measure.i: src/utils/measure.cpp.i
+.PHONY : src/utils/measure.i
+
+# target to preprocess a source file
+src/utils/measure.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/measure.cpp.i
+.PHONY : src/utils/measure.cpp.i
+
+src/utils/measure.s: src/utils/measure.cpp.s
+.PHONY : src/utils/measure.s
+
+# target to generate assembly for a file
+src/utils/measure.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/measure.cpp.s
+.PHONY : src/utils/measure.cpp.s
+
 src/utils/profile_io.o: src/utils/profile_io.cpp.o
 .PHONY : src/utils/profile_io.o
 
@@ -591,6 +835,30 @@ src/utils/profile_io.s: src/utils/profile_io.cpp.s
 src/utils/profile_io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.s
 .PHONY : src/utils/profile_io.cpp.s
+
+tests/autoexposure/independent_autoexposure_test.o: tests/autoexposure/independent_autoexposure_test.cpp.o
+.PHONY : tests/autoexposure/independent_autoexposure_test.o
+
+# target to build an object file
+tests/autoexposure/independent_autoexposure_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_autoexposure_test.dir/build.make CMakeFiles/independent_autoexposure_test.dir/tests/autoexposure/independent_autoexposure_test.cpp.o
+.PHONY : tests/autoexposure/independent_autoexposure_test.cpp.o
+
+tests/autoexposure/independent_autoexposure_test.i: tests/autoexposure/independent_autoexposure_test.cpp.i
+.PHONY : tests/autoexposure/independent_autoexposure_test.i
+
+# target to preprocess a source file
+tests/autoexposure/independent_autoexposure_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_autoexposure_test.dir/build.make CMakeFiles/independent_autoexposure_test.dir/tests/autoexposure/independent_autoexposure_test.cpp.i
+.PHONY : tests/autoexposure/independent_autoexposure_test.cpp.i
+
+tests/autoexposure/independent_autoexposure_test.s: tests/autoexposure/independent_autoexposure_test.cpp.s
+.PHONY : tests/autoexposure/independent_autoexposure_test.s
+
+# target to generate assembly for a file
+tests/autoexposure/independent_autoexposure_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_autoexposure_test.dir/build.make CMakeFiles/independent_autoexposure_test.dir/tests/autoexposure/independent_autoexposure_test.cpp.s
+.PHONY : tests/autoexposure/independent_autoexposure_test.cpp.s
 
 tests/balance/debug_balance.o: tests/balance/debug_balance.cpp.o
 .PHONY : tests/balance/debug_balance.o
@@ -688,6 +956,30 @@ tests/coupler/pybind_couplers.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/couplers_cpp_tests.dir/build.make CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.s
 .PHONY : tests/coupler/pybind_couplers.cpp.s
 
+tests/crop_resize/independent_crop_resize_test.o: tests/crop_resize/independent_crop_resize_test.cpp.o
+.PHONY : tests/crop_resize/independent_crop_resize_test.o
+
+# target to build an object file
+tests/crop_resize/independent_crop_resize_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_crop_resize_test.dir/build.make CMakeFiles/independent_crop_resize_test.dir/tests/crop_resize/independent_crop_resize_test.cpp.o
+.PHONY : tests/crop_resize/independent_crop_resize_test.cpp.o
+
+tests/crop_resize/independent_crop_resize_test.i: tests/crop_resize/independent_crop_resize_test.cpp.i
+.PHONY : tests/crop_resize/independent_crop_resize_test.i
+
+# target to preprocess a source file
+tests/crop_resize/independent_crop_resize_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_crop_resize_test.dir/build.make CMakeFiles/independent_crop_resize_test.dir/tests/crop_resize/independent_crop_resize_test.cpp.i
+.PHONY : tests/crop_resize/independent_crop_resize_test.cpp.i
+
+tests/crop_resize/independent_crop_resize_test.s: tests/crop_resize/independent_crop_resize_test.cpp.s
+.PHONY : tests/crop_resize/independent_crop_resize_test.s
+
+# target to generate assembly for a file
+tests/crop_resize/independent_crop_resize_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_crop_resize_test.dir/build.make CMakeFiles/independent_crop_resize_test.dir/tests/crop_resize/independent_crop_resize_test.cpp.s
+.PHONY : tests/crop_resize/independent_crop_resize_test.cpp.s
+
 tests/fast_interp_lut/pybind_fast_interp_lut.o: tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o
 .PHONY : tests/fast_interp_lut/pybind_fast_interp_lut.o
 
@@ -760,6 +1052,54 @@ tests/io/test_profile_io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_profile_io_test.dir/build.make CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.s
 .PHONY : tests/io/test_profile_io.cpp.s
 
+tests/parametric/independent_parametric_test.o: tests/parametric/independent_parametric_test.cpp.o
+.PHONY : tests/parametric/independent_parametric_test.o
+
+# target to build an object file
+tests/parametric/independent_parametric_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_parametric_test.dir/build.make CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.o
+.PHONY : tests/parametric/independent_parametric_test.cpp.o
+
+tests/parametric/independent_parametric_test.i: tests/parametric/independent_parametric_test.cpp.i
+.PHONY : tests/parametric/independent_parametric_test.i
+
+# target to preprocess a source file
+tests/parametric/independent_parametric_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_parametric_test.dir/build.make CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.i
+.PHONY : tests/parametric/independent_parametric_test.cpp.i
+
+tests/parametric/independent_parametric_test.s: tests/parametric/independent_parametric_test.cpp.s
+.PHONY : tests/parametric/independent_parametric_test.s
+
+# target to generate assembly for a file
+tests/parametric/independent_parametric_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_parametric_test.dir/build.make CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.s
+.PHONY : tests/parametric/independent_parametric_test.cpp.s
+
+tests/reconstruct/independent_reconstruct_test.o: tests/reconstruct/independent_reconstruct_test.cpp.o
+.PHONY : tests/reconstruct/independent_reconstruct_test.o
+
+# target to build an object file
+tests/reconstruct/independent_reconstruct_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_reconstruct_test.dir/build.make CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.o
+.PHONY : tests/reconstruct/independent_reconstruct_test.cpp.o
+
+tests/reconstruct/independent_reconstruct_test.i: tests/reconstruct/independent_reconstruct_test.cpp.i
+.PHONY : tests/reconstruct/independent_reconstruct_test.i
+
+# target to preprocess a source file
+tests/reconstruct/independent_reconstruct_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_reconstruct_test.dir/build.make CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.i
+.PHONY : tests/reconstruct/independent_reconstruct_test.cpp.i
+
+tests/reconstruct/independent_reconstruct_test.s: tests/reconstruct/independent_reconstruct_test.cpp.s
+.PHONY : tests/reconstruct/independent_reconstruct_test.s
+
+# target to generate assembly for a file
+tests/reconstruct/independent_reconstruct_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_reconstruct_test.dir/build.make CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.s
+.PHONY : tests/reconstruct/independent_reconstruct_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -781,7 +1121,11 @@ help:
 	@echo "... couplers_cpp_tests"
 	@echo "... debug_balance"
 	@echo "... fast_interp_cpp_tests"
+	@echo "... independent_autoexposure_test"
+	@echo "... independent_crop_resize_test"
+	@echo "... independent_parametric_test"
 	@echo "... independent_profile_io_test"
+	@echo "... independent_reconstruct_test"
 	@echo "... io_cpp_tests"
 	@echo "... src/model/balance.o"
 	@echo "... src/model/balance.i"
@@ -810,15 +1154,42 @@ help:
 	@echo "... src/model/illuminants.o"
 	@echo "... src/model/illuminants.i"
 	@echo "... src/model/illuminants.s"
+	@echo "... src/model/parametric.o"
+	@echo "... src/model/parametric.i"
+	@echo "... src/model/parametric.s"
+	@echo "... src/model/parametric.o"
+	@echo "... src/model/parametric.i"
+	@echo "... src/model/parametric.s"
+	@echo "... src/model/reconstruct.o"
+	@echo "... src/model/reconstruct.i"
+	@echo "... src/model/reconstruct.s"
+	@echo "... src/utils/autoexposure.o"
+	@echo "... src/utils/autoexposure.i"
+	@echo "... src/utils/autoexposure.s"
+	@echo "... src/utils/autoexposure.o"
+	@echo "... src/utils/autoexposure.i"
+	@echo "... src/utils/autoexposure.s"
+	@echo "... src/utils/crop_resize.o"
+	@echo "... src/utils/crop_resize.i"
+	@echo "... src/utils/crop_resize.s"
+	@echo "... src/utils/crop_resize.o"
+	@echo "... src/utils/crop_resize.i"
+	@echo "... src/utils/crop_resize.s"
 	@echo "... src/utils/fast_interp_lut.o"
 	@echo "... src/utils/fast_interp_lut.i"
 	@echo "... src/utils/fast_interp_lut.s"
 	@echo "... src/utils/io.o"
 	@echo "... src/utils/io.i"
 	@echo "... src/utils/io.s"
+	@echo "... src/utils/measure.o"
+	@echo "... src/utils/measure.i"
+	@echo "... src/utils/measure.s"
 	@echo "... src/utils/profile_io.o"
 	@echo "... src/utils/profile_io.i"
 	@echo "... src/utils/profile_io.s"
+	@echo "... tests/autoexposure/independent_autoexposure_test.o"
+	@echo "... tests/autoexposure/independent_autoexposure_test.i"
+	@echo "... tests/autoexposure/independent_autoexposure_test.s"
 	@echo "... tests/balance/debug_balance.o"
 	@echo "... tests/balance/debug_balance.i"
 	@echo "... tests/balance/debug_balance.s"
@@ -831,6 +1202,9 @@ help:
 	@echo "... tests/coupler/pybind_couplers.o"
 	@echo "... tests/coupler/pybind_couplers.i"
 	@echo "... tests/coupler/pybind_couplers.s"
+	@echo "... tests/crop_resize/independent_crop_resize_test.o"
+	@echo "... tests/crop_resize/independent_crop_resize_test.i"
+	@echo "... tests/crop_resize/independent_crop_resize_test.s"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.o"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.i"
 	@echo "... tests/fast_interp_lut/pybind_fast_interp_lut.s"
@@ -840,6 +1214,12 @@ help:
 	@echo "... tests/io/test_profile_io.o"
 	@echo "... tests/io/test_profile_io.i"
 	@echo "... tests/io/test_profile_io.s"
+	@echo "... tests/parametric/independent_parametric_test.o"
+	@echo "... tests/parametric/independent_parametric_test.i"
+	@echo "... tests/parametric/independent_parametric_test.s"
+	@echo "... tests/reconstruct/independent_reconstruct_test.o"
+	@echo "... tests/reconstruct/independent_reconstruct_test.i"
+	@echo "... tests/reconstruct/independent_reconstruct_test.s"
 .PHONY : help
 
 

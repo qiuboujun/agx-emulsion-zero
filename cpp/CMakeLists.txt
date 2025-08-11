@@ -13,7 +13,15 @@ find_package(CUDAToolkit REQUIRED)
 add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
+    src/utils/measure.cpp
+    src/utils/autoexposure.cpp
+    src/utils/autoexposure.cu
+    src/utils/crop_resize.cpp
+    src/utils/crop_resize.cu
     src/utils/profile_io.cpp
+    src/model/reconstruct.cpp
+    src/model/parametric.cpp
+    src/model/parametric.cu
     src/model/color_filters.cpp
     src/model/illuminants.cpp
     src/model/balance.cpp
@@ -33,6 +41,26 @@ target_include_directories(agx_core PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/external/json/include"
 )
 target_link_libraries(agx_core PUBLIC CUDA::cudart)
+# --- Standalone test for parametric model ---
+add_executable(independent_parametric_test tests/parametric/independent_parametric_test.cpp)
+target_link_libraries(independent_parametric_test PRIVATE agx_core)
+set_target_properties(independent_parametric_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+
+# --- Standalone test for autoexposure ---
+add_executable(independent_autoexposure_test tests/autoexposure/independent_autoexposure_test.cpp)
+target_link_libraries(independent_autoexposure_test PRIVATE agx_core)
+set_target_properties(independent_autoexposure_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+
+# --- Standalone test for crop/resize ---
+add_executable(independent_crop_resize_test tests/crop_resize/independent_crop_resize_test.cpp)
+target_link_libraries(independent_crop_resize_test PRIVATE agx_core)
+set_target_properties(independent_crop_resize_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
 # --- Standalone test for profile I/O ---
 add_executable(independent_profile_io_test tests/io/test_profile_io.cpp)
 target_link_libraries(independent_profile_io_test PRIVATE agx_core)
@@ -84,6 +112,13 @@ pybind11_add_module(io_cpp_tests
 target_link_libraries(io_cpp_tests PRIVATE agx_core)
 set_target_properties(io_cpp_tests PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/io"
+)
+
+# --- Standalone test for reconstruct ---
+add_executable(independent_reconstruct_test tests/reconstruct/independent_reconstruct_test.cpp)
+target_link_libraries(independent_reconstruct_test PRIVATE agx_core)
+set_target_properties(independent_reconstruct_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
 )
 
 # --- Test Module for couplers ---

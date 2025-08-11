@@ -1,10 +1,14 @@
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/agx_core.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_parametric_test.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_autoexposure_test.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_crop_resize_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_profile_io_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/fast_interp_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/config_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/balance_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/debug_balance.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/io_cpp_tests.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_reconstruct_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/couplers_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/scipy_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/edit_cache.dir
