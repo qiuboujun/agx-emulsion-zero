@@ -174,22 +174,30 @@ std::pair<nc::NdArray<float>, nc::NdArray<float>> rgb_to_tc_b_cpp(
     const std::string& color_space,
     bool apply_cctf_decoding,
     const std::string& reference_illuminant) {
-    // Compute illuminant xy matching Python path via SPD and CMFs
-    auto illuminant_spd = agx::model::standard_illuminant(reference_illuminant).flatten();
-    auto cmfs = colour::get_cie_1931_2_degree_cmfs(); // columns: wl,x,y,z
-    // Ensure compatible lengths
-    const size_t n = std::min(static_cast<size_t>(illuminant_spd.size()), static_cast<size_t>(cmfs.shape().rows));
-    double X = 0.0, Y = 0.0, Z = 0.0;
-    for (size_t i = 0; i < n; ++i) {
-        double e = static_cast<double>(illuminant_spd[i]);
-        X += e * static_cast<double>(cmfs(i, 1 - 1 + 0)); // cmfs(:,0) is x
-        Y += e * static_cast<double>(cmfs(i, 1));         // cmfs(:,1) is y
-        Z += e * static_cast<double>(cmfs(i, 2));         // cmfs(:,2) is z
-    }
-    double S = std::max(1e-20, X + Y + Z);
+    // Compute illuminant xy using exact constants for common CIE D illuminants to match Python
     nc::NdArray<float> illum_xy(1,2);
-    illum_xy(0,0) = static_cast<float>(X / S);
-    illum_xy(0,1) = static_cast<float>(Y / S);
+    bool used_constant_xy = false;
+    if (reference_illuminant == "D65") { illum_xy(0,0)=0.3127f; illum_xy(0,1)=0.3290f; used_constant_xy = true; }
+    else if (reference_illuminant == "D55") { illum_xy(0,0)=0.33242f; illum_xy(0,1)=0.34743f; used_constant_xy = true; }
+    else if (reference_illuminant == "D50") { illum_xy(0,0)=0.34567f; illum_xy(0,1)=0.35850f; used_constant_xy = true; }
+    else if (reference_illuminant == "D60") { illum_xy(0,0)=0.32168f; illum_xy(0,1)=0.33767f; used_constant_xy = true; }
+    else if (reference_illuminant == "D75") { illum_xy(0,0)=0.29902f; illum_xy(0,1)=0.31485f; used_constant_xy = true; }
+
+    if (!used_constant_xy) {
+        auto illuminant_spd = agx::model::standard_illuminant(reference_illuminant).flatten();
+        const auto& cmfs_xyz = agx::config::STANDARD_OBSERVER_CMFS; // shape [N,3]: x,y,z
+        const size_t n = std::min(static_cast<size_t>(illuminant_spd.size()), static_cast<size_t>(cmfs_xyz.shape().rows));
+        double X = 0.0, Y = 0.0, Z = 0.0;
+        for (size_t i = 0; i < n; ++i) {
+            double e = static_cast<double>(illuminant_spd[i]);
+            X += e * static_cast<double>(cmfs_xyz(i, 0));
+            Y += e * static_cast<double>(cmfs_xyz(i, 1));
+            Z += e * static_cast<double>(cmfs_xyz(i, 2));
+        }
+        double S = std::max(1e-20, X + Y + Z);
+        illum_xy(0,0) = static_cast<float>(X / S);
+        illum_xy(0,1) = static_cast<float>(Y / S);
+    }
 
     auto xyz = colour::RGB_to_XYZ(rgb, color_space, apply_cctf_decoding, illum_xy, "CAT02");
     nc::NdArray<float> b(xyz.shape().rows,1);
@@ -201,17 +209,17 @@ std::pair<nc::NdArray<float>, nc::NdArray<float>> rgb_to_tc_b_cpp(
         if (xy(i,0)<0) xy(i,0)=0; if (xy(i,0)>1) xy(i,0)=1;
         if (xy(i,1)<0) xy(i,1)=0; if (xy(i,1)>1) xy(i,1)=1;
     }
-    // tri2quad
+    // tri2quad mapping matching Python’s effective usage (tri2quad called with xy directly)
     nc::NdArray<float> tc(xy.shape().rows,2);
     for (uint32_t i=0;i<xy.shape().rows;++i){
-        float sqrt_x = std::sqrt(xy(i,0));
-        float tx = 1.0f - sqrt_x;
-        float ty = xy(i,1) * sqrt_x;
-        float y = ty / std::max(1.0f - tx, 1e-10f);
-        float x = (1.0f - tx) * (1.0f - tx);
-        x = std::min(1.0f, std::max(0.0f, x));
-        y = std::min(1.0f, std::max(0.0f, y));
-        tc(i,0)=x; tc(i,1)=y;
+        float x_in = xy(i,0);
+        float y_in = xy(i,1);
+        float denom = std::max(1.0f - x_in, 1e-10f);
+        float x_sq = (1.0f - x_in) * (1.0f - x_in);
+        float y_sq = y_in / denom;
+        x_sq = std::clamp(x_sq, 0.0f, 1.0f);
+        y_sq = std::clamp(y_sq, 0.0f, 1.0f);
+        tc(i,0)=x_sq; tc(i,1)=y_sq;
     }
     return {tc, b};
 }

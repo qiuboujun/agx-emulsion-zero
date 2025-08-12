@@ -8,13 +8,14 @@
 // HOST & DEVICE HELPER FUNCTIONS
 //================================================================================
 
+// Mitchell-Netravali cubic kernel (matches Python's cubic_interp_lut_at_2d)
 __host__ __device__ inline double mitchell_weight_d(double t) {
     const double B = 1.0 / 3.0;
     const double C = 1.0 / 3.0;
     double x = fabs(t);
     double x2 = x * x;
     double x3 = x2 * x;
-
+    
     if (x < 1.0) {
         return (1.0 / 6.0) * ((12.0 - 9.0 * B - 6.0 * C) * x3 +
                               (-18.0 + 12.0 * B + 6.0 * C) * x2 +
@@ -28,12 +29,12 @@ __host__ __device__ inline double mitchell_weight_d(double t) {
     return 0.0;
 }
 
-__host__ __device__ inline int safe_index(int idx, int L) {
+// Reflection boundary handling (matches Python's safe_index)
+__host__ __device__ inline int reflect_index(int idx, int L) {
     if (idx < 0) return -idx;
     if (idx >= L) return 2 * (L - 1) - idx;
     return idx;
 }
-
 
 //================================================================================
 // CUDA KERNELS
@@ -70,9 +71,9 @@ __global__ void apply_lut_cubic_2d_kernel(
     for (int c=0;c<16;++c) out_val[c]=0.0;
 
     for (int m = 0; m < 4; ++m) {
-        int y_idx = safe_index(y_base - 1 + m, lut_size);
+        int y_idx = reflect_index(y_base - 1 + m, lut_size);
         for (int n = 0; n < 4; ++n) {
-            int x_idx = safe_index(x_base - 1 + n, lut_size);
+            int x_idx = reflect_index(x_base - 1 + n, lut_size);
             double weight = wx[n] * wy[m];
             weight_sum += weight;
             // Index into flattened LUT: [x*L + y, channel] for row-major order
@@ -125,11 +126,11 @@ __global__ void apply_lut_cubic_3d_kernel(
     for (int c=0;c<16;++c) out_val[c]=0.0;
 
     for (int m = 0; m < 4; ++m) {
-        int r_idx = safe_index(r_base - 1 + m, lut_size);
+        int r_idx = reflect_index(r_base - 1 + m, lut_size);
         for (int n = 0; n < 4; ++n) {
-            int g_idx = safe_index(g_base - 1 + n, lut_size);
+            int g_idx = reflect_index(g_base - 1 + n, lut_size);
             for (int p = 0; p < 4; ++p) {
-                int b_idx = safe_index(b_base - 1 + p, lut_size);
+                int b_idx = reflect_index(b_base - 1 + p, lut_size);
                 double weight = wr[m] * wg[n] * wb[p];
                 weight_sum += weight;
                 int lut_pixel_idx = (r_idx * lut_size + g_idx) * lut_size + b_idx;
@@ -147,7 +148,6 @@ __global__ void apply_lut_cubic_3d_kernel(
         }
     }
 }
-
 
 //================================================================================
 // HOST-FACING FUNCTIONS
@@ -172,9 +172,9 @@ std::vector<float> cubic_interp_lut_at_2d(const nc::NdArray<float>& lut, float x
     std::vector<double> out(channels, 0.0);
 
     for (int i = 0; i < 4; ++i) {
-        int xi = safe_index(x_base - 1 + i, L);
+        int xi = reflect_index(x_base - 1 + i, L);
         for (int j = 0; j < 4; ++j) {
-            int yj = safe_index(y_base - 1 + j, L);
+            int yj = reflect_index(y_base - 1 + j, L);
             double weight = wx[i] * wy[j];
             weight_sum += weight;
             // Index into flattened LUT: [x*L + y, channel] for row-major order
@@ -212,11 +212,11 @@ std::vector<float> cubic_interp_lut_at_3d(const nc::NdArray<float>& lut, float r
     std::vector<double> out(channels, 0.0);
 
     for (int i = 0; i < 4; ++i) {
-        int ri = safe_index(r_base - 1 + i, L);
+        int ri = reflect_index(r_base - 1 + i, L);
         for (int j = 0; j < 4; ++j) {
-            int gj = safe_index(g_base - 1 + j, L);
+            int gj = reflect_index(g_base - 1 + j, L);
             for (int k = 0; k < 4; ++k) {
-                int bk = safe_index(b_base - 1 + k, L);
+                int bk = reflect_index(b_base - 1 + k, L);
                 double weight = wr[i] * wg[j] * wb[k];
                 weight_sum += weight;
                 // Index into flattened LUT: [(r*L + g)*L + b, channel]

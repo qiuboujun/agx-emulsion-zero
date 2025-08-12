@@ -154,18 +154,12 @@ CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw
  /usr/include/c++/11/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
- /usr/include/c++/11/bits/fstream.tcc \
- /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/spectral_upsampling.hpp \
- /usr/include/c++/11/array /usr/include/c++/11/utility \
- /usr/include/c++/11/bits/stl_relops.h /usr/include/c++/11/vector \
+ /usr/include/c++/11/bits/fstream.tcc /usr/include/c++/11/vector \
  /usr/include/c++/11/bits/stl_uninitialized.h \
  /usr/include/c++/11/bits/stl_vector.h \
  /usr/include/c++/11/bits/stl_bvector.h \
- /usr/include/c++/11/bits/vector.tcc /usr/local/include/NumCpp.hpp \
- /usr/local/include/NumCpp/Coordinates.hpp \
- /usr/local/include/NumCpp/Coordinates/Cartesian.hpp \
- /usr/include/c++/11/cmath /usr/include/math.h \
- /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/c++/11/bits/vector.tcc /usr/include/c++/11/cmath \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
@@ -187,6 +181,11 @@ CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw
  /usr/include/c++/11/tr1/poly_hermite.tcc \
  /usr/include/c++/11/tr1/poly_laguerre.tcc \
  /usr/include/c++/11/tr1/riemann_zeta.tcc \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/spectral_upsampling.hpp \
+ /usr/include/c++/11/array /usr/include/c++/11/utility \
+ /usr/include/c++/11/bits/stl_relops.h /usr/local/include/NumCpp.hpp \
+ /usr/local/include/NumCpp/Coordinates.hpp \
+ /usr/local/include/NumCpp/Coordinates/Cartesian.hpp \
  /usr/local/include/NumCpp/NdArray.hpp \
  /usr/local/include/NumCpp/NdArray/NdArrayCore.hpp \
  /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
@@ -2583,4 +2582,6 @@ CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw
  /usr/local/include/NumCpp/Special/trigamma.hpp \
  /usr/local/include/NumCpp/Utils.hpp \
  /usr/local/include/NumCpp/Utils/timeit.hpp \
- /usr/local/include/NumCpp/Vector.hpp
+ /usr/local/include/NumCpp/Vector.hpp \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/fast_interp_lut.hpp \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp
