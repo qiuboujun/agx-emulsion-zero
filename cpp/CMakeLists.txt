@@ -18,6 +18,9 @@ add_library(agx_core STATIC
     src/utils/autoexposure.cu
     src/utils/crop_resize.cpp
     src/utils/crop_resize.cu
+    src/utils/density_spectral.cpp
+    src/utils/spectral_upsampling.cpp
+    src/utils/spectral_upsampling.cu
     src/utils/profile_io.cpp
     src/model/reconstruct.cpp
     src/model/parametric.cpp
@@ -41,6 +44,9 @@ target_include_directories(agx_core PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/external/json/include"
 )
 target_link_libraries(agx_core PUBLIC CUDA::cudart)
+# Ensure headers that use AGX_SOURCE_DIR get the repo root path
+target_compile_definitions(agx_core PUBLIC AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+
 # --- Standalone test for parametric model ---
 add_executable(independent_parametric_test tests/parametric/independent_parametric_test.cpp)
 target_link_libraries(independent_parametric_test PRIVATE agx_core)
@@ -119,6 +125,24 @@ add_executable(independent_reconstruct_test tests/reconstruct/independent_recons
 target_link_libraries(independent_reconstruct_test PRIVATE agx_core)
 set_target_properties(independent_reconstruct_test PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+
+# --- Test for rgb_to_raw_hanatos2025 ---
+add_executable(test_rgb_to_raw_hanatos tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp)
+target_link_libraries(test_rgb_to_raw_hanatos PRIVATE agx_core)
+set_target_properties(test_rgb_to_raw_hanatos PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+target_compile_definitions(test_rgb_to_raw_hanatos PRIVATE AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+
+# --- Convenience target to run C++ test and Python parity comparison ---
+add_custom_target(compare_rgb_to_raw
+    COMMAND ${CMAKE_COMMAND} -E echo "Running C++ rgb_to_raw_hanatos test..."
+    COMMAND ${CMAKE_SOURCE_DIR}/build/test_rgb_to_raw_hanatos
+    COMMAND ${CMAKE_COMMAND} -E echo "Running Python comparison..."
+    COMMAND ${CMAKE_SOURCE_DIR}/tests/spectral_upsampling/run_comparison.sh
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS test_rgb_to_raw_hanatos
 )
 
 # --- Test Module for couplers ---

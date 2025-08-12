@@ -21,6 +21,8 @@
 #include <array>
 #include <utility>
 #include <vector>
+#include "NumCpp.hpp"
+#include <string>
 
 // The SpectralUpsampling class exposes a handful of static helper
 // functions.  In this basic port we avoid any dependencies on third
@@ -52,5 +54,31 @@ public:
     /// coefficients is assumed to be `(c0, c1, c2, c3)`.
     static std::vector<float> computeSpectraFromCoeffs(const std::array<float, 4> &coeffs);
 };
+
+#ifndef AGX_SPECTRAL_UPSAMPLING_EXTRAS
+#define AGX_SPECTRAL_UPSAMPLING_EXTRAS
+namespace agx { namespace utils {
+
+// Loads Hanatos 2025 spectra LUT from npy path into (L*L, K) NumCpp array
+nc::NdArray<float> load_hanatos_spectra_lut_npy(const std::string& npy_path);
+
+// Compute tc,b from RGB similar to Python rgb_to_tc_b
+std::pair<nc::NdArray<float>, nc::NdArray<float>> rgb_to_tc_b_cpp(
+    const nc::NdArray<float>& rgb,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant);
+
+// Full parity rgb_to_raw_hanatos2025
+nc::NdArray<float> rgb_to_raw_hanatos2025(
+    const nc::NdArray<float>& rgb,
+    const nc::NdArray<float>& sensitivity,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut);
+
+} } // namespace agx::utils
+#endif
 
 #endif // SPECTRAL_UPSAMPLING_HPP

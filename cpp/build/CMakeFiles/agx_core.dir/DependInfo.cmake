@@ -15,6 +15,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cu" "CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cu" "CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu" "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o.d"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu" "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/balance.cpp" "CMakeFiles/agx_core.dir/src/model/balance.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/model/balance.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/color_filters.cpp" "CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp" "CMakeFiles/agx_core.dir/src/model/couplers.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/model/couplers.cpp.o.d"
@@ -25,9 +26,11 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/reconstruct.cpp" "CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cpp" "CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cpp" "CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.o.d"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/density_spectral.cpp" "CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp" "CMakeFiles/agx_core.dir/src/utils/io.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/io.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/measure.cpp" "CMakeFiles/agx_core.dir/src/utils/measure.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/measure.cpp.o.d"
   "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/profile_io.cpp" "CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.o.d"
+  "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cpp" "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o" "gcc" "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

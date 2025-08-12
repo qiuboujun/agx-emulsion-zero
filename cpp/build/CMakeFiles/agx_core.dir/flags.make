@@ -3,13 +3,13 @@
 
 # compile CUDA with /usr/local/cuda-11.8/bin/nvcc
 # compile CXX with /usr/bin/c++
-CUDA_DEFINES = 
+CUDA_DEFINES = -DAGX_SOURCE_DIR=\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\"
 
 CUDA_INCLUDES = --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp
 
 CUDA_FLAGS = -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC
 
-CXX_DEFINES = 
+CXX_DEFINES = -DAGX_SOURCE_DIR=\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\"
 
 CXX_INCLUDES = -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include
 

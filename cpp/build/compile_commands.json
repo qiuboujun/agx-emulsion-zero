@@ -1,187 +1,211 @@
 [
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu -o CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu -o CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/fast_interp_lut.cu",
   "output": "CMakeFiles/agx_core.dir/src/utils/fast_interp_lut.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp",
   "output": "CMakeFiles/agx_core.dir/src/utils/io.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/measure.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/measure.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/measure.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/measure.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/measure.cpp",
   "output": "CMakeFiles/agx_core.dir/src/utils/measure.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cpp",
   "output": "CMakeFiles/agx_core.dir/src/utils/autoexposure.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cu -o CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cu -o CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/autoexposure.cu",
   "output": "CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cpp",
   "output": "CMakeFiles/agx_core.dir/src/utils/crop_resize.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cu -o CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cu -o CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/crop_resize.cu",
   "output": "CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/profile_io.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/density_spectral.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/density_spectral.cpp",
+  "output": "CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cpp",
+  "output": "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu -o CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu",
+  "output": "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/profile_io.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/profile_io.cpp",
   "output": "CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/reconstruct.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/reconstruct.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/reconstruct.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/reconstruct.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/parametric.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/parametric.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/parametric.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cu -o CMakeFiles/agx_core.dir/src/model/parametric.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cu -o CMakeFiles/agx_core.dir/src/model/parametric.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cu",
   "output": "CMakeFiles/agx_core.dir/src/model/parametric.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/color_filters.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/color_filters.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/color_filters.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/color_filters.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/illuminants.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/balance.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/balance.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/balance.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/balance.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/couplers.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/couplers.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/couplers.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cu -o CMakeFiles/agx_core.dir/src/model/couplers.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cu -o CMakeFiles/agx_core.dir/src/model/couplers.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/couplers.cu",
   "output": "CMakeFiles/agx_core.dir/src/model/couplers.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/density_curves.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cu -o CMakeFiles/agx_core.dir/src/model/density_curves.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cu -o CMakeFiles/agx_core.dir/src/model/density_curves.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/density_curves.cu",
   "output": "CMakeFiles/agx_core.dir/src/model/density_curves.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/diffusion.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/diffusion.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cpp",
   "output": "CMakeFiles/agx_core.dir/src/model/diffusion.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler  --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cu -o CMakeFiles/agx_core.dir/src/model/diffusion.cu.o",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cu -o CMakeFiles/agx_core.dir/src/model/diffusion.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cu",
   "output": "CMakeFiles/agx_core.dir/src/model/diffusion.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/parametric/independent_parametric_test.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/parametric/independent_parametric_test.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/parametric/independent_parametric_test.cpp",
   "output": "CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_autoexposure_test.dir/tests/autoexposure/independent_autoexposure_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/autoexposure/independent_autoexposure_test.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_autoexposure_test.dir/tests/autoexposure/independent_autoexposure_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/autoexposure/independent_autoexposure_test.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/autoexposure/independent_autoexposure_test.cpp",
   "output": "CMakeFiles/independent_autoexposure_test.dir/tests/autoexposure/independent_autoexposure_test.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_crop_resize_test.dir/tests/crop_resize/independent_crop_resize_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/crop_resize/independent_crop_resize_test.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_crop_resize_test.dir/tests/crop_resize/independent_crop_resize_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/crop_resize/independent_crop_resize_test.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/crop_resize/independent_crop_resize_test.cpp",
   "output": "CMakeFiles/independent_crop_resize_test.dir/tests/crop_resize/independent_crop_resize_test.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/test_profile_io.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/test_profile_io.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/test_profile_io.cpp",
   "output": "CMakeFiles/independent_profile_io_test.dir/tests/io/test_profile_io.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++ -Dfast_interp_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/fast_interp_lut/pybind_fast_interp_lut.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -Dfast_interp_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/fast_interp_lut/pybind_fast_interp_lut.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/fast_interp_lut/pybind_fast_interp_lut.cpp",
   "output": "CMakeFiles/fast_interp_cpp_tests.dir/tests/fast_interp_lut/pybind_fast_interp_lut.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++ -Dconfig_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/config/pybind_config.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -Dconfig_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/config/pybind_config.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/config/pybind_config.cpp",
   "output": "CMakeFiles/config_cpp_tests.dir/tests/config/pybind_config.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++ -Dbalance_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/balance_cpp_tests.dir/tests/balance/pybind_balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/pybind_balance.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -Dbalance_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/balance_cpp_tests.dir/tests/balance/pybind_balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/pybind_balance.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/pybind_balance.cpp",
   "output": "CMakeFiles/balance_cpp_tests.dir/tests/balance/pybind_balance.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/debug_balance.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/debug_balance.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/balance/debug_balance.cpp",
   "output": "CMakeFiles/debug_balance.dir/tests/balance/debug_balance.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++ -Dio_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -Dio_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/io/pyblind_io.cpp",
   "output": "CMakeFiles/io_cpp_tests.dir/tests/io/pyblind_io.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++  -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/reconstruct/independent_reconstruct_test.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/reconstruct/independent_reconstruct_test.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/reconstruct/independent_reconstruct_test.cpp",
   "output": "CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
-  "command": "/usr/bin/c++ -Dcouplers_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/coupler/pybind_couplers.cpp",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -o CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp",
+  "output": "CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp\\\" -Dcouplers_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/coupler/pybind_couplers.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/coupler/pybind_couplers.cpp",
   "output": "CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.o"
 }

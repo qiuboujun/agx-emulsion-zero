@@ -305,6 +305,32 @@ independent_reconstruct_test/fast:
 .PHONY : independent_reconstruct_test/fast
 
 #=============================================================================
+# Target rules for targets named test_rgb_to_raw_hanatos
+
+# Build rule for target.
+test_rgb_to_raw_hanatos: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_rgb_to_raw_hanatos
+.PHONY : test_rgb_to_raw_hanatos
+
+# fast build rule for target.
+test_rgb_to_raw_hanatos/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rgb_to_raw_hanatos.dir/build.make CMakeFiles/test_rgb_to_raw_hanatos.dir/build
+.PHONY : test_rgb_to_raw_hanatos/fast
+
+#=============================================================================
+# Target rules for targets named compare_rgb_to_raw
+
+# Build rule for target.
+compare_rgb_to_raw: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 compare_rgb_to_raw
+.PHONY : compare_rgb_to_raw
+
+# fast build rule for target.
+compare_rgb_to_raw/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compare_rgb_to_raw.dir/build.make CMakeFiles/compare_rgb_to_raw.dir/build
+.PHONY : compare_rgb_to_raw/fast
+
+#=============================================================================
 # Target rules for targets named couplers_cpp_tests
 
 # Build rule for target.
@@ -740,6 +766,30 @@ src/utils/crop_resize.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/crop_resize.cu.s
 .PHONY : src/utils/crop_resize.cu.s
 
+src/utils/density_spectral.o: src/utils/density_spectral.cpp.o
+.PHONY : src/utils/density_spectral.o
+
+# target to build an object file
+src/utils/density_spectral.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.o
+.PHONY : src/utils/density_spectral.cpp.o
+
+src/utils/density_spectral.i: src/utils/density_spectral.cpp.i
+.PHONY : src/utils/density_spectral.i
+
+# target to preprocess a source file
+src/utils/density_spectral.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.i
+.PHONY : src/utils/density_spectral.cpp.i
+
+src/utils/density_spectral.s: src/utils/density_spectral.cpp.s
+.PHONY : src/utils/density_spectral.s
+
+# target to generate assembly for a file
+src/utils/density_spectral.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.s
+.PHONY : src/utils/density_spectral.cpp.s
+
 src/utils/fast_interp_lut.o: src/utils/fast_interp_lut.cu.o
 .PHONY : src/utils/fast_interp_lut.o
 
@@ -835,6 +885,54 @@ src/utils/profile_io.s: src/utils/profile_io.cpp.s
 src/utils/profile_io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/profile_io.cpp.s
 .PHONY : src/utils/profile_io.cpp.s
+
+src/utils/spectral_upsampling.o: src/utils/spectral_upsampling.cpp.o
+.PHONY : src/utils/spectral_upsampling.o
+
+# target to build an object file
+src/utils/spectral_upsampling.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o
+.PHONY : src/utils/spectral_upsampling.cpp.o
+
+src/utils/spectral_upsampling.i: src/utils/spectral_upsampling.cpp.i
+.PHONY : src/utils/spectral_upsampling.i
+
+# target to preprocess a source file
+src/utils/spectral_upsampling.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.i
+.PHONY : src/utils/spectral_upsampling.cpp.i
+
+src/utils/spectral_upsampling.s: src/utils/spectral_upsampling.cpp.s
+.PHONY : src/utils/spectral_upsampling.s
+
+# target to generate assembly for a file
+src/utils/spectral_upsampling.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.s
+.PHONY : src/utils/spectral_upsampling.cpp.s
+
+src/utils/spectral_upsampling.o: src/utils/spectral_upsampling.cu.o
+.PHONY : src/utils/spectral_upsampling.o
+
+# target to build an object file
+src/utils/spectral_upsampling.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o
+.PHONY : src/utils/spectral_upsampling.cu.o
+
+src/utils/spectral_upsampling.i: src/utils/spectral_upsampling.cu.i
+.PHONY : src/utils/spectral_upsampling.i
+
+# target to preprocess a source file
+src/utils/spectral_upsampling.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.i
+.PHONY : src/utils/spectral_upsampling.cu.i
+
+src/utils/spectral_upsampling.s: src/utils/spectral_upsampling.cu.s
+.PHONY : src/utils/spectral_upsampling.s
+
+# target to generate assembly for a file
+src/utils/spectral_upsampling.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.s
+.PHONY : src/utils/spectral_upsampling.cu.s
 
 tests/autoexposure/independent_autoexposure_test.o: tests/autoexposure/independent_autoexposure_test.cpp.o
 .PHONY : tests/autoexposure/independent_autoexposure_test.o
@@ -1100,6 +1198,30 @@ tests/reconstruct/independent_reconstruct_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_reconstruct_test.dir/build.make CMakeFiles/independent_reconstruct_test.dir/tests/reconstruct/independent_reconstruct_test.cpp.s
 .PHONY : tests/reconstruct/independent_reconstruct_test.cpp.s
 
+tests/spectral_upsampling/test_rgb_to_raw_hanatos.o: tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.o
+.PHONY : tests/spectral_upsampling/test_rgb_to_raw_hanatos.o
+
+# target to build an object file
+tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rgb_to_raw_hanatos.dir/build.make CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.o
+.PHONY : tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.o
+
+tests/spectral_upsampling/test_rgb_to_raw_hanatos.i: tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.i
+.PHONY : tests/spectral_upsampling/test_rgb_to_raw_hanatos.i
+
+# target to preprocess a source file
+tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rgb_to_raw_hanatos.dir/build.make CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.i
+.PHONY : tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.i
+
+tests/spectral_upsampling/test_rgb_to_raw_hanatos.s: tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.s
+.PHONY : tests/spectral_upsampling/test_rgb_to_raw_hanatos.s
+
+# target to generate assembly for a file
+tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rgb_to_raw_hanatos.dir/build.make CMakeFiles/test_rgb_to_raw_hanatos.dir/tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.s
+.PHONY : tests/spectral_upsampling/test_rgb_to_raw_hanatos.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1112,6 +1234,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... compare_rgb_to_raw"
 	@echo "... format"
 	@echo "... scipy_test"
 	@echo "... tidy"
@@ -1127,6 +1250,7 @@ help:
 	@echo "... independent_profile_io_test"
 	@echo "... independent_reconstruct_test"
 	@echo "... io_cpp_tests"
+	@echo "... test_rgb_to_raw_hanatos"
 	@echo "... src/model/balance.o"
 	@echo "... src/model/balance.i"
 	@echo "... src/model/balance.s"
@@ -1175,6 +1299,9 @@ help:
 	@echo "... src/utils/crop_resize.o"
 	@echo "... src/utils/crop_resize.i"
 	@echo "... src/utils/crop_resize.s"
+	@echo "... src/utils/density_spectral.o"
+	@echo "... src/utils/density_spectral.i"
+	@echo "... src/utils/density_spectral.s"
 	@echo "... src/utils/fast_interp_lut.o"
 	@echo "... src/utils/fast_interp_lut.i"
 	@echo "... src/utils/fast_interp_lut.s"
@@ -1187,6 +1314,12 @@ help:
 	@echo "... src/utils/profile_io.o"
 	@echo "... src/utils/profile_io.i"
 	@echo "... src/utils/profile_io.s"
+	@echo "... src/utils/spectral_upsampling.o"
+	@echo "... src/utils/spectral_upsampling.i"
+	@echo "... src/utils/spectral_upsampling.s"
+	@echo "... src/utils/spectral_upsampling.o"
+	@echo "... src/utils/spectral_upsampling.i"
+	@echo "... src/utils/spectral_upsampling.s"
 	@echo "... tests/autoexposure/independent_autoexposure_test.o"
 	@echo "... tests/autoexposure/independent_autoexposure_test.i"
 	@echo "... tests/autoexposure/independent_autoexposure_test.s"
@@ -1220,6 +1353,9 @@ help:
 	@echo "... tests/reconstruct/independent_reconstruct_test.o"
 	@echo "... tests/reconstruct/independent_reconstruct_test.i"
 	@echo "... tests/reconstruct/independent_reconstruct_test.s"
+	@echo "... tests/spectral_upsampling/test_rgb_to_raw_hanatos.o"
+	@echo "... tests/spectral_upsampling/test_rgb_to_raw_hanatos.i"
+	@echo "... tests/spectral_upsampling/test_rgb_to_raw_hanatos.s"
 .PHONY : help
 
 

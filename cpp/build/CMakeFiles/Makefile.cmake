@@ -133,6 +133,8 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/debug_balance.dir/DependInfo.cmake"
   "CMakeFiles/io_cpp_tests.dir/DependInfo.cmake"
   "CMakeFiles/independent_reconstruct_test.dir/DependInfo.cmake"
+  "CMakeFiles/test_rgb_to_raw_hanatos.dir/DependInfo.cmake"
+  "CMakeFiles/compare_rgb_to_raw.dir/DependInfo.cmake"
   "CMakeFiles/couplers_cpp_tests.dir/DependInfo.cmake"
   "CMakeFiles/scipy_test.dir/DependInfo.cmake"
   "numcpp_build/CMakeFiles/format.dir/DependInfo.cmake"

@@ -8,24 +8,24 @@
 // HOST & DEVICE HELPER FUNCTIONS
 //================================================================================
 
-__host__ __device__ inline float mitchell_weight(float t) {
-    const float B = 1.0f / 3.0f;
-    const float C = 1.0f / 3.0f;
-    float x = fabsf(t);
-    float x2 = x * x;
-    float x3 = x2 * x;
+__host__ __device__ inline double mitchell_weight_d(double t) {
+    const double B = 1.0 / 3.0;
+    const double C = 1.0 / 3.0;
+    double x = fabs(t);
+    double x2 = x * x;
+    double x3 = x2 * x;
 
-    if (x < 1.0f) {
-        return (1.0f / 6.0f) * ((12.0f - 9.0f * B - 6.0f * C) * x3 +
-                               (-18.0f + 12.0f * B + 6.0f * C) * x2 +
-                               (6.0f - 2.0f * B));
-    } else if (x < 2.0f) {
-        return (1.0f / 6.0f) * ((-B - 6.0f * C) * x3 +
-                               (6.0f * B + 30.0f * C) * x2 +
-                               (-12.0f * B - 48.0f * C) * x +
-                               (8.0f * B + 24.0f * C));
+    if (x < 1.0) {
+        return (1.0 / 6.0) * ((12.0 - 9.0 * B - 6.0 * C) * x3 +
+                              (-18.0 + 12.0 * B + 6.0 * C) * x2 +
+                              (6.0 - 2.0 * B));
+    } else if (x < 2.0) {
+        return (1.0 / 6.0) * ((-B - 6.0 * C) * x3 +
+                              (6.0 * B + 30.0 * C) * x2 +
+                              (-12.0 * B - 48.0 * C) * x +
+                              (8.0 * B + 24.0 * C));
     }
-    return 0.0f;
+    return 0.0;
 }
 
 __host__ __device__ inline int safe_index(int idx, int L) {
@@ -58,33 +58,35 @@ __global__ void apply_lut_cubic_2d_kernel(
     const int x_base = floorf(x_in), y_base = floorf(y_in);
     const float x_frac = x_in - x_base, y_frac = y_in - y_base;
 
-    float wx[4], wy[4];
-    wx[0] = mitchell_weight(x_frac + 1.0f); wx[1] = mitchell_weight(x_frac);
-    wx[2] = mitchell_weight(x_frac - 1.0f); wx[3] = mitchell_weight(x_frac - 2.0f);
-    wy[0] = mitchell_weight(y_frac + 1.0f); wy[1] = mitchell_weight(y_frac);
-    wy[2] = mitchell_weight(y_frac - 1.0f); wy[3] = mitchell_weight(y_frac - 2.0f);
+    double wx[4], wy[4];
+    wx[0] = mitchell_weight_d((double)x_frac + 1.0); wx[1] = mitchell_weight_d((double)x_frac);
+    wx[2] = mitchell_weight_d((double)x_frac - 1.0); wx[3] = mitchell_weight_d((double)x_frac - 2.0);
+    wy[0] = mitchell_weight_d((double)y_frac + 1.0); wy[1] = mitchell_weight_d((double)y_frac);
+    wy[2] = mitchell_weight_d((double)y_frac - 1.0); wy[3] = mitchell_weight_d((double)y_frac - 2.0);
 
-    float weight_sum = 0.0f;
-    float out_val[16] = {0.0f}; // Max channels supported
+    double weight_sum = 0.0;
+    double out_val[16];
+    #pragma unroll
+    for (int c=0;c<16;++c) out_val[c]=0.0;
 
     for (int m = 0; m < 4; ++m) {
         int y_idx = safe_index(y_base - 1 + m, lut_size);
         for (int n = 0; n < 4; ++n) {
             int x_idx = safe_index(x_base - 1 + n, lut_size);
-            float weight = wx[n] * wy[m];
+            double weight = wx[n] * wy[m];
             weight_sum += weight;
             // Index into flattened LUT: [x*L + y, channel] for row-major order
             int lut_pixel_idx = x_idx * lut_size + y_idx;
             for (int c = 0; c < lut_channels; ++c) {
-                out_val[c] += weight * lut[lut_pixel_idx * lut_channels + c];
+                out_val[c] += weight * (double)lut[lut_pixel_idx * lut_channels + c];
             }
         }
     }
 
     const int output_pixel_idx = (i * width + j);
-    if (weight_sum != 0.0f) {
+    if (weight_sum != 0.0) {
         for (int c = 0; c < lut_channels; ++c) {
-            output[output_pixel_idx * lut_channels + c] = out_val[c] / weight_sum;
+            output[output_pixel_idx * lut_channels + c] = (float)(out_val[c] / weight_sum);
         }
     }
 }
@@ -109,16 +111,18 @@ __global__ void apply_lut_cubic_3d_kernel(
     const int r_base = floorf(r_in), g_base = floorf(g_in), b_base = floorf(b_in);
     const float r_frac = r_in - r_base, g_frac = g_in - g_base, b_frac = b_in - b_base;
 
-    float wr[4], wg[4], wb[4];
-    wr[0] = mitchell_weight(r_frac + 1); wr[1] = mitchell_weight(r_frac);
-    wr[2] = mitchell_weight(r_frac - 1); wr[3] = mitchell_weight(r_frac - 2);
-    wg[0] = mitchell_weight(g_frac + 1); wg[1] = mitchell_weight(g_frac);
-    wg[2] = mitchell_weight(g_frac - 1); wg[3] = mitchell_weight(g_frac - 2);
-    wb[0] = mitchell_weight(b_frac + 1); wb[1] = mitchell_weight(b_frac);
-    wb[2] = mitchell_weight(b_frac - 1); wb[3] = mitchell_weight(b_frac - 2);
+    double wr[4], wg[4], wb[4];
+    wr[0] = mitchell_weight_d((double)r_frac + 1.0); wr[1] = mitchell_weight_d((double)r_frac);
+    wr[2] = mitchell_weight_d((double)r_frac - 1.0); wr[3] = mitchell_weight_d((double)r_frac - 2.0);
+    wg[0] = mitchell_weight_d((double)g_frac + 1.0); wg[1] = mitchell_weight_d((double)g_frac);
+    wg[2] = mitchell_weight_d((double)g_frac - 1.0); wg[3] = mitchell_weight_d((double)g_frac - 2.0);
+    wb[0] = mitchell_weight_d((double)b_frac + 1.0); wb[1] = mitchell_weight_d((double)b_frac);
+    wb[2] = mitchell_weight_d((double)b_frac - 1.0); wb[3] = mitchell_weight_d((double)b_frac - 2.0);
 
-    float weight_sum = 0.0f;
-    float out_val[16] = {0.0f};
+    double weight_sum = 0.0;
+    double out_val[16];
+    #pragma unroll
+    for (int c=0;c<16;++c) out_val[c]=0.0;
 
     for (int m = 0; m < 4; ++m) {
         int r_idx = safe_index(r_base - 1 + m, lut_size);
@@ -126,20 +130,20 @@ __global__ void apply_lut_cubic_3d_kernel(
             int g_idx = safe_index(g_base - 1 + n, lut_size);
             for (int p = 0; p < 4; ++p) {
                 int b_idx = safe_index(b_base - 1 + p, lut_size);
-                float weight = wr[m] * wg[n] * wb[p];
+                double weight = wr[m] * wg[n] * wb[p];
                 weight_sum += weight;
                 int lut_pixel_idx = (r_idx * lut_size + g_idx) * lut_size + b_idx;
                 for (int c = 0; c < lut_channels; ++c) {
-                    out_val[c] += weight * lut[lut_pixel_idx * lut_channels + c];
+                    out_val[c] += weight * (double)lut[lut_pixel_idx * lut_channels + c];
                 }
             }
         }
     }
 
     const int output_pixel_idx = (i * width + j);
-    if (weight_sum != 0.0f) {
+    if (weight_sum != 0.0) {
         for (int c = 0; c < lut_channels; ++c) {
-            output[output_pixel_idx * lut_channels + c] = out_val[c] / weight_sum;
+            output[output_pixel_idx * lut_channels + c] = (float)(out_val[c] / weight_sum);
         }
     }
 }
@@ -158,33 +162,35 @@ std::vector<float> cubic_interp_lut_at_2d(const nc::NdArray<float>& lut, float x
     const int x_base = floorf(x), y_base = floorf(y);
     const float x_frac = x - x_base, y_frac = y - y_base;
 
-    float wx[4], wy[4];
-    wx[0] = mitchell_weight(x_frac + 1); wx[1] = mitchell_weight(x_frac);
-    wx[2] = mitchell_weight(x_frac - 1); wx[3] = mitchell_weight(x_frac - 2);
-    wy[0] = mitchell_weight(y_frac + 1); wy[1] = mitchell_weight(y_frac);
-    wy[2] = mitchell_weight(y_frac - 1); wy[3] = mitchell_weight(y_frac - 2);
+    double wx[4], wy[4];
+    wx[0] = mitchell_weight_d((double)x_frac + 1.0); wx[1] = mitchell_weight_d((double)x_frac);
+    wx[2] = mitchell_weight_d((double)x_frac - 1.0); wx[3] = mitchell_weight_d((double)x_frac - 2.0);
+    wy[0] = mitchell_weight_d((double)y_frac + 1.0); wy[1] = mitchell_weight_d((double)y_frac);
+    wy[2] = mitchell_weight_d((double)y_frac - 1.0); wy[3] = mitchell_weight_d((double)y_frac - 2.0);
 
-    float weight_sum = 0.0f;
-    std::vector<float> out(channels, 0.0f);
+    double weight_sum = 0.0;
+    std::vector<double> out(channels, 0.0);
 
     for (int i = 0; i < 4; ++i) {
         int xi = safe_index(x_base - 1 + i, L);
         for (int j = 0; j < 4; ++j) {
             int yj = safe_index(y_base - 1 + j, L);
-            float weight = wx[i] * wy[j];
+            double weight = wx[i] * wy[j];
             weight_sum += weight;
             // Index into flattened LUT: [x*L + y, channel] for row-major order
             int lut_idx = xi * L + yj;
             for (int c = 0; c < channels; ++c) {
-                out[c] += weight * lut(lut_idx, c);
+                out[c] += weight * (double)lut(lut_idx, c);
             }
         }
     }
 
-    if (weight_sum != 0.0f) {
+    if (weight_sum != 0.0) {
         for (int c = 0; c < channels; ++c) out[c] /= weight_sum;
     }
-    return out;
+    std::vector<float> out_f(channels);
+    for (int c=0;c<channels;++c) out_f[c] = (float)out[c];
+    return out_f;
 }
 
 std::vector<float> cubic_interp_lut_at_3d(const nc::NdArray<float>& lut, float r, float g, float b) {
@@ -194,16 +200,16 @@ std::vector<float> cubic_interp_lut_at_3d(const nc::NdArray<float>& lut, float r
     const int r_base = floorf(r), g_base = floorf(g), b_base = floorf(b);
     const float r_frac = r - r_base, g_frac = g - g_base, b_frac = b - b_base;
 
-    float wr[4], wg[4], wb[4];
-    wr[0] = mitchell_weight(r_frac + 1); wr[1] = mitchell_weight(r_frac);
-    wr[2] = mitchell_weight(r_frac - 1); wr[3] = mitchell_weight(r_frac - 2);
-    wg[0] = mitchell_weight(g_frac + 1); wg[1] = mitchell_weight(g_frac);
-    wg[2] = mitchell_weight(g_frac - 1); wg[3] = mitchell_weight(g_frac - 2);
-    wb[0] = mitchell_weight(b_frac + 1); wb[1] = mitchell_weight(b_frac);
-    wb[2] = mitchell_weight(b_frac - 1); wb[3] = mitchell_weight(b_frac - 2);
+    double wr[4], wg[4], wb[4];
+    wr[0] = mitchell_weight_d((double)r_frac + 1.0); wr[1] = mitchell_weight_d((double)r_frac);
+    wr[2] = mitchell_weight_d((double)r_frac - 1.0); wr[3] = mitchell_weight_d((double)r_frac - 2.0);
+    wg[0] = mitchell_weight_d((double)g_frac + 1.0); wg[1] = mitchell_weight_d((double)g_frac);
+    wg[2] = mitchell_weight_d((double)g_frac - 1.0); wg[3] = mitchell_weight_d((double)g_frac - 2.0);
+    wb[0] = mitchell_weight_d((double)b_frac + 1.0); wb[1] = mitchell_weight_d((double)b_frac);
+    wb[2] = mitchell_weight_d((double)b_frac - 1.0); wb[3] = mitchell_weight_d((double)b_frac - 2.0);
 
-    float weight_sum = 0.0f;
-    std::vector<float> out(channels, 0.0f);
+    double weight_sum = 0.0;
+    std::vector<double> out(channels, 0.0);
 
     for (int i = 0; i < 4; ++i) {
         int ri = safe_index(r_base - 1 + i, L);
@@ -211,21 +217,23 @@ std::vector<float> cubic_interp_lut_at_3d(const nc::NdArray<float>& lut, float r
             int gj = safe_index(g_base - 1 + j, L);
             for (int k = 0; k < 4; ++k) {
                 int bk = safe_index(b_base - 1 + k, L);
-                float weight = wr[i] * wg[j] * wb[k];
+                double weight = wr[i] * wg[j] * wb[k];
                 weight_sum += weight;
                 // Index into flattened LUT: [(r*L + g)*L + b, channel]
                 int lut_idx = (ri * L + gj) * L + bk;
                 for (int c = 0; c < channels; ++c) {
-                    out[c] += weight * lut(lut_idx, c);
+                    out[c] += weight * (double)lut(lut_idx, c);
                 }
             }
         }
     }
 
-    if (weight_sum != 0.0f) {
+    if (weight_sum != 0.0) {
         for (int c = 0; c < channels; ++c) out[c] /= weight_sum;
     }
-    return out;
+    std::vector<float> out_f(channels);
+    for (int c=0;c<channels;++c) out_f[c] = (float)out[c];
+    return out_f;
 }
 
 nc::NdArray<float> apply_lut_cubic_2d(const nc::NdArray<float>& lut, const nc::NdArray<float>& image, int height, int width) {
