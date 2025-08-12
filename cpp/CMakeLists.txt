@@ -13,6 +13,7 @@ find_package(CUDAToolkit REQUIRED)
 add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
+    src/utils/conversions.cpp
     src/utils/measure.cpp
     src/utils/autoexposure.cpp
     src/utils/autoexposure.cu
@@ -34,6 +35,7 @@ add_library(agx_core STATIC
     src/model/density_curves.cu
     src/model/diffusion.cpp
     src/model/diffusion.cu
+    src/model/process.cpp
     # src/utils/spectral_upsampling.cu  # Temporarily excluded due to compilation issues
     # scipy.cpp is no longer needed as scipy.hpp is header-only
     # colour.cpp doesn't exist - colour.hpp is header-only
@@ -45,7 +47,8 @@ target_include_directories(agx_core PUBLIC
 )
 target_link_libraries(agx_core PUBLIC CUDA::cudart)
 # Ensure headers that use AGX_SOURCE_DIR get the repo root path
-target_compile_definitions(agx_core PUBLIC AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+# Point AGX_SOURCE_DIR to the repository root (parent of cpp/)
+target_compile_definitions(agx_core PUBLIC AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}/..")
 
 # --- Standalone test for parametric model ---
 add_executable(independent_parametric_test tests/parametric/independent_parametric_test.cpp)
@@ -133,7 +136,7 @@ target_link_libraries(test_rgb_to_raw_hanatos PRIVATE agx_core)
 set_target_properties(test_rgb_to_raw_hanatos PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
 )
-target_compile_definitions(test_rgb_to_raw_hanatos PRIVATE AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+target_compile_definitions(test_rgb_to_raw_hanatos PRIVATE AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}/..")
 
 # --- Convenience target to run C++ test and Python parity comparison ---
 add_custom_target(compare_rgb_to_raw
@@ -143,6 +146,30 @@ add_custom_target(compare_rgb_to_raw
     COMMAND ${CMAKE_SOURCE_DIR}/tests/spectral_upsampling/run_comparison.sh
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     DEPENDS test_rgb_to_raw_hanatos
+)
+
+# --- Process end-to-end test ---
+add_executable(test_process_end_to_end tests/process/test_process_end_to_end.cpp)
+target_link_libraries(test_process_end_to_end PRIVATE agx_core)
+set_target_properties(test_process_end_to_end PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+target_compile_definitions(test_process_end_to_end PRIVATE AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}/..")
+
+add_executable(dump_process_stages tests/process/dump_process_stages.cpp)
+target_link_libraries(dump_process_stages PRIVATE agx_core)
+set_target_properties(dump_process_stages PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build"
+)
+target_compile_definitions(dump_process_stages PRIVATE AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}/..")
+
+add_custom_target(compare_process
+    COMMAND ${CMAKE_COMMAND} -E echo "Running C++ process end-to-end..."
+    COMMAND ${CMAKE_SOURCE_DIR}/build/test_process_end_to_end
+    COMMAND ${CMAKE_COMMAND} -E echo "Running Python comparison..."
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=. python3 ${CMAKE_SOURCE_DIR}/cpp/tests/process/compare_process_py.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS test_process_end_to_end
 )
 
 # --- Test Module for couplers ---

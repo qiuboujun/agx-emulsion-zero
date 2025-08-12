@@ -1,5 +1,4 @@
-#pragma once
-
+#include "conversions.hpp"
 #include "NumCpp.hpp"
 #include "io.hpp"
 #include "config.hpp"        // For load_densitometer_data
@@ -22,42 +21,62 @@ namespace utils {
  * @param light A float or nc::NdArray<float> for the initial light intensity value(s), same shape or broadcastable to `density`.
  * @return nc::NdArray<float> The light intensity after passing through the medium with the given density (same shape as input).
  */
-inline nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc::NdArray<float>& light) {
+nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc::NdArray<float>& light) {
     // Compute transmittance = 10^(-density)
     nc::NdArray<float> transmitted = density.copy();
     for (auto it = transmitted.begin(); it != transmitted.end(); ++it) {
         *it = std::pow(10.0f, -(*it));
     }
-    
-    // Multiply by light (broadcast if necessary)
-    if (light.shape().rows == 1 && light.shape().cols == density.shape().cols) {
-        // Light is 1xN, broadcast across all rows of density
-        for (size_t i = 0; i < density.shape().rows; ++i) {
-            for (size_t j = 0; j < density.shape().cols; ++j) {
-                transmitted(i, j) *= light(0, j);
-            }
-        }
-    } else if (light.shape().cols == 1 && light.shape().rows == density.shape().cols) {
-        // Light is Nx1, broadcast across columns
-        for (size_t i = 0; i < density.shape().rows; ++i) {
-            for (size_t j = 0; j < density.shape().cols; ++j) {
-                transmitted(i, j) *= light(j, 0);
-            }
-        }
-    } else if (light.size() == 1) {
-        // Light is a scalar in an NdArray
-        for (auto it = transmitted.begin(); it != transmitted.end(); ++it) {
-            *it *= light[0];
-        }
-    } else {
-        // Shapes match or are already aligned
-        for (size_t i = 0; i < density.shape().rows; ++i) {
-            for (size_t j = 0; j < density.shape().cols; ++j) {
+
+    // Determine broadcasting mode
+    const auto rows = density.shape().rows;
+    const auto cols = density.shape().cols;
+    const auto lrows = light.shape().rows;
+    const auto lcols = light.shape().cols;
+    const auto lsize = light.size();
+
+    if (lsize == 1) {
+        // Scalar light
+        const float s = light[0];
+        for (auto& v : transmitted) v *= s;
+    } else if (lrows == rows && lcols == cols) {
+        // Exact shape match
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
                 transmitted(i, j) *= light(i, j);
             }
         }
+    } else if (static_cast<size_t>(cols) == lsize || (lrows == 1 && lcols == cols) || (lcols == 1 && lrows == cols)) {
+        // Vector length equals number of columns: broadcast across columns
+        auto lflat = light.flatten();
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                transmitted(i, j) *= lflat[j];
+            }
+        }
+    } else if (static_cast<size_t>(rows) == lsize || (lrows == rows && lcols == 1) || (lcols == rows && lrows == 1)) {
+        // Vector length equals number of rows: broadcast across rows
+        auto lflat = light.flatten();
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                transmitted(i, j) *= lflat[i];
+            }
+        }
+    } else if (static_cast<size_t>(rows * cols) == lsize) {
+        // Element-wise multiply by flattened light
+        auto lflat = light.flatten();
+        size_t idx = 0;
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j, ++idx) {
+                transmitted(i, j) *= lflat[idx];
+            }
+        }
+    } else {
+        // Fallback: treat as scalar using first element
+        const float s = light.flatten()[0];
+        for (auto& v : transmitted) v *= s;
     }
-    
+
     // Replace NaN values with 0
     for (auto it = transmitted.begin(); it != transmitted.end(); ++it) {
         if (std::isnan(*it)) {
@@ -68,7 +87,7 @@ inline nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, co
 }
 
 // Overload for single float inputs (convenience)
-inline float density_to_light(float density, float light) {
+float density_to_light(float density, float light) {
     float transmitted = std::pow(10.0f, -density) * light;
     return std::isnan(transmitted) ? 0.0f : transmitted;
 }
@@ -83,7 +102,7 @@ inline float density_to_light(float density, float light) {
  * @param type A string specifying the densitometer type (e.g., "status_A"). Default is "status_A".
  * @return nc::NdArray<float> A 1x3 array containing the densitometer correction factors for the three channels.
  */
-inline nc::NdArray<float> compute_densitometer_correction(const nc::NdArray<float>& dye_density, const std::string& type = "status_A") {
+nc::NdArray<float> compute_densitometer_correction(const nc::NdArray<float>& dye_density, const std::string& type) {
     // Load densitometer spectral responsivities (shape: [N,3] for R,G,B channels)
     nc::NdArray<float> responsivities = agx::utils::load_densitometer_data(type);
     // Use only the first 3 columns of dye_density (assume shape [N, >=4])
@@ -117,7 +136,7 @@ inline nc::NdArray<float> compute_densitometer_correction(const nc::NdArray<floa
  * @param illuminant nc::NdArray<float> of shape [N] (or [N,1]) representing the illuminant spectral power distribution (aligned to the same wavelengths as sensitivity).
  * @return nc::NdArray<float> A 3x3 matrix (nc::NdArray) that converts from ACES2065-1 RGB to raw camera RGB.
  */
-inline nc::NdArray<float> compute_aces_conversion_matrix(const nc::NdArray<float>& sensitivity, const nc::NdArray<float>& illuminant) {
+nc::NdArray<float> compute_aces_conversion_matrix(const nc::NdArray<float>& sensitivity, const nc::NdArray<float>& illuminant) {
     // Dimensions check
     size_t N = sensitivity.shape().rows;
     if (sensitivity.shape().cols != 3 || illuminant.flatten().size() != N) {
@@ -181,14 +200,14 @@ inline nc::NdArray<float> compute_aces_conversion_matrix(const nc::NdArray<float
  *         - first: the raw camera RGB values (same shape as input RGB).
  *         - second: the raw mid-gray value (as a 1x3 array, typically [1,1,1]).
  */
-inline std::pair<nc::NdArray<float>, nc::NdArray<float>> 
+std::pair<nc::NdArray<float>, nc::NdArray<float>> 
 rgb_to_raw_aces_idt(const nc::NdArray<float>& RGB,
                     const nc::NdArray<float>& illuminant,
                     const nc::NdArray<float>& sensitivity,
-                    nc::NdArray<float> midgray_rgb = nc::NdArray<float>(),
-                    const std::string& color_space = "sRGB",
-                    bool apply_cctf_decoding = true,
-                    nc::NdArray<float> aces_conversion_matrix = nc::NdArray<float>()) {
+                    nc::NdArray<float> midgray_rgb,
+                    const std::string& color_space,
+                    bool apply_cctf_decoding,
+                    nc::NdArray<float> aces_conversion_matrix) {
     // Determine mid-gray values (default to 0.184 for each channel if not provided)
     float midgray_val = 0.184f;
     if (midgray_rgb.size() > 0) {

@@ -331,6 +331,45 @@ compare_rgb_to_raw/fast:
 .PHONY : compare_rgb_to_raw/fast
 
 #=============================================================================
+# Target rules for targets named test_process_end_to_end
+
+# Build rule for target.
+test_process_end_to_end: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_process_end_to_end
+.PHONY : test_process_end_to_end
+
+# fast build rule for target.
+test_process_end_to_end/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_process_end_to_end.dir/build.make CMakeFiles/test_process_end_to_end.dir/build
+.PHONY : test_process_end_to_end/fast
+
+#=============================================================================
+# Target rules for targets named dump_process_stages
+
+# Build rule for target.
+dump_process_stages: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dump_process_stages
+.PHONY : dump_process_stages
+
+# fast build rule for target.
+dump_process_stages/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dump_process_stages.dir/build.make CMakeFiles/dump_process_stages.dir/build
+.PHONY : dump_process_stages/fast
+
+#=============================================================================
+# Target rules for targets named compare_process
+
+# Build rule for target.
+compare_process: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 compare_process
+.PHONY : compare_process
+
+# fast build rule for target.
+compare_process/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compare_process.dir/build.make CMakeFiles/compare_process.dir/build
+.PHONY : compare_process/fast
+
+#=============================================================================
 # Target rules for targets named couplers_cpp_tests
 
 # Build rule for target.
@@ -646,6 +685,30 @@ src/model/parametric.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/parametric.cu.s
 .PHONY : src/model/parametric.cu.s
 
+src/model/process.o: src/model/process.cpp.o
+.PHONY : src/model/process.o
+
+# target to build an object file
+src/model/process.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/process.cpp.o
+.PHONY : src/model/process.cpp.o
+
+src/model/process.i: src/model/process.cpp.i
+.PHONY : src/model/process.i
+
+# target to preprocess a source file
+src/model/process.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/process.cpp.i
+.PHONY : src/model/process.cpp.i
+
+src/model/process.s: src/model/process.cpp.s
+.PHONY : src/model/process.s
+
+# target to generate assembly for a file
+src/model/process.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/process.cpp.s
+.PHONY : src/model/process.cpp.s
+
 src/model/reconstruct.o: src/model/reconstruct.cpp.o
 .PHONY : src/model/reconstruct.o
 
@@ -717,6 +780,30 @@ src/utils/autoexposure.s: src/utils/autoexposure.cu.s
 src/utils/autoexposure.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/autoexposure.cu.s
 .PHONY : src/utils/autoexposure.cu.s
+
+src/utils/conversions.o: src/utils/conversions.cpp.o
+.PHONY : src/utils/conversions.o
+
+# target to build an object file
+src/utils/conversions.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cpp.o
+.PHONY : src/utils/conversions.cpp.o
+
+src/utils/conversions.i: src/utils/conversions.cpp.i
+.PHONY : src/utils/conversions.i
+
+# target to preprocess a source file
+src/utils/conversions.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cpp.i
+.PHONY : src/utils/conversions.cpp.i
+
+src/utils/conversions.s: src/utils/conversions.cpp.s
+.PHONY : src/utils/conversions.s
+
+# target to generate assembly for a file
+src/utils/conversions.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cpp.s
+.PHONY : src/utils/conversions.cpp.s
 
 src/utils/crop_resize.o: src/utils/crop_resize.cpp.o
 .PHONY : src/utils/crop_resize.o
@@ -1174,6 +1261,54 @@ tests/parametric/independent_parametric_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/independent_parametric_test.dir/build.make CMakeFiles/independent_parametric_test.dir/tests/parametric/independent_parametric_test.cpp.s
 .PHONY : tests/parametric/independent_parametric_test.cpp.s
 
+tests/process/dump_process_stages.o: tests/process/dump_process_stages.cpp.o
+.PHONY : tests/process/dump_process_stages.o
+
+# target to build an object file
+tests/process/dump_process_stages.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dump_process_stages.dir/build.make CMakeFiles/dump_process_stages.dir/tests/process/dump_process_stages.cpp.o
+.PHONY : tests/process/dump_process_stages.cpp.o
+
+tests/process/dump_process_stages.i: tests/process/dump_process_stages.cpp.i
+.PHONY : tests/process/dump_process_stages.i
+
+# target to preprocess a source file
+tests/process/dump_process_stages.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dump_process_stages.dir/build.make CMakeFiles/dump_process_stages.dir/tests/process/dump_process_stages.cpp.i
+.PHONY : tests/process/dump_process_stages.cpp.i
+
+tests/process/dump_process_stages.s: tests/process/dump_process_stages.cpp.s
+.PHONY : tests/process/dump_process_stages.s
+
+# target to generate assembly for a file
+tests/process/dump_process_stages.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dump_process_stages.dir/build.make CMakeFiles/dump_process_stages.dir/tests/process/dump_process_stages.cpp.s
+.PHONY : tests/process/dump_process_stages.cpp.s
+
+tests/process/test_process_end_to_end.o: tests/process/test_process_end_to_end.cpp.o
+.PHONY : tests/process/test_process_end_to_end.o
+
+# target to build an object file
+tests/process/test_process_end_to_end.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_process_end_to_end.dir/build.make CMakeFiles/test_process_end_to_end.dir/tests/process/test_process_end_to_end.cpp.o
+.PHONY : tests/process/test_process_end_to_end.cpp.o
+
+tests/process/test_process_end_to_end.i: tests/process/test_process_end_to_end.cpp.i
+.PHONY : tests/process/test_process_end_to_end.i
+
+# target to preprocess a source file
+tests/process/test_process_end_to_end.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_process_end_to_end.dir/build.make CMakeFiles/test_process_end_to_end.dir/tests/process/test_process_end_to_end.cpp.i
+.PHONY : tests/process/test_process_end_to_end.cpp.i
+
+tests/process/test_process_end_to_end.s: tests/process/test_process_end_to_end.cpp.s
+.PHONY : tests/process/test_process_end_to_end.s
+
+# target to generate assembly for a file
+tests/process/test_process_end_to_end.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_process_end_to_end.dir/build.make CMakeFiles/test_process_end_to_end.dir/tests/process/test_process_end_to_end.cpp.s
+.PHONY : tests/process/test_process_end_to_end.cpp.s
+
 tests/reconstruct/independent_reconstruct_test.o: tests/reconstruct/independent_reconstruct_test.cpp.o
 .PHONY : tests/reconstruct/independent_reconstruct_test.o
 
@@ -1234,6 +1369,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... compare_process"
 	@echo "... compare_rgb_to_raw"
 	@echo "... format"
 	@echo "... scipy_test"
@@ -1243,6 +1379,7 @@ help:
 	@echo "... config_cpp_tests"
 	@echo "... couplers_cpp_tests"
 	@echo "... debug_balance"
+	@echo "... dump_process_stages"
 	@echo "... fast_interp_cpp_tests"
 	@echo "... independent_autoexposure_test"
 	@echo "... independent_crop_resize_test"
@@ -1250,6 +1387,7 @@ help:
 	@echo "... independent_profile_io_test"
 	@echo "... independent_reconstruct_test"
 	@echo "... io_cpp_tests"
+	@echo "... test_process_end_to_end"
 	@echo "... test_rgb_to_raw_hanatos"
 	@echo "... src/model/balance.o"
 	@echo "... src/model/balance.i"
@@ -1284,6 +1422,9 @@ help:
 	@echo "... src/model/parametric.o"
 	@echo "... src/model/parametric.i"
 	@echo "... src/model/parametric.s"
+	@echo "... src/model/process.o"
+	@echo "... src/model/process.i"
+	@echo "... src/model/process.s"
 	@echo "... src/model/reconstruct.o"
 	@echo "... src/model/reconstruct.i"
 	@echo "... src/model/reconstruct.s"
@@ -1293,6 +1434,9 @@ help:
 	@echo "... src/utils/autoexposure.o"
 	@echo "... src/utils/autoexposure.i"
 	@echo "... src/utils/autoexposure.s"
+	@echo "... src/utils/conversions.o"
+	@echo "... src/utils/conversions.i"
+	@echo "... src/utils/conversions.s"
 	@echo "... src/utils/crop_resize.o"
 	@echo "... src/utils/crop_resize.i"
 	@echo "... src/utils/crop_resize.s"
@@ -1350,6 +1494,12 @@ help:
 	@echo "... tests/parametric/independent_parametric_test.o"
 	@echo "... tests/parametric/independent_parametric_test.i"
 	@echo "... tests/parametric/independent_parametric_test.s"
+	@echo "... tests/process/dump_process_stages.o"
+	@echo "... tests/process/dump_process_stages.i"
+	@echo "... tests/process/dump_process_stages.s"
+	@echo "... tests/process/test_process_end_to_end.o"
+	@echo "... tests/process/test_process_end_to_end.i"
+	@echo "... tests/process/test_process_end_to_end.s"
 	@echo "... tests/reconstruct/independent_reconstruct_test.o"
 	@echo "... tests/reconstruct/independent_reconstruct_test.i"
 	@echo "... tests/reconstruct/independent_reconstruct_test.s"

@@ -13,9 +13,9 @@
 
 // Helper function to get the root data path.
 std::string get_data_path() {
-    // This path needs to be correct relative to where the final executable is run.
-    // For our test executable, we run from project root, so just return current directory
-    return "./";
+    // Resolve data paths relative to the repository root
+    // AGX_SOURCE_DIR points to repo root as defined in CMake
+    return std::string(AGX_SOURCE_DIR) + "/";
 }
 
 namespace agx {

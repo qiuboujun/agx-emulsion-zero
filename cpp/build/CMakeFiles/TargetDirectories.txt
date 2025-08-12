@@ -11,6 +11,9 @@
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/independent_reconstruct_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/test_rgb_to_raw_hanatos.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/compare_rgb_to_raw.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/test_process_end_to_end.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/dump_process_stages.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/compare_process.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/couplers_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/scipy_test.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/edit_cache.dir

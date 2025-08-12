@@ -290,10 +290,20 @@ Profile ProfileIO::load_from_file(const std::string& json_path) {
     p.info.reference_illuminant = info["reference_illuminant"].get<std::string>();
     p.info.viewing_illuminant = info["viewing_illuminant"].get<std::string>();
     
-    // Parse density_midscale_neutral array
+    // Parse density_midscale_neutral which may be a scalar or a 3-array in profiles
     const auto& dmn = info["density_midscale_neutral"];
-    for (size_t i = 0; i < 3; ++i) {
-        p.info.density_midscale_neutral[i] = dmn[i].get<float>();
+    if (dmn.is_array()) {
+        for (size_t i = 0; i < 3; ++i) {
+            p.info.density_midscale_neutral[i] = dmn[i].get<float>();
+        }
+    } else if (dmn.is_number_float() || dmn.is_number_integer()) {
+        float v = dmn.get<float>();
+        p.info.density_midscale_neutral = {v, v, v};
+    } else if (dmn.is_string()) {
+        // Allow string tokens like "NaN" although unexpected here; treat as 0
+        p.info.density_midscale_neutral = {0.0f, 0.0f, 0.0f};
+    } else {
+        p.info.density_midscale_neutral = {0.0f, 0.0f, 0.0f};
     }
     
     std::cout << "ProfileIO::load_from_file: Stock: " << p.info.stock << std::endl;
