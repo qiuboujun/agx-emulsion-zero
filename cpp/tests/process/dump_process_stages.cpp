@@ -293,12 +293,14 @@ int main(){
     j["density_cmy_center"] = at3(density_cmy);
     j["density_spectral_center"] = extractK(density_spec);
     auto enlarger_ill_flat = enlarger_ill.flatten();
-    j["print_illuminant"] = std::vector<float>(enlarger_ill_flat.begin(), enlarger_ill_flat.end());
+    // Dump enlarger illuminant as K samples
+    j["print_illuminant"] = extractK(enlarger_ill);
     j["light_enlarger_center"] = extractK(light);
     j["cmy_pre_paper_center"] = at3(cmy);
     j["midgray_factor"] = midgray_factor;
     j["density_print_center"] = at3(density_print);
-    j["scan_illuminant"] = std::vector<float>(scan_ill.begin(), scan_ill.end());
+    // Dump scan illuminant as K samples
+    j["scan_illuminant"] = extractK(scan_ill);
     j["light_scan_center"] = extractK(light_scan);
     j["xyz_center"] = at3(xyz_hw3);
     j["rgb_center"] = at3(rgb);

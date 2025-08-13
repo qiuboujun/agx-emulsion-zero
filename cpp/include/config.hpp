@@ -12,8 +12,8 @@ constexpr int ENLARGER_STEPS = 170;
 // Define global variables directly in the header using 'inline'.
 // This prevents "multiple definition" linker errors.
 inline nc::NdArray<float> LOG_EXPOSURE;
-inline colour::SpectralShape SPECTRAL_SHAPE(380, 780, 5); // Can be initialized directly
-inline nc::NdArray<float> STANDARD_OBSERVER_CMFS;
+ inline colour::SpectralShape SPECTRAL_SHAPE(380, 780, 5); // Can be initialized directly
+ inline nc::NdArray<float> STANDARD_OBSERVER_CMFS;
 
 /**
  * @brief Initializes all global configuration data.
@@ -31,6 +31,7 @@ inline void initialize_config() {
     
     // Extract only the x, y, z columns (skip wavelength column) to match Python colour library
     size_t num_rows = aligned_cmfs.shape().rows;
+    // Ensure wavelengths in SpectralShape are 1xN (flatten) and CMFS are Nx3 (2D)
     STANDARD_OBSERVER_CMFS = nc::NdArray<float>(num_rows, 3);
     
     for (size_t i = 0; i < num_rows; ++i) {

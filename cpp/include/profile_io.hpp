@@ -30,6 +30,8 @@ struct ProfileData {
     nc::NdArray<float> dye_density;            // [K,5]
     nc::NdArray<float> log_exposure;           // [M,1] or [M]
     nc::NdArray<float> wavelengths;            // [K,1] or [K]
+    std::array<float,3> gamma_factor = {1.0f, 1.0f, 1.0f};
+    float dye_density_min_factor = 1.0f;
 };
 
 struct Profile {

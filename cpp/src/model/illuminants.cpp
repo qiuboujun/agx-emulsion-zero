@@ -31,7 +31,8 @@ nc::NdArray<float> black_body_spectrum(double temperature)
     // Retrieve the global wavelength grid (in nanometres) and flatten to a 1D array
     auto wl = agx::config::SPECTRAL_SHAPE.wavelengths.flatten();
     const std::size_t n = wl.size();
-    nc::NdArray<float> values(n); // ensure 1-D vector of length n
+    // NumCpp uses 2D arrays; allocate 1xN to represent a 1D spectrum
+    nc::NdArray<float> values(1, n);
     // Compute the spectral power distribution according to Planck's law
     for (std::size_t i = 0; i < n; ++i) {
         // Convert wavelength from nanometres to metres

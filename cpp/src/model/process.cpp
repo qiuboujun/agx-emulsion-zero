@@ -11,6 +11,7 @@
 #include "diffusion.hpp"
 #include "colour.hpp"
 #include "conversions.hpp"
+#include "io.hpp"
 
 using agx::profiles::Profile;
 using agx::profiles::ProfileIO;
@@ -166,18 +167,31 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::cout << "Density CMY shape: " << density_cmy.shape().rows << "x" << density_cmy.shape().cols << "\n";
 
     // Enlarge and print
-    auto light_src_flat = agx::model::standard_illuminant(params_.enlarger.illuminant).flatten();
-    // Force 1xK-length illuminant for enlarger
+    auto light_src_K = agx::model::standard_illuminant(params_.enlarger.illuminant); // already 1xK
     const int Kspec = static_cast<int>(agx::config::SPECTRAL_SHAPE.wavelengths.size());
-    nc::NdArray<float> light_src_K(1, Kspec);
-    for (int i=0;i<Kspec;++i) light_src_K(0,i) = light_src_flat[i];
+    // Load neutral Y/M/C filter settings from DB to match Python
+    float y_neutral = params_.enlarger.y_filter_neutral;
+    float m_neutral = params_.enlarger.m_filter_neutral;
+    float c_neutral = params_.enlarger.c_filter_neutral;
+    try {
+        auto ymc = agx::utils::read_neutral_ymc_filter_values();
+        // Access [print_paper][illuminant][negative] -> [y, m, c]
+        auto arr = ymc[paper.info.stock][params_.enlarger.illuminant][neg.info.stock];
+        if (arr.is_array() && arr.size() >= 3) {
+            y_neutral = arr[0].get<float>();
+            m_neutral = arr[1].get<float>();
+            c_neutral = arr[2].get<float>();
+        }
+    } catch (...) {
+        // Fallback to params if DB not found
+    }
     auto enlarger_ill = agx::model::color_enlarger(light_src_K,
-        params_.enlarger.y_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.y_filter_shift,
-        params_.enlarger.m_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.m_filter_shift,
-        params_.enlarger.c_filter_neutral * agx::config::ENLARGER_STEPS);
+        y_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.y_filter_shift,
+        m_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.m_filter_shift,
+        c_neutral * agx::config::ENLARGER_STEPS);
 
     // Spectral density from film density
-    auto density_spec = agx::utils::compute_density_spectral(density_cmy, neg.data.dye_density, /*min factor*/ 1.0f);
+    auto density_spec = agx::utils::compute_density_spectral(density_cmy, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor);
     std::cout << "Density spectral shape: " << density_spec.shape().rows << "x" << density_spec.shape().cols << "\n";
     auto light = agx::utils::density_to_light(density_spec, enlarger_ill);
     std::cout << "Light (enlarger) shape: " << light.shape().rows << "x" << light.shape().cols << "\n";
@@ -196,14 +210,17 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::cout << "CMY (pre paper) shape: " << cmy.shape().rows << "x" << cmy.shape().cols << "\n";
     cmy *= params_.enlarger.print_exposure;
 
-    // Midgray normalization for print exposure
-    nc::NdArray<float> rgb_mid(1,3); rgb_mid(0,0)=0.184f; rgb_mid(0,1)=0.184f; rgb_mid(0,2)=0.184f;
+    // Midgray normalization for print exposure (match Python):
+    // rgb_midgray = [0.184,0.184,0.184] * 2**neg_exp_comp_ev if print_exposure_compensation
+    float neg_exp_comp_ev = params_.enlarger.print_exposure_compensation ? params_.camera.exposure_compensation_ev : 0.0f;
+    float mid_scale = std::pow(2.0f, neg_exp_comp_ev);
+    nc::NdArray<float> rgb_mid(1,3); rgb_mid(0,0)=0.184f*mid_scale; rgb_mid(0,1)=0.184f*mid_scale; rgb_mid(0,2)=0.184f*mid_scale;
     auto raw_mid = agx::utils::rgb_to_raw_hanatos2025(rgb_mid, sensitivity, "sRGB", false, neg.info.reference_illuminant, lut);
     auto log_raw_mid_nc = nc::log10(raw_mid + 1e-10f);
     auto log_raw_mid_mat = toMat(log_raw_mid_nc);
     auto density_cmy_mid_mat = agx_emulsion::interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma);
     auto density_cmy_mid = fromMat(density_cmy_mid_mat);
-    auto density_spec_mid = agx::utils::compute_density_spectral(density_cmy_mid, neg.data.dye_density, /*min factor*/ 1.0f);
+    auto density_spec_mid = agx::utils::compute_density_spectral(density_cmy_mid, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor);
     auto light_mid = agx::utils::density_to_light(density_spec_mid, enlarger_ill);
     auto raw_mid_print = nc::dot(light_mid, paper_sens);
     std::cout << "Midgray raw print: " << raw_mid_print(0,0) << ", " << raw_mid_print(0,1) << ", " << raw_mid_print(0,2) << "\n";
@@ -215,9 +232,9 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     // Preflash if any (approximate)
     if (params_.enlarger.preflash_exposure > 0.0f) {
         auto preflash_ill = agx::model::color_enlarger(light_src_K,
-            params_.enlarger.y_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.preflash_y_filter_shift,
-            params_.enlarger.m_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.preflash_m_filter_shift,
-            params_.enlarger.c_filter_neutral * agx::config::ENLARGER_STEPS);
+            y_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.preflash_y_filter_shift,
+            m_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.preflash_m_filter_shift,
+            c_neutral * agx::config::ENLARGER_STEPS);
         nc::NdArray<float> base_den(1, neg.data.dye_density.shape().rows);
         for (uint32_t k=0;k<neg.data.dye_density.shape().rows;++k){ base_den(0,k)=neg.data.dye_density(k,3); }
         auto light_pre = agx::utils::density_to_light(base_den, preflash_ill);
@@ -244,10 +261,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
 
     // Scan to RGB (XYZ)
     std::cout << "Paper dye_density shape: " << paper.data.dye_density.shape().rows << "x" << paper.data.dye_density.shape().cols << "\n";
-    auto scan_ill_flat = agx::model::standard_illuminant(paper.info.viewing_illuminant).flatten();
-    // Force 1xK-length scan illuminant
-    nc::NdArray<float> scan_ill(1, Kspec);
-    for (int i=0;i<Kspec;++i) scan_ill(0,i) = scan_ill_flat[i];
+    auto scan_ill = agx::model::standard_illuminant(paper.info.viewing_illuminant); // 1xK
     std::cout << "Scan illuminant shape: " << scan_ill.shape().rows << "x" << scan_ill.shape().cols << "\n";
     float norm = 0.0f; for(uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) norm += agx::config::STANDARD_OBSERVER_CMFS(i,1) * scan_ill[i];
     std::cout << "Computing density spectral for scan...\n";

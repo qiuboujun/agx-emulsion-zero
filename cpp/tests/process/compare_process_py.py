@@ -29,6 +29,11 @@ def main():
     params.io.output_cctf_encoding = True
     params.camera.auto_exposure = True
 
+    # Disable scanner blur & unsharp and paper glare to match C++
+    params.scanner.lens_blur = 0.0
+    params.scanner.unsharp_mask = (0.0, 0.0)
+    params.print_paper.glare.active = False
+
     # Align Python EV with C++: use identical setting of apply_cctf_decoding=False
     ev_py = measure_autoexposure_ev(img, color_space='sRGB', apply_cctf_decoding=False, method='center_weighted')
     print('Python EV (apply_cctf_decoding=False):', ev_py)

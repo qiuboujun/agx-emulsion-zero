@@ -329,6 +329,26 @@ Profile ProfileIO::load_from_file(const std::string& json_path) {
     std::cout << "ProfileIO::load_from_file: Converting wavelengths..." << std::endl;
     p.data.wavelengths           = json_to_ndarray_2d(d.at("wavelengths"));
     
+    // Optional tune parameters
+    try {
+        const auto& tune = d.at("tune");
+        if (tune.contains("gamma_factor")) {
+            const auto& gf = tune.at("gamma_factor");
+            if (gf.is_array() && gf.size()>=3) {
+                p.data.gamma_factor[0] = gf[0].get<float>();
+                p.data.gamma_factor[1] = gf[1].get<float>();
+                p.data.gamma_factor[2] = gf[2].get<float>();
+            } else if (gf.is_number_float() || gf.is_number_integer()) {
+                float g = gf.get<float>();
+                p.data.gamma_factor = {g,g,g};
+            }
+        }
+        if (tune.contains("dye_density_min_factor")) {
+            p.data.dye_density_min_factor = tune.at("dye_density_min_factor").get<float>();
+        }
+    } catch (...) {
+        // keep defaults
+    }
     std::cout << "ProfileIO::load_from_file: All conversions completed successfully" << std::endl;
     return p;
 }
