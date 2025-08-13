@@ -125,6 +125,18 @@ Matrix interpolate_exposure_to_density(
     return out;
 }
 
+bool gpu_interpolate_exposure_to_density(
+    const Matrix& log_exposure_rgb,
+    const Matrix& density_curves,
+    const std::vector<double>& log_exposure,
+    const std::array<double,3>& gamma_factor,
+    Matrix& out)
+{
+    // CPU fallback if CUDA TU not used; actual GPU impl in density_curves.cu
+    out = interpolate_exposure_to_density(log_exposure_rgb, density_curves, log_exposure, gamma_factor);
+    return false;
+}
+
 Matrix apply_gamma_shift_correction(
     const std::vector<double>& le,
     const Matrix& dc,

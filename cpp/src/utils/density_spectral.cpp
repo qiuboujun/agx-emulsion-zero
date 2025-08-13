@@ -21,16 +21,18 @@ nc::NdArray<float> compute_density_spectral(
     for (int y = 0; y < H; ++y) {
         for (int x = 0; x < W; ++x) {
             // Gather CMY per pixel
-            float c = density_cmy(y, x * 3 + 0);
-            float m = density_cmy(y, x * 3 + 1);
-            float yv = density_cmy(y, x * 3 + 2);
+            const double c = static_cast<double>(density_cmy(y, x * 3 + 0));
+            const double m = static_cast<double>(density_cmy(y, x * 3 + 1));
+            const double yv = static_cast<double>(density_cmy(y, x * 3 + 2));
             const int cols = (int)dye_density.shape().cols;
             for (int k = 0; k < K; ++k) {
-                float spec = c * dye_density(k, 0) + m * dye_density(k, 1) + yv * dye_density(k, 2);
+                double spec = c * static_cast<double>(dye_density(k, 0))
+                            + m * static_cast<double>(dye_density(k, 1))
+                            + yv * static_cast<double>(dye_density(k, 2));
                 if (cols > 3) {
-                    spec += dye_density(k, 3) * dye_density_min_factor;
+                    spec += static_cast<double>(dye_density(k, 3)) * static_cast<double>(dye_density_min_factor);
                 }
-                out(y, x * K + k) = spec;
+                out(y, x * K + k) = static_cast<float>(spec);
             }
         }
     }

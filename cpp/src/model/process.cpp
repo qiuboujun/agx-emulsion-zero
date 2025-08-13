@@ -76,11 +76,11 @@ static nc::NdArray<float> dot_blocks_K3(const nc::NdArray<float>& A, const nc::N
         // compute out block (H x 3) = (H x K) dot (K x 3)
         for (int i = 0; i < H; ++i){
             for (int c = 0; c < 3; ++c){
-                float acc = 0.0f;
+                double acc = 0.0;
                 for (int k = 0; k < K; ++k){
-                    acc += A(i, w*K + k) * B(k, c);
+                    acc += static_cast<double>(A(i, w*K + k)) * static_cast<double>(B(k, c));
                 }
-                out(i, w*3 + c) = acc;
+                out(i, w*3 + c) = static_cast<float>(acc);
             }
         }
     }
@@ -155,14 +155,24 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     }
 
     // Develop film (log_raw -> density_cmy)
-    // Develop film per pixel: reshape to (H*W) x 3
-    nc::NdArray<float> log_raw_nc = nc::log10(raw + 1e-10f);
-    auto log_raw = toMat(hw3_to_hw_by3(log_raw_nc));
+    // Compute log10 in double precision and reshape to (H*W) x 3
+    auto raw_hw_by3_for_log = hw3_to_hw_by3(raw);
+    agx_emulsion::Matrix log_raw(raw_hw_by3_for_log.shape().rows, 3);
+    for (uint32_t i=0;i<raw_hw_by3_for_log.shape().rows;++i){
+        for (uint32_t j=0;j<3;++j){
+            double v = static_cast<double>(raw_hw_by3_for_log(i,j));
+            if (v < 0.0) v = 0.0; // match np.fmax(raw, 0.0)
+            log_raw(i,j) = std::log10(v + 1e-10);
+        }
+    }
     auto dc_neg = toMat(neg.data.density_curves);
-    std::array<double,3> gamma = {1.0, 1.0, 1.0};
+    std::array<double,3> gamma = {static_cast<double>(neg.data.gamma_factor[0]), static_cast<double>(neg.data.gamma_factor[1]), static_cast<double>(neg.data.gamma_factor[2])};
     std::vector<double> le_neg(neg.data.log_exposure.size());
     for (uint32_t i=0;i<neg.data.log_exposure.size();++i){ le_neg[i] = neg.data.log_exposure[i]; }
-    auto density_cmy_mat = agx_emulsion::interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma);
+    agx_emulsion::Matrix density_cmy_mat;
+    if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma, density_cmy_mat)) {
+        density_cmy_mat = agx_emulsion::interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma);
+    }
     auto density_cmy = hw_by3_to_hw3(fromMat(density_cmy_mat), Himg, Wimg);
     std::cout << "Density CMY shape: " << density_cmy.shape().rows << "x" << density_cmy.shape().cols << "\n";
 
@@ -216,9 +226,16 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     float mid_scale = std::pow(2.0f, neg_exp_comp_ev);
     nc::NdArray<float> rgb_mid(1,3); rgb_mid(0,0)=0.184f*mid_scale; rgb_mid(0,1)=0.184f*mid_scale; rgb_mid(0,2)=0.184f*mid_scale;
     auto raw_mid = agx::utils::rgb_to_raw_hanatos2025(rgb_mid, sensitivity, "sRGB", false, neg.info.reference_illuminant, lut);
-    auto log_raw_mid_nc = nc::log10(raw_mid + 1e-10f);
-    auto log_raw_mid_mat = toMat(log_raw_mid_nc);
-    auto density_cmy_mid_mat = agx_emulsion::interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma);
+    agx_emulsion::Matrix log_raw_mid_mat(1,3);
+    for (int j=0;j<3;++j){
+        double v = static_cast<double>(raw_mid(0,j));
+        if (v < 0.0) v = 0.0;
+        log_raw_mid_mat(0,j) = std::log10(v + 1e-10);
+    }
+    agx_emulsion::Matrix density_cmy_mid_mat;
+    if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma, density_cmy_mid_mat)) {
+        density_cmy_mid_mat = agx_emulsion::interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma);
+    }
     auto density_cmy_mid = fromMat(density_cmy_mid_mat);
     auto density_spec_mid = agx::utils::compute_density_spectral(density_cmy_mid, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor);
     auto light_mid = agx::utils::density_to_light(density_spec_mid, enlarger_ill);
@@ -249,13 +266,24 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         }
     }
 
-    // Develop print: log10 and apply density curves of paper
-    auto log_cmy_nc = nc::log10(cmy + 1e-10f);
-    auto log_cmy_mat = toMat(hw3_to_hw_by3(log_cmy_nc));
+    // Develop print: log10 and apply density curves of paper (compute log in double)
+    auto cmy_hw_by3_for_log = hw3_to_hw_by3(cmy);
+    agx_emulsion::Matrix log_cmy_mat(cmy_hw_by3_for_log.shape().rows, 3);
+    for (uint32_t i=0;i<cmy_hw_by3_for_log.shape().rows;++i){
+        for (uint32_t j=0;j<3;++j){
+            double v = static_cast<double>(cmy_hw_by3_for_log(i,j));
+            if (v < 0.0) v = 0.0;
+            log_cmy_mat(i,j) = std::log10(v + 1e-10);
+        }
+    }
     auto dc_paper = toMat(paper.data.density_curves);
+    std::array<double,3> gamma_paper = {static_cast<double>(paper.data.gamma_factor[0]), static_cast<double>(paper.data.gamma_factor[1]), static_cast<double>(paper.data.gamma_factor[2])};
     std::vector<double> le_paper(paper.data.log_exposure.size());
     for (uint32_t i=0;i<paper.data.log_exposure.size();++i){ le_paper[i]=paper.data.log_exposure[i]; }
-    auto density_print_mat = agx_emulsion::interpolate_exposure_to_density(log_cmy_mat, dc_paper, le_paper, gamma);
+    agx_emulsion::Matrix density_print_mat;
+    if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_cmy_mat, dc_paper, le_paper, gamma_paper, density_print_mat)) {
+        density_print_mat = agx_emulsion::interpolate_exposure_to_density(log_cmy_mat, dc_paper, le_paper, gamma_paper);
+    }
     auto density_print = hw_by3_to_hw3(fromMat(density_print_mat), Himg, Wimg);
     std::cout << "Density print shape: " << density_print.shape().rows << "x" << density_print.shape().cols << "\n";
 
@@ -265,7 +293,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::cout << "Scan illuminant shape: " << scan_ill.shape().rows << "x" << scan_ill.shape().cols << "\n";
     float norm = 0.0f; for(uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) norm += agx::config::STANDARD_OBSERVER_CMFS(i,1) * scan_ill[i];
     std::cout << "Computing density spectral for scan...\n";
-    auto dens_spec_scan = agx::utils::compute_density_spectral(density_print, paper.data.dye_density, /*min factor*/ 1.0f);
+    auto dens_spec_scan = agx::utils::compute_density_spectral(density_print, paper.data.dye_density, /*min factor*/ paper.data.dye_density_min_factor);
     std::cout << "dens_spec_scan shape: " << dens_spec_scan.shape().rows << "x" << dens_spec_scan.shape().cols << "\n";
     auto light_scan = agx::utils::density_to_light(dens_spec_scan, scan_ill);
     std::cout << "Light (scan) shape: " << light_scan.shape().rows << "x" << light_scan.shape().cols << "\n";

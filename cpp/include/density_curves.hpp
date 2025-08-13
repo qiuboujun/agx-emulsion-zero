@@ -84,6 +84,17 @@ Matrix interpolate_exposure_to_density(
     const std::array<double,3>& gamma_factor);
 
 /**
+ * GPU-accelerated interpolation. Returns true on GPU path success and
+ * writes the result to 'out'. Falls back to CPU if CUDA is unavailable.
+ */
+bool gpu_interpolate_exposure_to_density(
+    const Matrix& log_exposure_rgb,
+    const Matrix& density_curves,
+    const std::vector<double>& log_exposure,
+    const std::array<double,3>& gamma_factor,
+    Matrix& out);
+
+/**
  * apply_gamma_shift_correction:
  * For each channel i:
  *   dc_out[:,i] = interp(le, le/gamma_correction[i] + log_exposure_correction[i], dc[:,i])

@@ -273,16 +273,18 @@ nc::NdArray<float> rgb_to_raw_hanatos2025(
     nc::NdArray<float> lut_proj(rows, 3);
     for (int r=0;r<rows;++r){
         for (int c=0;c<3;++c){
-            float acc = 0.0f;
-            for (int k=0;k<K;++k) acc += spectra_lut(r,k) * sensitivity(k,c);
-            lut_proj(r,c) = acc;
+            double acc = 0.0;
+            for (int k=0;k<K;++k) acc += static_cast<double>(spectra_lut(r,k)) * static_cast<double>(sensitivity(k,c));
+            lut_proj(r,c) = static_cast<float>(acc);
         }
     }
     const int L = static_cast<int>(std::round(std::sqrt(rows)));
 
     auto [tc, b] = rgb_to_tc_b_cpp(rgb, color_space, apply_cctf_decoding, reference_illuminant);
-    const int H = rgb.shape().rows; const int W = 1; // treat as Hx1 grid
-    auto raw = agx::apply_lut_cubic_2d(lut_proj, tc, H, W); // (H, 3)
+    const int H = rgb.shape().rows;
+    // Match Python: use cubic interpolation with reflection boundaries
+    // Build an H×1 grid of tc coordinates and apply cubic LUT
+    nc::NdArray<float> raw = agx::apply_lut_cubic_2d(lut_proj, tc, /*height*/H, /*width*/1);
     // Scale by b
     for (int i=0;i<H;++i){ for (int c=0;c<3;++c) raw(i,c) *= b(i,0); }
 

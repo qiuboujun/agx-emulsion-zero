@@ -215,25 +215,72 @@ inline std::array<float, 3> xy_to_XYZ(const std::array<float, 2>& xy) {
  * For now, hardcode the exact matrix from Python colour-science library
  * for sRGB (D65) to ACES2065-1 (D60) adaptation.
  */
-inline std::array<std::array<float, 3>, 3> get_cat02_adaptation_matrix(
-    const std::array<float, 2>& source_xy, 
-    const std::array<float, 2>& target_xy) {
-    
-    // For sRGB (D65) to ACES2065-1 (D60), return the exact matrix from Python
-    if (std::abs(source_xy[0] - 0.3127f) < 1e-4f && std::abs(source_xy[1] - 0.3290f) < 1e-4f &&
-        std::abs(target_xy[0] - 0.32168f) < 1e-4f && std::abs(target_xy[1] - 0.33767f) < 1e-4f) {
-        
-        return {{
-            {{1.0119593493f, 0.0080079667f, -0.0157793777f}},
-            {{0.0057710782f, 1.0013620155f, -0.0062872432f}},
-            {{-0.0003376221f, -0.0010466140f, 0.9275841365f}}
-        }};
+    inline std::array<std::array<float, 3>, 3> get_cat02_adaptation_matrix(
+        const std::array<float, 2>& source_xy, 
+        const std::array<float, 2>& target_xy) {
+        // If this exact pair is requested, return the hardcoded matrix to match Python
+        if (std::abs(source_xy[0] - 0.3127f) < 1e-4f && std::abs(source_xy[1] - 0.3290f) < 1e-4f &&
+            std::abs(target_xy[0] - 0.32168f) < 1e-4f && std::abs(target_xy[1] - 0.33767f) < 1e-4f) {
+            return {{
+                {{1.0119593493f, 0.0080079667f, -0.0157793777f}},
+                {{0.0057710782f, 1.0013620155f, -0.0062872432f}},
+                {{-0.0003376221f, -0.0010466140f, 0.9275841365f}}
+            }};
+        }
+
+        // General CAT02 (Von Kries) chromatic adaptation
+        // Matrices from CIECAM02 / CAT02 definition
+        const float M[3][3] = {
+            { 0.7328f,  0.4296f, -0.1624f},
+            {-0.7036f,  1.6975f,  0.0061f},
+            { 0.0030f,  0.0136f,  0.9834f}
+        };
+        const float M_inv[3][3] = {
+            { 1.096124f, -0.278869f,  0.182745f},
+            { 0.454369f,  0.473533f,  0.072098f},
+            { -0.009628f, -0.005698f, 1.015326f}
+        };
+
+        auto srcXYZ = xy_to_XYZ(source_xy); // normalized so Y=1
+        auto dstXYZ = xy_to_XYZ(target_xy); // normalized so Y=1
+
+        // Convert to LMS
+        auto mul3x3v = [](const float A[3][3], const std::array<float,3>& v){
+            std::array<float,3> out{};
+            out[0] = A[0][0]*v[0] + A[0][1]*v[1] + A[0][2]*v[2];
+            out[1] = A[1][0]*v[0] + A[1][1]*v[1] + A[1][2]*v[2];
+            out[2] = A[2][0]*v[0] + A[2][1]*v[1] + A[2][2]*v[2];
+            return out;
+        };
+        std::array<float,3> src = {srcXYZ[0], srcXYZ[1], srcXYZ[2]};
+        std::array<float,3> dst = {dstXYZ[0], dstXYZ[1], dstXYZ[2]};
+        auto LMS_src = mul3x3v(M, src);
+        auto LMS_dst = mul3x3v(M, dst);
+
+        // Scaling diagonal
+        float D[3] = {
+            (LMS_src[0] != 0.0f) ? (LMS_dst[0] / LMS_src[0]) : 1.0f,
+            (LMS_src[1] != 0.0f) ? (LMS_dst[1] / LMS_src[1]) : 1.0f,
+            (LMS_src[2] != 0.0f) ? (LMS_dst[2] / LMS_src[2]) : 1.0f
+        };
+
+        // Compute M = M_inv * D * M
+        std::array<std::array<float,3>,3> temp{};
+        // temp = D * M
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                temp[i][j] = D[i] * M[i][j];
+            }
+        }
+        // result = M_inv * temp
+        std::array<std::array<float,3>,3> result{};
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                result[i][j] = M_inv[i][0]*temp[0][j] + M_inv[i][1]*temp[1][j] + M_inv[i][2]*temp[2][j];
+            }
+        }
+        return result;
     }
-    
-    // Fallback computation omitted for brevity. Use Bradford if CAT02 is unknown pair.
-    // Just return identity to avoid unexpected drift.
-    return {{{{1.f,0.f,0.f}}, {{0.f,1.f,0.f}}, {{0.f,0.f,1.f}}}};
-}
 
 /**
  * @brief Bradford chromatic adaptation transform matrices
