@@ -12,6 +12,7 @@
 #include "density_curves.hpp"
 #include "conversions.hpp"
 #include "autoexposure.hpp"
+#include "fast_interp_lut.hpp"
 
 using json = nlohmann::json;
 
@@ -104,6 +105,84 @@ int main(){
     // Hanatos LUT
     auto lut = agx::utils::load_hanatos_spectra_lut_npy(std::string(AGX_SOURCE_DIR) + "/cpp/data/luts/spectral_upsampling/irradiance_xy_tc.npy");
     auto image_hw_by3 = hw3_to_hw_by3(image);
+
+    // Center pixel index and RGB
+    int ci = H/2, cj = W/2;
+    nc::NdArray<float> center_rgb(1,3);
+    center_rgb(0,0) = image(ci, cj*3+0);
+    center_rgb(0,1) = image(ci, cj*3+1);
+    center_rgb(0,2) = image(ci, cj*3+2);
+
+    // Compute tc and b for center
+    auto tb = agx::utils::rgb_to_tc_b_cpp(center_rgb, params.io.input_color_space, params.io.input_cctf_decoding, neg.info.reference_illuminant);
+    auto tc_center = tb.first; // (1,2)
+    auto b_center = tb.second; // (1,1)
+
+    // Preproject LUT by sensitivity (L*L, K) dot (K,3) -> (L*L,3)
+    const int rows = lut.shape().rows;
+    const int K = lut.shape().cols;
+    nc::NdArray<float> lut_proj(rows, 3);
+    for (int r=0;r<rows;++r){
+        for (int c=0;c<3;++c){
+            float acc = 0.0f;
+            for (int k=0;k<K;++k) acc += lut(r,k) * sensitivity(k,c);
+            lut_proj(r,c) = acc;
+        }
+    }
+    const int L = static_cast<int>(std::round(std::sqrt(rows)));
+
+    // Apply 2D LUT at tc_center using cubic (Mitchell)
+    nc::NdArray<float> tc_img(1,2);
+    tc_img(0,0) = tc_center(0,0);
+    tc_img(0,1) = tc_center(0,1);
+    auto raw_pre_center_nc = agx::apply_lut_cubic_2d(lut_proj, tc_img, /*height*/1, /*width*/1); // (1,3)
+
+    // Scale by b
+    nc::NdArray<float> raw_pre_scaled(1,3);
+    for (int c=0;c<3;++c) raw_pre_scaled(0,c) = raw_pre_center_nc(0,c) * b_center(0,0);
+
+    // Midgray normalization (linear RGI equivalent)
+    nc::NdArray<float> mid_rgb(1,3); mid_rgb(0,0)=0.184f; mid_rgb(0,1)=0.184f; mid_rgb(0,2)=0.184f;
+    auto tb_mid = agx::utils::rgb_to_tc_b_cpp(mid_rgb, params.io.input_color_space, false, neg.info.reference_illuminant);
+    const float x_m = tb_mid.first(0,0) * (L - 1);
+    const float y_m = tb_mid.first(0,1) * (L - 1);
+    // Bilinear over original spectra LUT
+    // local helper
+    auto bilinear = [&](float x, float y){
+        const int x0 = static_cast<int>(std::floor(x));
+        const int y0 = static_cast<int>(std::floor(y));
+        const int x1 = std::min(x0 + 1, L - 1);
+        const int y1 = std::min(y0 + 1, L - 1);
+        const float fx = x - static_cast<float>(x0);
+        const float fy = y - static_cast<float>(y0);
+        const float w00 = (1.0f - fx) * (1.0f - fy);
+        const float w10 = fx * (1.0f - fy);
+        const float w01 = (1.0f - fx) * fy;
+        const float w11 = fx * fy;
+        std::vector<float> out(K, 0.0f);
+        const int idx00 = x0 * L + y0;
+        const int idx10 = x1 * L + y0;
+        const int idx01 = x0 * L + y1;
+        const int idx11 = x1 * L + y1;
+        for (int k=0;k<K;++k){
+            float v00 = lut(idx00, k);
+            float v10 = lut(idx10, k);
+            float v01 = lut(idx01, k);
+            float v11 = lut(idx11, k);
+            out[k] = w00 * v00 + w10 * v10 + w01 * v01 + w11 * v11;
+        }
+        return out;
+    };
+    auto mid_spec = bilinear(x_m, y_m);
+    // scale spectrum by b_mid
+    for (int k=0;k<K;++k) mid_spec[k] *= tb_mid.second(0,0);
+    // project with sensitivity
+    float raw_mid_center[3] = {0,0,0};
+    for (int c=0;c<3;++c){
+        float acc = 0.0f; for (int k=0;k<K;++k) acc += mid_spec[k] * sensitivity(k,c);
+        raw_mid_center[c] = acc;
+    }
+
     auto raw_hw_by3 = agx::utils::rgb_to_raw_hanatos2025(image_hw_by3, sensitivity, params.io.input_color_space, params.io.input_cctf_decoding, neg.info.reference_illuminant, lut);
     raw_hw_by3 *= std::pow(2.0f, ev);
     auto raw = hw_by3_to_hw3(raw_hw_by3, H, W);
@@ -195,17 +274,21 @@ int main(){
     auto rgb = hw_by3_to_hw3(rgb_flat, H, W);
 
     // Center pixel index
-    int ci = H/2, cj = W/2;
+    // int ci = H/2, cj = W/2; (already declared)
     int idx_center = cj; // within row
 
     // dump JSON
     json j;
     auto at3 = [&](const nc::NdArray<float>& hw3){ return std::array<float,3>{ hw3(ci, cj*3+0), hw3(ci, cj*3+1), hw3(ci, cj*3+2)}; };
-    auto vecK = [&](const nc::NdArray<float>& v){ std::vector<float> out; out.reserve(v.shape().cols); for (uint32_t k=0;k<v.shape().cols;++k) out.push_back(v(ci, cj* (v.shape().cols/agx::config::SPECTRAL_SHAPE.wavelengths.size()) + k)); return out; };
-    // More robust K extraction from light/density_spectral blocks
-    auto extractK = [&](const nc::NdArray<float>& hwK){ std::vector<float> out; int K = agx::config::SPECTRAL_SHAPE.wavelengths.size(); out.reserve(K); for (int k=0;k<K;++k) out.push_back(hwK(ci, cj*K + k)); return out; };
+    auto extractK = [&](const nc::NdArray<float>& hwK){ std::vector<float> out; int Kloc = agx::config::SPECTRAL_SHAPE.wavelengths.size(); out.reserve(Kloc); for (int k=0;k<Kloc;++k) out.push_back(hwK(ci, cj*Kloc + k)); return out; };
 
     j["image_center_rgb"] = at3(image);
+    j["tc_center"] = std::vector<float>{ tc_center(0,0), tc_center(0,1) };
+    j["b_center"] = b_center(0,0);
+    j["raw_pre_center"] = std::vector<float>{ raw_pre_center_nc(0,0), raw_pre_center_nc(0,1), raw_pre_center_nc(0,2) };
+    j["raw_pre_scaled_center"] = std::vector<float>{ raw_pre_scaled(0,0), raw_pre_scaled(0,1), raw_pre_scaled(0,2) };
+    j["midgray_raw_center"] = std::vector<float>{ raw_mid_center[0], raw_mid_center[1], raw_mid_center[2] };
+    j["ev"] = ev;
     j["raw_center"] = at3(raw);
     j["density_cmy_center"] = at3(density_cmy);
     j["density_spectral_center"] = extractK(density_spec);

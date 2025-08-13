@@ -166,8 +166,12 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::cout << "Density CMY shape: " << density_cmy.shape().rows << "x" << density_cmy.shape().cols << "\n";
 
     // Enlarge and print
-    auto light_src = agx::model::standard_illuminant(params_.enlarger.illuminant);
-    auto enlarger_ill = agx::model::color_enlarger(light_src,
+    auto light_src_flat = agx::model::standard_illuminant(params_.enlarger.illuminant).flatten();
+    // Force 1xK-length illuminant for enlarger
+    const int Kspec = static_cast<int>(agx::config::SPECTRAL_SHAPE.wavelengths.size());
+    nc::NdArray<float> light_src_K(1, Kspec);
+    for (int i=0;i<Kspec;++i) light_src_K(0,i) = light_src_flat[i];
+    auto enlarger_ill = agx::model::color_enlarger(light_src_K,
         params_.enlarger.y_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.y_filter_shift,
         params_.enlarger.m_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.m_filter_shift,
         params_.enlarger.c_filter_neutral * agx::config::ENLARGER_STEPS);
@@ -210,7 +214,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
 
     // Preflash if any (approximate)
     if (params_.enlarger.preflash_exposure > 0.0f) {
-        auto preflash_ill = agx::model::color_enlarger(light_src,
+        auto preflash_ill = agx::model::color_enlarger(light_src_K,
             params_.enlarger.y_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.preflash_y_filter_shift,
             params_.enlarger.m_filter_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.preflash_m_filter_shift,
             params_.enlarger.c_filter_neutral * agx::config::ENLARGER_STEPS);
@@ -240,8 +244,11 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
 
     // Scan to RGB (XYZ)
     std::cout << "Paper dye_density shape: " << paper.data.dye_density.shape().rows << "x" << paper.data.dye_density.shape().cols << "\n";
-    auto scan_ill = agx::model::standard_illuminant(paper.info.viewing_illuminant).flatten();
-    std::cout << "Scan illuminant length: " << scan_ill.size() << "\n";
+    auto scan_ill_flat = agx::model::standard_illuminant(paper.info.viewing_illuminant).flatten();
+    // Force 1xK-length scan illuminant
+    nc::NdArray<float> scan_ill(1, Kspec);
+    for (int i=0;i<Kspec;++i) scan_ill(0,i) = scan_ill_flat[i];
+    std::cout << "Scan illuminant shape: " << scan_ill.shape().rows << "x" << scan_ill.shape().cols << "\n";
     float norm = 0.0f; for(uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) norm += agx::config::STANDARD_OBSERVER_CMFS(i,1) * scan_ill[i];
     std::cout << "Computing density spectral for scan...\n";
     auto dens_spec_scan = agx::utils::compute_density_spectral(density_print, paper.data.dye_density, /*min factor*/ 1.0f);
@@ -252,8 +259,21 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     xyz_hw3 = nc::nan_to_num(xyz_hw3);
     std::cout << "XYZ (H x W*3) shape: " << xyz_hw3.shape().rows << "x" << xyz_hw3.shape().cols << "\n";
 
-    // Convert XYZ -> output RGB
-    nc::NdArray<float> illuminant_xy(1,2); illuminant_xy(0,0)=0.3127f; illuminant_xy(0,1)=0.3290f;
+    // Convert XYZ -> output RGB, compute viewing illuminant xy from scan SPD to match Python
+    nc::NdArray<float> illuminant_xyz(1,3);
+    illuminant_xyz(0,0)=0.0f; illuminant_xyz(0,1)=0.0f; illuminant_xyz(0,2)=0.0f;
+    auto scan_flat = scan_ill.flatten();
+    for (uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) {
+        float e = scan_flat[i];
+        illuminant_xyz(0,0) += e * agx::config::STANDARD_OBSERVER_CMFS(i,0);
+        illuminant_xyz(0,1) += e * agx::config::STANDARD_OBSERVER_CMFS(i,1);
+        illuminant_xyz(0,2) += e * agx::config::STANDARD_OBSERVER_CMFS(i,2);
+    }
+    illuminant_xyz /= norm;
+    nc::NdArray<float> illuminant_xy(1,2);
+    float Ssum = illuminant_xyz(0,0) + illuminant_xyz(0,1) + illuminant_xyz(0,2);
+    if (Ssum > 0.0f) { illuminant_xy(0,0) = illuminant_xyz(0,0)/Ssum; illuminant_xy(0,1) = illuminant_xyz(0,1)/Ssum; }
+    else { illuminant_xy(0,0)=0.3127f; illuminant_xy(0,1)=0.3290f; }
     auto xyz_hw_by3 = hw3_to_hw_by3(xyz_hw3);
     auto rgb_hw_by3 = colour::XYZ_to_RGB(xyz_hw_by3, params_.io.output_color_space, params_.io.output_cctf_encoding, illuminant_xy, "CAT02");
     auto rgb_hw3 = hw_by3_to_hw3(rgb_hw_by3, Himg, Wimg);

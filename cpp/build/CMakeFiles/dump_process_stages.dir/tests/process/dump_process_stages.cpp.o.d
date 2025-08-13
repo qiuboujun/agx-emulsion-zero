@@ -2653,4 +2653,5 @@ CMakeFiles/dump_process_stages.dir/tests/process/dump_process_stages.cpp.o: \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/density_spectral.hpp \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/density_curves.hpp \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/conversions.hpp \
- /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/autoexposure.hpp
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/autoexposure.hpp \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/fast_interp_lut.hpp

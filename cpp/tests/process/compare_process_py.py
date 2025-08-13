@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from agx_emulsion.model.process import photo_params, photo_process
+from agx_emulsion.utils.autoexposure import measure_autoexposure_ev
 
 def main():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -27,6 +28,10 @@ def main():
     params.io.output_color_space = 'sRGB'
     params.io.output_cctf_encoding = True
     params.camera.auto_exposure = True
+
+    # Align Python EV with C++: use identical setting of apply_cctf_decoding=False
+    ev_py = measure_autoexposure_ev(img, color_space='sRGB', apply_cctf_decoding=False, method='center_weighted')
+    print('Python EV (apply_cctf_decoding=False):', ev_py)
 
     out_py = photo_process(img, params)
 

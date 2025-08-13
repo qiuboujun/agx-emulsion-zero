@@ -174,7 +174,8 @@ nc::NdArray<float> DichroicFilters::apply(
 
     // Compute dimmed filter matrix (N × 3)
     // and product across channels for each wavelength
-    nc::NdArray<float> total_filter(n);
+    // Allocate 1xN to respect NumCpp 2D convention for 1D arrays
+    nc::NdArray<float> total_filter(1, n);
     for (std::size_t j = 0; j < n; ++j) {
         float prod = 1.0f;
         for (std::size_t i = 0; i < 3; ++i) {
@@ -184,13 +185,13 @@ nc::NdArray<float> DichroicFilters::apply(
             float dimmed = 1.0f - (1.0f - f_val) * vals[i];
             prod *= dimmed;
         }
-        total_filter[j] = prod;
+        total_filter(0, j) = prod;
     }
 
     // Multiply by illuminant
-    nc::NdArray<float> result(n);
+    nc::NdArray<float> result(1, n);
     for (std::size_t j = 0; j < n; ++j) {
-        result[j] = illum_flat[j] * total_filter[j];
+        result(0, j) = illum_flat[j] * total_filter(0, j);
     }
     return result;
 }
@@ -248,6 +249,9 @@ nc::NdArray<float> color_enlarger(
     int enlarger_steps,
     const DichroicFilters* filters)
 {
+    // Ensure input is 1D K-length SPD
+    auto illum = light_source.flatten();
+    const std::size_t K = illum.size();
     // Compute per‑channel values divided by the step count
     std::array<float, 3> ymc = {
         y_filter_value / static_cast<float>(enlarger_steps),
@@ -256,7 +260,14 @@ nc::NdArray<float> color_enlarger(
     };
     // Select filter set: default to durst digital light if null
     const DichroicFilters* filt = filters ? filters : durst_digital_light_dichroic_filters;
-    return filt->apply(light_source, ymc);
+    // Ensure global filters are initialized before use to avoid null dereference
+    if (filt == nullptr) {
+        initialize_global_filters();
+        filt = durst_digital_light_dichroic_filters;
+    }
+    // Apply filters and ensure returned SPD is 1D K length
+    auto out = filt->apply(illum, ymc);
+    return out.flatten();
 }
 
 // -----------------------------------------------------------------------------

@@ -62,6 +62,18 @@ nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc:
                 transmitted(i, j) *= lflat[i];
             }
         }
+    } else if (lsize > 1 && (cols % lsize == 0)) {
+        // Block broadcast: light length K divides number of columns (W*K)
+        auto lflat = light.flatten();
+        const size_t blockSize = lsize;
+        const size_t blocks = cols / blockSize;
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t b = 0; b < blocks; ++b) {
+                for (size_t k = 0; k < blockSize; ++k) {
+                    transmitted(i, b*blockSize + k) *= lflat[k];
+                }
+            }
+        }
     } else if (static_cast<size_t>(rows * cols) == lsize) {
         // Element-wise multiply by flattened light
         auto lflat = light.flatten();
