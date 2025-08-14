@@ -76,7 +76,9 @@ std::pair<nc::NdArray<float>, nc::NdArray<float>> compute_with_lut(
     const std::function<nc::NdArray<float>(const nc::NdArray<float>&)>& function,
     float xmin,
     float xmax,
-    int steps);
+    int steps,
+    int height,
+    int width);
 
 /**
  * @brief Performs a warmup for both 3D and 2D LUT functions.

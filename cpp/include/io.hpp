@@ -18,6 +18,12 @@ struct AgxEmulsionData {
 namespace agx {
 namespace utils {
 
+// Returns a base data path used to resolve resources. At runtime inside the OFX
+// bundle this resolves to the plugin's directory; resources live under
+// "agx_emulsion/data" relative to it. During development it falls back to
+// the repository root defined by AGX_SOURCE_DIR.
+std::string get_data_path();
+
 //================================================================================
 // Interpolation
 //================================================================================

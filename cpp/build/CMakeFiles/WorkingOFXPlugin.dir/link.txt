@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,WorkingOFXPlugin.ofx -o WorkingOFXPlugin.ofx.bundle/Contents/Linux-x86-64/WorkingOFXPlugin.ofx CMakeFiles/WorkingOFXPlugin.dir/ofx/WorkingOFXPlugin.cpp.o  -Wl,-rpath,"\\\$ORIGIN" 

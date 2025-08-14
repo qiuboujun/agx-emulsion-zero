@@ -10,13 +10,35 @@
 #include <iostream> // For debug output
 #include <cmath> // For std::min
 #include <limits>
+#include <filesystem>
+#include <dlfcn.h>
 
 // Helper function to get the root data path.
+namespace agx {
+namespace utils {
 std::string get_data_path() {
-    // Resolve data paths relative to the repository root
-    // AGX_SOURCE_DIR points to repo root as defined in CMake
+    // Try to resolve relative to the plugin binary location if available
+    // This lets the OFX bundle carry its own resources.
+    Dl_info dl_info{};
+    if (dladdr((void*)&get_data_path, &dl_info) != 0 && dl_info.dli_fname) {
+        try {
+            std::filesystem::path lib_path(dl_info.dli_fname);
+            std::filesystem::path base_dir = lib_path.parent_path();
+            // Prefer placing resources alongside the plugin binary under
+            // base_dir/agx_emulsion/data/...
+            std::filesystem::path probe = base_dir / "agx_emulsion" / "data";
+            if (std::filesystem::exists(probe)) {
+                return (base_dir.string() + "/");
+            }
+        } catch (...) {
+            // Fall back below
+        }
+    }
+    // Fallback: repository root (development)
     return std::string(AGX_SOURCE_DIR) + "/";
 }
+} // namespace utils
+} // namespace agx
 
 namespace agx {
 namespace utils {

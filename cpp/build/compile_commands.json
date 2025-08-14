@@ -250,5 +250,71 @@
   "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -Dcouplers_cpp_tests_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /home/jimmyqiu/miniconda3/include/python3.13 -isystem /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/pybind11/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -fvisibility=hidden -flto -fno-fat-lto-objects -o CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/coupler/pybind_couplers.cpp",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/tests/coupler/pybind_couplers.cpp",
   "output": "CMakeFiles/couplers_cpp_tests.dir/tests/coupler/pybind_couplers.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/ofx/AgXEmulsionPlugin.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/ofx/AgXEmulsionPlugin.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/ofx/AgXEmulsionPlugin.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/ofx/AgXEmulsionPlugin.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS --options-file CMakeFiles/AgXEmulsionPlugin.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/ofx/ofx_cuda_bridge.cu -o CMakeFiles/AgXEmulsionPlugin.dir/ofx/ofx_cuda_bridge.cu.o",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/ofx/ofx_cuda_bridge.cu",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/ofx/ofx_cuda_bridge.cu.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsProperty.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsProperty.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsProperty.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsProperty.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsLog.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsLog.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsLog.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsLog.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsCore.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsCore.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsCore.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsCore.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsMultiThread.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsMultiThread.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsMultiThread.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsMultiThread.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsParams.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsParams.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsParams.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsParams.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsImageEffect.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsImageEffect.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsImageEffect.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsImageEffect.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -DAgXEmulsionPlugin_EXPORTS -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsInteract.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsInteract.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/Library/ofxsInteract.cpp",
+  "output": "CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsInteract.cpp.o"
 }
 ]

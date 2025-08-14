@@ -10268,7 +10268,6 @@ CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o: /home/jimmyqiu/cursor/agx-e
   /usr/local/include/NumCpp/Vector.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/color_filters.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/io.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/json.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/adl_serializer.hpp \
@@ -10326,7 +10325,8 @@ CMakeFiles/agx_core.dir/src/model/illuminants.cpp.o: /home/jimmyqiu/cursor/agx-e
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/ordered_map.hpp \
   /usr/include/c++/11/any \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/macro_unscope.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley_undef.hpp
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/color_filters.hpp
 
 CMakeFiles/agx_core.dir/src/model/parametric.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/parametric.cpp \
   /usr/include/stdc-predef.h \
@@ -18631,8 +18631,8 @@ CMakeFiles/agx_core.dir/src/model/process.cpp.o: /home/jimmyqiu/cursor/agx-emuls
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/illuminants.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/color_filters.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/io.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/color_filters.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/density_spectral.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/density_curves.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/diffusion.hpp \
@@ -43541,7 +43541,10 @@ CMakeFiles/agx_core.dir/src/utils/io.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-z
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/scipy.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/profile_io.hpp
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/profile_io.hpp \
+  /usr/include/dlfcn.h \
+  /usr/include/x86_64-linux-gnu/bits/dlfcn.h \
+  /usr/include/x86_64-linux-gnu/bits/dl_find_object.h
 
 CMakeFiles/agx_core.dir/src/utils/lut.cpp.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/lut.cpp \
   /usr/include/stdc-predef.h \
@@ -54526,10 +54529,6 @@ CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o: /home/jimmyqiu/curs
   /usr/local/include/NumCpp/Utils/timeit.hpp \
   /usr/local/include/NumCpp/Vector.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/fast_interp_lut.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/illuminants.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/color_filters.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/io.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/json.hpp \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/adl_serializer.hpp \
@@ -54587,7 +54586,11 @@ CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cpp.o: /home/jimmyqiu/curs
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/ordered_map.hpp \
   /usr/include/c++/11/any \
   /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/detail/macro_unscope.hpp \
-  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley_undef.hpp
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/fast_interp_lut.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/illuminants.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
+  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/color_filters.hpp
 
 CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o: /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu \
   /usr/include/stdc-predef.h \
@@ -57371,6 +57374,10 @@ CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o: /home/jimmyqiu/curso
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu:
 
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/measure.cpp:
+
+/usr/include/x86_64-linux-gnu/bits/dl_find_object.h:
+
+/usr/include/dlfcn.h:
 
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/io.cpp:
 
@@ -60247,6 +60254,8 @@ CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o: /home/jimmyqiu/curso
 /usr/include/boost/algorithm/string/case_conv.hpp:
 
 /usr/include/boost/date_time/year_month_day.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/dlfcn.h:
 
 /usr/include/boost/fusion/adapted/struct/detail/value_at_impl.hpp:
 

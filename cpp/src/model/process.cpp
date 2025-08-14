@@ -214,8 +214,8 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         params_.scanner.unsharp_sigma = 0.0f;
         params_.scanner.unsharp_amount = 0.0f;
     }
-    // Load profiles
-    std::string root = std::string(AGX_SOURCE_DIR) + "/cpp/data/profiles/";
+    // Load profiles (resolve via runtime data path with repo fallback)
+    std::string root = agx::utils::get_data_path() + "agx_emulsion/data/profiles/";
     Profile neg = ProfileIO::load_from_file(root + params_.profiles.negative + ".json");
     Profile paper = ProfileIO::load_from_file(root + params_.profiles.print_paper + ".json");
 
@@ -262,7 +262,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     }
 
     // RGB->RAW (Hanatos 2025) and exposure
-    auto lut = agx::utils::load_hanatos_spectra_lut_npy(std::string(AGX_SOURCE_DIR) + "/cpp/data/luts/spectral_upsampling/irradiance_xy_tc.npy");
+    auto lut = agx::utils::load_hanatos_spectra_lut_npy(agx::utils::get_data_path() + "agx_emulsion/data/luts/spectral_upsampling/irradiance_xy_tc.npy");
     std::cout << "Spectra LUT shape: " << lut.shape().rows << "x" << lut.shape().cols << "\n";
     // Reshape to (H*W) x 3 for per-pixel processing
     auto image_hw_by3 = hw3_to_hw_by3(image);
@@ -290,6 +290,9 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     raw *= std::pow(2.0f, ev);
 
     // Lens blur (Gaussian) and halation/scattering
+    std::cout << "Lens blur (um): " << params_.camera.lens_blur_um
+              << ", Halation active: " << (params_.io.full_image && neg.halation.active ? 1 : 0)
+              << ", pixel_size_um: " << pixel_size_um << "\n";
     if (params_.camera.lens_blur_um > 0.0f) {
         std::vector<float> raw_vec(raw.size()); std::copy(raw.begin(), raw.end(), raw_vec.begin());
         std::vector<float> out(raw.size());
@@ -310,6 +313,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     }
 
     // Develop film (log_raw -> density_cmy)
+    std::cout << "Develop film: interpolate exposure->density (neg)" << "\n";
     // Compute log10 in double precision and reshape to (H*W) x 3
     auto raw_hw_by3_for_log = hw3_to_hw_by3(raw);
     agx_emulsion::Matrix log_raw(raw_hw_by3_for_log.shape().rows, 3);
@@ -325,8 +329,29 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::vector<double> le_neg(neg.data.log_exposure.size());
     for (uint32_t i=0;i<neg.data.log_exposure.size();++i){ le_neg[i] = neg.data.log_exposure[i]; }
     agx_emulsion::Matrix density_cmy_mat;
-    if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma, density_cmy_mat)) {
-        density_cmy_mat = agx_emulsion::interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma);
+    {
+        std::cout << "  P (pixels): " << log_raw.rows << ", N (curve points): " << le_neg.size() << "\n";
+        auto t0 = std::chrono::steady_clock::now();
+        bool gpu_ok = false;
+        try {
+            gpu_ok = agx_emulsion::gpu_interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma, density_cmy_mat);
+        } catch (const std::exception& e) {
+            std::cout << "  GPU interpolate threw: " << e.what() << "\n";
+            gpu_ok = false;
+        } catch (...) {
+            std::cout << "  GPU interpolate threw unknown exception" << "\n";
+            gpu_ok = false;
+        }
+        auto t1 = std::chrono::steady_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+        std::cout << "  GPU interpolate done: ok=" << (gpu_ok?1:0) << ", time=" << ms << " ms" << "\n";
+        if (!gpu_ok) {
+            auto c0 = std::chrono::steady_clock::now();
+            density_cmy_mat = agx_emulsion::interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma);
+            auto c1 = std::chrono::steady_clock::now();
+            auto cms = std::chrono::duration_cast<std::chrono::milliseconds>(c1 - c0).count();
+            std::cout << "  CPU interpolate time=" << cms << " ms" << "\n";
+        }
     }
     // DIR couplers: compute corrected curves and corrected log_raw, then re-interpolate (Python parity)
     // Only apply if profile has dir_couplers active
@@ -455,6 +480,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     // ---------------------------------------------------------------------------------
     agx_emulsion::Matrix log_cmy_mat; // (H*W) x 3
     if (params_.settings.use_enlarger_lut) {
+        std::cout << "Enlarger path: using LUT, resolution=" << params_.settings.lut_resolution << "\n";
         // Precompute paper sensitivity and midgray factor and preflash raw once
         nc::NdArray<float> paper_sens(paper.data.log_sensitivity.shape().rows, paper.data.log_sensitivity.shape().cols);
         for (uint32_t i=0;i<paper.data.log_sensitivity.shape().rows;++i){
@@ -555,12 +581,34 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
 
         // Evaluate via LUT
         auto dnorm_flat = hw3_to_hw_by3(dnorm);
-        auto [log_raw_flat, lut3d] = agx::utils::compute_with_lut(dnorm_flat, spectral_fn, 0.0f, 1.0f, params_.settings.lut_resolution);
+        std::cout << "  compute_with_lut (enlarger) start" << std::endl;
+        auto [log_raw_flat, lut3d] = agx::utils::compute_with_lut(dnorm_flat, spectral_fn, 0.0f, 1.0f, params_.settings.lut_resolution, Himg, Wimg);
+        std::cout << "  compute_with_lut (enlarger) done" << std::endl;
+        
+        // Check if LUT computation failed
+        if (log_raw_flat.shape().rows == 0 || log_raw_flat.shape().cols == 0) {
+            std::cout << "  ERROR: LUT computation failed, falling back to direct spectral path" << std::endl;
+            // Fallback to direct spectral computation
+            auto density_spec = agx::utils::compute_density_spectral(dnorm, neg.data.dye_density, neg.data.dye_density_min_factor);
+            auto light = agx::utils::density_to_light(density_spec, enlarger_ill);
+            auto raw = nc::dot(light, paper_sens);
+            if (!params_.enlarger.just_preflash) {
+                for (int i=0;i<raw.shape().rows;++i){ for(int c=0;c<3;++c){ raw(i,c) *= (params_.enlarger.print_exposure * exposure_factor); } }
+            } else {
+                for (int i=0;i<raw.shape().rows;++i){ for(int c=0;c<3;++c){ raw(i,c) = 0.0f; } }
+            }
+            for (int i=0;i<raw.shape().rows;++i){ for(int c=0;c<3;++c){ raw(i,c) += raw_pre(0,c); } }
+            nc::NdArray<float> log_raw_fallback(raw.shape().rows,3);
+            for (int i=0;i<raw.shape().rows;++i){ for (int c=0;c<3;++c){ double v = std::max(0.0, (double)raw(i,c)); log_raw_fallback(i,c) = (float)std::log10(v + 1e-10); } }
+            log_raw_flat = log_raw_fallback;
+        }
+        
         (void)lut3d;
         // Fill log_cmy_mat
         log_cmy_mat = agx_emulsion::Matrix(log_raw_flat.shape().rows, 3);
         for (uint32_t i=0;i<log_raw_flat.shape().rows;++i){ for(int c=0;c<3;++c) log_cmy_mat(i,c) = log_raw_flat(i,c); }
     } else {
+        std::cout << "Enlarger path: direct spectral (no LUT)\n";
         // Direct spectral path (existing implementation)
         nc::NdArray<float> density_spec;
         if (!agx::utils::compute_density_spectral_gpu(density_cmy, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor, density_spec)) {
@@ -673,9 +721,22 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
             for (int i=0;i<N;++i){ for (int c=0;c<3;++c){ double v = std::max(0.0, (double)xyz_flat(i,c)); out(i,c) = (float)std::log10(v + 1e-10); } }
             return out;
         };
-        auto [log_xyz_flat, lut3d_scan] = agx::utils::compute_with_lut(dnorm_flat, spec_fn, 0.0f, 1.0f, params_.settings.lut_resolution);
+        auto [log_xyz_flat, lut3d_scan] = agx::utils::compute_with_lut(dnorm_flat, spec_fn, 0.0f, 1.0f, params_.settings.lut_resolution, Himg, Wimg);
         (void)lut3d_scan;
-        for (uint32_t i=0;i<log_xyz_flat.shape().rows;++i){ for (int c=0;c<3;++c){ log_xyz_flat(i,c) = std::pow(10.0f, log_xyz_flat(i,c)); }}
+        
+        // Check if LUT computation failed
+        if (log_xyz_flat.shape().rows == 0 || log_xyz_flat.shape().cols == 0) {
+            std::cout << "  ERROR: Scanner LUT computation failed, falling back to direct spectral path" << std::endl;
+            // Fallback to direct spectral computation
+            auto dens_spec_scan = agx::utils::compute_density_spectral(density_print, paper.data.dye_density, paper.data.dye_density_min_factor);
+            auto light_scan = agx::utils::density_to_light(dens_spec_scan, scan_ill);
+            auto xyz_hw_by3_local = dot_blocks_K3(light_scan, agx::config::STANDARD_OBSERVER_CMFS, Wimg);
+            for (uint32_t i=0;i<xyz_hw_by3_local.shape().rows;++i){ for (int c=0;c<3;++c){ xyz_hw_by3_local(i,c) /= norm; }}
+            log_xyz_flat = xyz_hw_by3_local;
+            for (uint32_t i=0;i<log_xyz_flat.shape().rows;++i){ for (int c=0;c<3;++c){ log_xyz_flat(i,c) = std::pow(10.0f, log_xyz_flat(i,c)); }}
+        } else {
+            for (uint32_t i=0;i<log_xyz_flat.shape().rows;++i){ for (int c=0;c<3;++c){ log_xyz_flat(i,c) = std::pow(10.0f, log_xyz_flat(i,c)); }}
+        }
         auto xyz_hw_by3_local = log_xyz_flat;
         xyz_hw3 = hw_by3_to_hw3(xyz_hw_by3_local, Himg, Wimg);
         xyz_hw3 = nc::nan_to_num(xyz_hw3);
@@ -696,60 +757,83 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         xyz_hw3 = xyz_hw3 / norm;
         xyz_hw3 = nc::nan_to_num(xyz_hw3);
     }
-    std::cout << "XYZ (H x W*3) shape: " << xyz_hw3.shape().rows << "x" << xyz_hw3.shape().cols << "\n";
-
-    // Convert XYZ -> output RGB, compute viewing illuminant xy from scan SPD to match Python
-    nc::NdArray<float> illuminant_xyz(1,3);
-    illuminant_xyz(0,0)=0.0f; illuminant_xyz(0,1)=0.0f; illuminant_xyz(0,2)=0.0f;
-    auto scan_flat = scan_ill.flatten();
-    for (uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) {
-        float e = scan_flat[i];
-        illuminant_xyz(0,0) += e * agx::config::STANDARD_OBSERVER_CMFS(i,0);
-        illuminant_xyz(0,1) += e * agx::config::STANDARD_OBSERVER_CMFS(i,1);
-        illuminant_xyz(0,2) += e * agx::config::STANDARD_OBSERVER_CMFS(i,2);
-    }
-    illuminant_xyz /= norm;
-    nc::NdArray<float> illuminant_xy(1,2);
-    float Ssum = illuminant_xyz(0,0) + illuminant_xyz(0,1) + illuminant_xyz(0,2);
-    if (Ssum > 0.0f) { illuminant_xy(0,0) = illuminant_xyz(0,0)/Ssum; illuminant_xy(0,1) = illuminant_xyz(0,1)/Ssum; }
-    else { illuminant_xy(0,0)=0.3127f; illuminant_xy(0,1)=0.3290f; }
-    auto xyz_hw_by3 = hw3_to_hw_by3(xyz_hw3);
-    // Add stochastic glare if requested (matches Python compute_random_glare_amount)
-    if (params_.settings.apply_paper_glare && paper.glare.active && paper.glare.percent > 0.0f) {
-        xyz_hw_by3 = agx::utils::add_random_glare(
-            xyz_hw_by3,
-            illuminant_xyz,
-            paper.glare.percent / 100.0f,
-            paper.glare.roughness,
-            paper.glare.blur,
-            Himg,
-            Wimg
-        );
-    }
-    auto rgb_hw_by3 = colour::XYZ_to_RGB(xyz_hw_by3, params_.io.output_color_space, params_.io.output_cctf_encoding, illuminant_xy, "CAT02");
-    auto rgb_hw3 = hw_by3_to_hw3(rgb_hw_by3, Himg, Wimg);
-    // Scanner lens blur and unsharp (post-conversion), matching Python order
-    if (params_.scanner.lens_blur > 0.0f) {
-        std::vector<float> rgb_vec(rgb_hw3.size()); std::copy(rgb_hw3.begin(), rgb_hw3.end(), rgb_vec.begin());
-        std::vector<float> rgb_blur;
-        agx_emulsion::Diffusion::apply_gaussian_blur(rgb_vec, Himg, Wimg, params_.scanner.lens_blur, rgb_blur, /*truncate*/4.0f, /*try_cuda*/true);
-        std::copy(rgb_blur.begin(), rgb_blur.end(), rgb_hw3.begin());
-    }
-    if (params_.scanner.unsharp_sigma > 0.0f && params_.scanner.unsharp_amount > 0.0f) {
-        std::vector<float> rgb_vec(rgb_hw3.size()); std::copy(rgb_hw3.begin(), rgb_hw3.end(), rgb_vec.begin());
-        std::vector<float> rgb_unsharp;
-        agx_emulsion::Diffusion::apply_unsharp_mask(rgb_vec, Himg, Wimg, params_.scanner.unsharp_sigma, params_.scanner.unsharp_amount, rgb_unsharp);
-        std::copy(rgb_unsharp.begin(), rgb_unsharp.end(), rgb_hw3.begin());
-    }
-    if (params_.debug.return_negative_density_cmy) return density_cmy;
-    if (params_.debug.return_print_density_cmy) return density_print;
-    // Final clamp to [0,1] to match Python's np.clip after optional CCTF encoding
-    for (auto &v : rgb_hw3) {
-        if (v < 0.0f) v = 0.0f;
-        else if (v > 1.0f) v = 1.0f;
-    }
-    std::cout << "Output RGB shape: " << rgb_hw3.shape().rows << "x" << rgb_hw3.shape().cols << "\n";
-    return rgb_hw3;
+    std::cout << "XYZ (H x W*3) shape: " << xyz_hw3.shape().rows << "x" << xyz_hw3.shape().cols << std::endl;
+        
+        // Convert XYZ -> output RGB, compute viewing illuminant xy from scan SPD to match Python
+        std::cout << "Computing viewing illuminant..." << std::endl;
+        nc::NdArray<float> illuminant_xyz(1,3);
+        illuminant_xyz(0,0)=0.0f; illuminant_xyz(0,1)=0.0f; illuminant_xyz(0,2)=0.0f;
+        auto scan_flat = scan_ill.flatten();
+        for (uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) {
+            float e = scan_flat[i];
+            illuminant_xyz(0,0) += e * agx::config::STANDARD_OBSERVER_CMFS(i,0);
+            illuminant_xyz(0,1) += e * agx::config::STANDARD_OBSERVER_CMFS(i,1);
+            illuminant_xyz(0,2) += e * agx::config::STANDARD_OBSERVER_CMFS(i,2);
+        }
+        illuminant_xyz /= norm;
+        nc::NdArray<float> illuminant_xy(1,2);
+        float Ssum = illuminant_xyz(0,0) + illuminant_xyz(0,1) + illuminant_xyz(0,2);
+        if (Ssum > 0.0f) { illuminant_xy(0,0) = illuminant_xyz(0,0)/Ssum; illuminant_xy(0,1) = illuminant_xyz(0,1)/Ssum; }
+        else { illuminant_xy(0,0)=0.3127f; illuminant_xy(0,1)=0.3290f; }
+        std::cout << "Viewing illuminant computed" << std::endl;
+        
+        auto xyz_hw_by3 = hw3_to_hw_by3(xyz_hw3);
+        std::cout << "XYZ reshaped to " << xyz_hw_by3.shape().rows << "x" << xyz_hw_by3.shape().cols << std::endl;
+        
+        // Add stochastic glare if requested (matches Python compute_random_glare_amount)
+        if (params_.settings.apply_paper_glare && paper.glare.active && paper.glare.percent > 0.0f) {
+            std::cout << "Applying paper glare..." << std::endl;
+            xyz_hw_by3 = agx::utils::add_random_glare(
+                xyz_hw_by3,
+                illuminant_xyz,
+                paper.glare.percent / 100.0f,
+                paper.glare.roughness,
+                paper.glare.blur,
+                Himg,
+                Wimg
+            );
+            std::cout << "Paper glare applied" << std::endl;
+        }
+        
+        std::cout << "Converting XYZ to RGB..." << std::endl;
+        auto rgb_hw_by3 = colour::XYZ_to_RGB(xyz_hw_by3, params_.io.output_color_space, params_.io.output_cctf_encoding, illuminant_xy, "CAT02");
+        std::cout << "XYZ to RGB conversion completed" << std::endl;
+        
+        auto rgb_hw3 = hw_by3_to_hw3(rgb_hw_by3, Himg, Wimg);
+        std::cout << "RGB reshaped to " << rgb_hw3.shape().rows << "x" << rgb_hw3.shape().cols << std::endl;
+        
+        // Scanner lens blur and unsharp (post-conversion), matching Python order
+        if (params_.scanner.lens_blur > 0.0f) {
+            std::cout << "Applying scanner lens blur..." << std::endl;
+            std::vector<float> rgb_vec(rgb_hw3.size()); std::copy(rgb_hw3.begin(), rgb_hw3.end(), rgb_vec.begin());
+            std::vector<float> rgb_blur;
+            agx_emulsion::Diffusion::apply_gaussian_blur(rgb_vec, Himg, Wimg, params_.scanner.lens_blur, rgb_blur, /*truncate*/4.0f, /*try_cuda*/true);
+            std::copy(rgb_blur.begin(), rgb_blur.end(), rgb_hw3.begin());
+            std::cout << "Scanner lens blur applied" << std::endl;
+        }
+        if (params_.scanner.unsharp_sigma > 0.0f && params_.scanner.unsharp_amount > 0.0f) {
+            std::cout << "Applying scanner unsharp mask..." << std::endl;
+            std::vector<float> rgb_vec(rgb_hw3.size()); std::copy(rgb_hw3.begin(), rgb_hw3.end(), rgb_vec.begin());
+            std::vector<float> rgb_unsharp;
+            agx_emulsion::Diffusion::apply_unsharp_mask(rgb_vec, Himg, Wimg, params_.scanner.unsharp_sigma, params_.scanner.unsharp_amount, rgb_unsharp);
+            std::copy(rgb_unsharp.begin(), rgb_unsharp.end(), rgb_hw3.begin());
+            std::cout << "Scanner unsharp mask applied" << std::endl;
+        }
+        
+        if (params_.debug.return_negative_density_cmy) return density_cmy;
+        if (params_.debug.return_print_density_cmy) return density_print;
+        
+        // Final clamp to [0,1] to match Python's np.clip after optional CCTF encoding
+        std::cout << "Applying final clamp..." << std::endl;
+        for (auto &v : rgb_hw3) {
+            if (v < 0.0f) v = 0.0f;
+            else if (v > 1.0f) v = 1.0f;
+        }
+        std::cout << "Final clamp completed" << std::endl;
+        
+        std::cout << "Output RGB shape: " << rgb_hw3.shape().rows << "x" << rgb_hw3.shape().cols << std::endl;
+        std::cout << "Process::run() completed successfully" << std::endl;
+        return rgb_hw3;
 }
 
 } } // namespace agx::process

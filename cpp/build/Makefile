@@ -396,6 +396,45 @@ scipy_test/fast:
 .PHONY : scipy_test/fast
 
 #=============================================================================
+# Target rules for targets named AgXEmulsionPlugin
+
+# Build rule for target.
+AgXEmulsionPlugin: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 AgXEmulsionPlugin
+.PHONY : AgXEmulsionPlugin
+
+# fast build rule for target.
+AgXEmulsionPlugin/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/build
+.PHONY : AgXEmulsionPlugin/fast
+
+#=============================================================================
+# Target rules for targets named AgXEmulsionPluginBundle
+
+# Build rule for target.
+AgXEmulsionPluginBundle: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 AgXEmulsionPluginBundle
+.PHONY : AgXEmulsionPluginBundle
+
+# fast build rule for target.
+AgXEmulsionPluginBundle/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPluginBundle.dir/build.make CMakeFiles/AgXEmulsionPluginBundle.dir/build
+.PHONY : AgXEmulsionPluginBundle/fast
+
+#=============================================================================
+# Target rules for targets named install_ofx
+
+# Build rule for target.
+install_ofx: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 install_ofx
+.PHONY : install_ofx
+
+# fast build rule for target.
+install_ofx/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/install_ofx.dir/build.make CMakeFiles/install_ofx.dir/build
+.PHONY : install_ofx/fast
+
+#=============================================================================
 # Target rules for targets named format
 
 # Build rule for target.
@@ -420,6 +459,270 @@ tidy: cmake_check_build_system
 tidy/fast:
 	$(MAKE) $(MAKESILENT) -f numcpp_build/CMakeFiles/tidy.dir/build.make numcpp_build/CMakeFiles/tidy.dir/build
 .PHONY : tidy/fast
+
+external/OpenFX/Support/Library/ofxsCore.o: external/OpenFX/Support/Library/ofxsCore.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsCore.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsCore.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsCore.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsCore.cpp.o
+
+external/OpenFX/Support/Library/ofxsCore.i: external/OpenFX/Support/Library/ofxsCore.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsCore.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsCore.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsCore.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsCore.cpp.i
+
+external/OpenFX/Support/Library/ofxsCore.s: external/OpenFX/Support/Library/ofxsCore.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsCore.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsCore.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsCore.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsCore.cpp.s
+
+external/OpenFX/Support/Library/ofxsHWNDInteract.o: external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsHWNDInteract.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.o
+
+external/OpenFX/Support/Library/ofxsHWNDInteract.i: external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsHWNDInteract.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.i
+
+external/OpenFX/Support/Library/ofxsHWNDInteract.s: external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsHWNDInteract.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsHWNDInteract.cpp.s
+
+external/OpenFX/Support/Library/ofxsImageEffect.o: external/OpenFX/Support/Library/ofxsImageEffect.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsImageEffect.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsImageEffect.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsImageEffect.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsImageEffect.cpp.o
+
+external/OpenFX/Support/Library/ofxsImageEffect.i: external/OpenFX/Support/Library/ofxsImageEffect.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsImageEffect.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsImageEffect.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsImageEffect.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsImageEffect.cpp.i
+
+external/OpenFX/Support/Library/ofxsImageEffect.s: external/OpenFX/Support/Library/ofxsImageEffect.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsImageEffect.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsImageEffect.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsImageEffect.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsImageEffect.cpp.s
+
+external/OpenFX/Support/Library/ofxsInteract.o: external/OpenFX/Support/Library/ofxsInteract.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsInteract.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsInteract.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsInteract.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsInteract.cpp.o
+
+external/OpenFX/Support/Library/ofxsInteract.i: external/OpenFX/Support/Library/ofxsInteract.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsInteract.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsInteract.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsInteract.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsInteract.cpp.i
+
+external/OpenFX/Support/Library/ofxsInteract.s: external/OpenFX/Support/Library/ofxsInteract.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsInteract.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsInteract.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsInteract.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsInteract.cpp.s
+
+external/OpenFX/Support/Library/ofxsLog.o: external/OpenFX/Support/Library/ofxsLog.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsLog.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsLog.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsLog.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsLog.cpp.o
+
+external/OpenFX/Support/Library/ofxsLog.i: external/OpenFX/Support/Library/ofxsLog.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsLog.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsLog.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsLog.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsLog.cpp.i
+
+external/OpenFX/Support/Library/ofxsLog.s: external/OpenFX/Support/Library/ofxsLog.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsLog.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsLog.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsLog.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsLog.cpp.s
+
+external/OpenFX/Support/Library/ofxsMultiThread.o: external/OpenFX/Support/Library/ofxsMultiThread.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsMultiThread.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsMultiThread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsMultiThread.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsMultiThread.cpp.o
+
+external/OpenFX/Support/Library/ofxsMultiThread.i: external/OpenFX/Support/Library/ofxsMultiThread.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsMultiThread.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsMultiThread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsMultiThread.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsMultiThread.cpp.i
+
+external/OpenFX/Support/Library/ofxsMultiThread.s: external/OpenFX/Support/Library/ofxsMultiThread.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsMultiThread.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsMultiThread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsMultiThread.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsMultiThread.cpp.s
+
+external/OpenFX/Support/Library/ofxsParams.o: external/OpenFX/Support/Library/ofxsParams.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsParams.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsParams.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsParams.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsParams.cpp.o
+
+external/OpenFX/Support/Library/ofxsParams.i: external/OpenFX/Support/Library/ofxsParams.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsParams.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsParams.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsParams.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsParams.cpp.i
+
+external/OpenFX/Support/Library/ofxsParams.s: external/OpenFX/Support/Library/ofxsParams.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsParams.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsParams.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsParams.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsParams.cpp.s
+
+external/OpenFX/Support/Library/ofxsProperty.o: external/OpenFX/Support/Library/ofxsProperty.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsProperty.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsProperty.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsProperty.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsProperty.cpp.o
+
+external/OpenFX/Support/Library/ofxsProperty.i: external/OpenFX/Support/Library/ofxsProperty.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsProperty.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsProperty.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsProperty.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsProperty.cpp.i
+
+external/OpenFX/Support/Library/ofxsProperty.s: external/OpenFX/Support/Library/ofxsProperty.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsProperty.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsProperty.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsProperty.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsProperty.cpp.s
+
+external/OpenFX/Support/Library/ofxsPropertyValidation.o: external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsPropertyValidation.o
+
+# target to build an object file
+external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.o
+.PHONY : external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.o
+
+external/OpenFX/Support/Library/ofxsPropertyValidation.i: external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsPropertyValidation.i
+
+# target to preprocess a source file
+external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.i
+.PHONY : external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.i
+
+external/OpenFX/Support/Library/ofxsPropertyValidation.s: external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsPropertyValidation.s
+
+# target to generate assembly for a file
+external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.s
+.PHONY : external/OpenFX/Support/Library/ofxsPropertyValidation.cpp.s
+
+ofx/AgXEmulsionPlugin.o: ofx/AgXEmulsionPlugin.cpp.o
+.PHONY : ofx/AgXEmulsionPlugin.o
+
+# target to build an object file
+ofx/AgXEmulsionPlugin.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/ofx/AgXEmulsionPlugin.cpp.o
+.PHONY : ofx/AgXEmulsionPlugin.cpp.o
+
+ofx/AgXEmulsionPlugin.i: ofx/AgXEmulsionPlugin.cpp.i
+.PHONY : ofx/AgXEmulsionPlugin.i
+
+# target to preprocess a source file
+ofx/AgXEmulsionPlugin.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/ofx/AgXEmulsionPlugin.cpp.i
+.PHONY : ofx/AgXEmulsionPlugin.cpp.i
+
+ofx/AgXEmulsionPlugin.s: ofx/AgXEmulsionPlugin.cpp.s
+.PHONY : ofx/AgXEmulsionPlugin.s
+
+# target to generate assembly for a file
+ofx/AgXEmulsionPlugin.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/ofx/AgXEmulsionPlugin.cpp.s
+.PHONY : ofx/AgXEmulsionPlugin.cpp.s
+
+ofx/ofx_cuda_bridge.o: ofx/ofx_cuda_bridge.cu.o
+.PHONY : ofx/ofx_cuda_bridge.o
+
+# target to build an object file
+ofx/ofx_cuda_bridge.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/ofx/ofx_cuda_bridge.cu.o
+.PHONY : ofx/ofx_cuda_bridge.cu.o
+
+ofx/ofx_cuda_bridge.i: ofx/ofx_cuda_bridge.cu.i
+.PHONY : ofx/ofx_cuda_bridge.i
+
+# target to preprocess a source file
+ofx/ofx_cuda_bridge.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/ofx/ofx_cuda_bridge.cu.i
+.PHONY : ofx/ofx_cuda_bridge.cu.i
+
+ofx/ofx_cuda_bridge.s: ofx/ofx_cuda_bridge.cu.s
+.PHONY : ofx/ofx_cuda_bridge.s
+
+# target to generate assembly for a file
+ofx/ofx_cuda_bridge.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AgXEmulsionPlugin.dir/build.make CMakeFiles/AgXEmulsionPlugin.dir/ofx/ofx_cuda_bridge.cu.s
+.PHONY : ofx/ofx_cuda_bridge.cu.s
 
 src/model/balance.o: src/model/balance.cpp.o
 .PHONY : src/model/balance.o
@@ -1441,11 +1744,14 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... AgXEmulsionPluginBundle"
 	@echo "... compare_process"
 	@echo "... compare_rgb_to_raw"
 	@echo "... format"
+	@echo "... install_ofx"
 	@echo "... scipy_test"
 	@echo "... tidy"
+	@echo "... AgXEmulsionPlugin"
 	@echo "... agx_core"
 	@echo "... balance_cpp_tests"
 	@echo "... config_cpp_tests"
@@ -1461,6 +1767,39 @@ help:
 	@echo "... io_cpp_tests"
 	@echo "... test_process_end_to_end"
 	@echo "... test_rgb_to_raw_hanatos"
+	@echo "... external/OpenFX/Support/Library/ofxsCore.o"
+	@echo "... external/OpenFX/Support/Library/ofxsCore.i"
+	@echo "... external/OpenFX/Support/Library/ofxsCore.s"
+	@echo "... external/OpenFX/Support/Library/ofxsHWNDInteract.o"
+	@echo "... external/OpenFX/Support/Library/ofxsHWNDInteract.i"
+	@echo "... external/OpenFX/Support/Library/ofxsHWNDInteract.s"
+	@echo "... external/OpenFX/Support/Library/ofxsImageEffect.o"
+	@echo "... external/OpenFX/Support/Library/ofxsImageEffect.i"
+	@echo "... external/OpenFX/Support/Library/ofxsImageEffect.s"
+	@echo "... external/OpenFX/Support/Library/ofxsInteract.o"
+	@echo "... external/OpenFX/Support/Library/ofxsInteract.i"
+	@echo "... external/OpenFX/Support/Library/ofxsInteract.s"
+	@echo "... external/OpenFX/Support/Library/ofxsLog.o"
+	@echo "... external/OpenFX/Support/Library/ofxsLog.i"
+	@echo "... external/OpenFX/Support/Library/ofxsLog.s"
+	@echo "... external/OpenFX/Support/Library/ofxsMultiThread.o"
+	@echo "... external/OpenFX/Support/Library/ofxsMultiThread.i"
+	@echo "... external/OpenFX/Support/Library/ofxsMultiThread.s"
+	@echo "... external/OpenFX/Support/Library/ofxsParams.o"
+	@echo "... external/OpenFX/Support/Library/ofxsParams.i"
+	@echo "... external/OpenFX/Support/Library/ofxsParams.s"
+	@echo "... external/OpenFX/Support/Library/ofxsProperty.o"
+	@echo "... external/OpenFX/Support/Library/ofxsProperty.i"
+	@echo "... external/OpenFX/Support/Library/ofxsProperty.s"
+	@echo "... external/OpenFX/Support/Library/ofxsPropertyValidation.o"
+	@echo "... external/OpenFX/Support/Library/ofxsPropertyValidation.i"
+	@echo "... external/OpenFX/Support/Library/ofxsPropertyValidation.s"
+	@echo "... ofx/AgXEmulsionPlugin.o"
+	@echo "... ofx/AgXEmulsionPlugin.i"
+	@echo "... ofx/AgXEmulsionPlugin.s"
+	@echo "... ofx/ofx_cuda_bridge.o"
+	@echo "... ofx/ofx_cuda_bridge.i"
+	@echo "... ofx/ofx_cuda_bridge.s"
 	@echo "... src/model/balance.o"
 	@echo "... src/model/balance.i"
 	@echo "... src/model/balance.s"

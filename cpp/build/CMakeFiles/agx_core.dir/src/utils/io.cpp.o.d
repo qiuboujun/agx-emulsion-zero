@@ -2643,4 +2643,6 @@ CMakeFiles/agx_core.dir/src/utils/io.cpp.o: \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/config.hpp \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/colour.hpp \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/scipy.hpp \
- /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/profile_io.hpp
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/profile_io.hpp \
+ /usr/include/dlfcn.h /usr/include/x86_64-linux-gnu/bits/dlfcn.h \
+ /usr/include/x86_64-linux-gnu/bits/dl_find_object.h

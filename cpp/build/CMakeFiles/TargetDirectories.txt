@@ -16,6 +16,9 @@
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/compare_process.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/couplers_cpp_tests.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/scipy_test.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/AgXEmulsionPlugin.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/AgXEmulsionPluginBundle.dir
+/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/install_ofx.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/edit_cache.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/rebuild_cache.dir
 /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build/CMakeFiles/list_install_components.dir

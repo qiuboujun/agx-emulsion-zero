@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <array>
+#include "io.hpp"
 
 #ifndef AGX_SOURCE_DIR
 #define AGX_SOURCE_DIR "."
@@ -626,12 +627,23 @@ inline nc::NdArray<float> XYZ_to_xy(const nc::NdArray<float>& xyz) {
  * @return An nc::NdArray of shape [N, 4] with columns [wavelength, x, y, z].
  */
 inline nc::NdArray<float> get_cie_1931_2_degree_cmfs() {
-    // Try cpp/data first, then fallback to top-level data
-    std::string filename = std::string(AGX_SOURCE_DIR) + "/cpp/data/CIE_1931_2_Degree_CMFS.csv";
+    // Prefer runtime bundle path, fallback to repo
+    std::string filename = std::string(AGX_SOURCE_DIR) + "/data/CIE_1931_2_Degree_CMFS.csv";
+    // Use get_data_path if available to find bundled resources
+    try {
+        filename = agx::utils::get_data_path() + "agx_emulsion/data/CIE_1931_2_Degree_CMFS.csv";
+    } catch (...) {
+        // ignore
+    }
     std::ifstream file(filename);
     if (!file.is_open()) {
-        filename = std::string(AGX_SOURCE_DIR) + "/data/CIE_1931_2_Degree_CMFS.csv";
-        file.open(filename);
+        // last resort fallback to cpp/data
+        std::string alt = std::string(AGX_SOURCE_DIR) + "/cpp/data/CIE_1931_2_Degree_CMFS.csv";
+        file.open(alt);
+        if (!file.is_open()) {
+            throw std::runtime_error("Could not open file: " + filename);
+        }
+        filename = alt;
     }
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + filename);

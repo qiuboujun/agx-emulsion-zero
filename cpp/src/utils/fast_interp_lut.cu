@@ -149,6 +149,107 @@ __global__ void apply_lut_cubic_3d_kernel(
     }
 }
 
+// Linear-index versions to avoid oversized 2D grids
+__global__ void apply_lut_cubic_2d_kernel_linear(
+    float* output,
+    const float* image,
+    const float* lut,
+    int N, int width,
+    int lut_size, int lut_channels)
+{
+    const int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= N) return;
+
+    const float x_in = image[idx * 2 + 0] * (lut_size - 1);
+    const float y_in = image[idx * 2 + 1] * (lut_size - 1);
+
+    const int x_base = floorf(x_in), y_base = floorf(y_in);
+    const float x_frac = x_in - x_base, y_frac = y_in - y_base;
+
+    double wx[4], wy[4];
+    wx[0] = mitchell_weight_d((double)x_frac + 1.0); wx[1] = mitchell_weight_d((double)x_frac);
+    wx[2] = mitchell_weight_d((double)x_frac - 1.0); wx[3] = mitchell_weight_d((double)x_frac - 2.0);
+    wy[0] = mitchell_weight_d((double)y_frac + 1.0); wy[1] = mitchell_weight_d((double)y_frac);
+    wy[2] = mitchell_weight_d((double)y_frac - 1.0); wy[3] = mitchell_weight_d((double)y_frac - 2.0);
+
+    double weight_sum = 0.0;
+    double out_val[16];
+    #pragma unroll
+    for (int c=0;c<16;++c) out_val[c]=0.0;
+
+    for (int m = 0; m < 4; ++m) {
+        int y_idx = reflect_index(y_base - 1 + m, lut_size);
+        for (int n = 0; n < 4; ++n) {
+            int x_idx = reflect_index(x_base - 1 + n, lut_size);
+            double weight = wx[n] * wy[m];
+            weight_sum += weight;
+            int lut_pixel_idx = x_idx * lut_size + y_idx;
+            for (int c = 0; c < lut_channels; ++c) {
+                out_val[c] += weight * (double)lut[lut_pixel_idx * lut_channels + c];
+            }
+        }
+    }
+
+    if (weight_sum != 0.0) {
+        for (int c = 0; c < lut_channels; ++c) {
+            output[idx * lut_channels + c] = (float)(out_val[c] / weight_sum);
+        }
+    }
+}
+
+__global__ void apply_lut_cubic_3d_kernel_linear(
+    float* output,
+    const float* image,
+    const float* lut,
+    int N, int width,
+    int lut_size, int lut_channels)
+{
+    const int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= N) return;
+
+    const float r_in = image[idx * 3 + 0] * (lut_size - 1);
+    const float g_in = image[idx * 3 + 1] * (lut_size - 1);
+    const float b_in = image[idx * 3 + 2] * (lut_size - 1);
+
+    const int r_base = floorf(r_in), g_base = floorf(g_in), b_base = floorf(b_in);
+    const float r_frac = r_in - r_base, g_frac = g_in - g_base, b_frac = b_in - b_base;
+
+    double wr[4], wg[4], wb[4];
+    wr[0] = mitchell_weight_d((double)r_frac + 1.0); wr[1] = mitchell_weight_d((double)r_frac);
+    wr[2] = mitchell_weight_d((double)r_frac - 1.0); wr[3] = mitchell_weight_d((double)r_frac - 2.0);
+    wg[0] = mitchell_weight_d((double)g_frac + 1.0); wg[1] = mitchell_weight_d((double)g_frac);
+    wg[2] = mitchell_weight_d((double)g_frac - 1.0); wg[3] = mitchell_weight_d((double)g_frac - 2.0);
+    wb[0] = mitchell_weight_d((double)b_frac + 1.0); wb[1] = mitchell_weight_d((double)b_frac);
+    wb[2] = mitchell_weight_d((double)b_frac - 1.0); wb[3] = mitchell_weight_d((double)b_frac - 2.0);
+
+    double weight_sum = 0.0;
+    double out_val[16];
+    #pragma unroll
+    for (int c=0;c<16;++c) out_val[c]=0.0;
+
+    for (int m = 0; m < 4; ++m) {
+        int r_idx = reflect_index(r_base - 1 + m, lut_size);
+        for (int n = 0; n < 4; ++n) {
+            int g_idx = reflect_index(g_base - 1 + n, lut_size);
+            for (int p = 0; p < 4; ++p) {
+                int b_idx = reflect_index(b_base - 1 + p, lut_size);
+                double weight = wr[m] * wg[n] * wb[p];
+                weight_sum += weight;
+                int lut_pixel_idx = (r_idx * lut_size + g_idx) * lut_size + b_idx;
+                for (int c = 0; c < lut_channels; ++c) {
+                    out_val[c] += weight * (double)lut[lut_pixel_idx * lut_channels + c];
+                }
+            }
+        }
+    }
+
+    if (weight_sum != 0.0) {
+        for (int c = 0; c < lut_channels; ++c) {
+            output[idx * lut_channels + c] = (float)(out_val[c] / weight_sum);
+        }
+    }
+}
+
 //================================================================================
 // HOST-FACING FUNCTIONS
 //================================================================================
@@ -241,25 +342,43 @@ nc::NdArray<float> apply_lut_cubic_2d(const nc::NdArray<float>& lut, const nc::N
     const int lut_channels = lut.shape().cols;
     auto output = nc::NdArray<float>(height * width, lut_channels);
 
+    // Validate dimensions to prevent CUDA launch errors
+    if (width <= 0 || height <= 0 || width > 65535 || height > 65535) {
+        throw std::runtime_error("Invalid image dimensions for CUDA kernel: " + std::to_string(width) + "x" + std::to_string(height));
+    }
+
     float *dev_lut, *dev_image, *dev_output;
     cudaMalloc(&dev_lut, lut.nbytes());
+    cudaMemcpy(dev_lut, lut.data(), lut.nbytes(), cudaMemcpyHostToDevice);
     cudaMalloc(&dev_image, image.nbytes());
+    cudaMemcpy(dev_image, image.data(), image.nbytes(), cudaMemcpyHostToDevice);
     cudaMalloc(&dev_output, output.nbytes());
 
-    cudaMemcpy(dev_lut, lut.data(), lut.nbytes(), cudaMemcpyHostToDevice);
-    cudaMemcpy(dev_image, image.data(), image.nbytes(), cudaMemcpyHostToDevice);
-
-    const dim3 threadsPerBlock(16, 16);
-    const dim3 numBlocks((width + threadsPerBlock.x - 1) / threadsPerBlock.x, (height + threadsPerBlock.y - 1) / threadsPerBlock.y);
-
-    apply_lut_cubic_2d_kernel<<<numBlocks, threadsPerBlock>>>(dev_output, dev_image, dev_lut, height, width, lut_size, lut_channels);
+    // Use linear kernel to avoid oversized grid.y
+    const int N = height * width;
+    const int threads = 256;
+    const int blocks = (N + threads - 1) / threads;
+    if (blocks > 65535) {
+        cudaFree(dev_lut);
+        cudaFree(dev_image);
+        cudaFree(dev_output);
+        throw std::runtime_error("Grid.x too large for CUDA: blocks=" + std::to_string(blocks));
+    }
+    apply_lut_cubic_2d_kernel_linear<<<blocks, threads>>>(dev_output, dev_image, dev_lut, N, width, lut_size, lut_channels);
     
     cudaDeviceSynchronize();
-    if (cudaGetLastError() != cudaSuccess) throw std::runtime_error("CUDA Kernel Launch Error");
+    if (cudaGetLastError() != cudaSuccess) {
+        cudaFree(dev_lut);
+        cudaFree(dev_image);
+        cudaFree(dev_output);
+        throw std::runtime_error("CUDA Kernel Launch Error");
+    }
 
     cudaMemcpy(output.data(), dev_output, output.nbytes(), cudaMemcpyDeviceToHost);
 
-    cudaFree(dev_lut); cudaFree(dev_image); cudaFree(dev_output);
+    cudaFree(dev_lut); 
+    cudaFree(dev_image); 
+    cudaFree(dev_output);
     return output;
 }
 
@@ -268,25 +387,43 @@ nc::NdArray<float> apply_lut_cubic_3d(const nc::NdArray<float>& lut, const nc::N
     const int lut_channels = lut.shape().cols;
     auto output = nc::NdArray<float>(height * width, lut_channels);
 
+    // Validate dimensions to prevent CUDA launch errors
+    if (width <= 0 || height <= 0 || width > 65535 || height > 65535) {
+        throw std::runtime_error("Invalid image dimensions for CUDA kernel: " + std::to_string(width) + "x" + std::to_string(height));
+    }
+
     float *dev_lut, *dev_image, *dev_output;
     cudaMalloc(&dev_lut, lut.nbytes());
+    cudaMemcpy(dev_lut, lut.data(), lut.nbytes(), cudaMemcpyHostToDevice);
     cudaMalloc(&dev_image, image.nbytes());
+    cudaMemcpy(dev_image, image.data(), image.nbytes(), cudaMemcpyHostToDevice);
     cudaMalloc(&dev_output, output.nbytes());
 
-    cudaMemcpy(dev_lut, lut.data(), lut.nbytes(), cudaMemcpyHostToDevice);
-    cudaMemcpy(dev_image, image.data(), image.nbytes(), cudaMemcpyHostToDevice);
-
-    const dim3 threadsPerBlock(16, 16);
-    const dim3 numBlocks((width + threadsPerBlock.x - 1) / threadsPerBlock.x, (height + threadsPerBlock.y - 1) / threadsPerBlock.y);
-
-    apply_lut_cubic_3d_kernel<<<numBlocks, threadsPerBlock>>>(dev_output, dev_image, dev_lut, height, width, lut_size, lut_channels);
+    // Use linear kernel to avoid oversized grid.y
+    const int N = height * width;
+    const int threads = 256;
+    const int blocks = (N + threads - 1) / threads;
+    if (blocks > 65535) {
+        cudaFree(dev_lut);
+        cudaFree(dev_image);
+        cudaFree(dev_output);
+        throw std::runtime_error("Grid.x too large for CUDA: blocks=" + std::to_string(blocks));
+    }
+    apply_lut_cubic_3d_kernel_linear<<<blocks, threads>>>(dev_output, dev_image, dev_lut, N, width, lut_size, lut_channels);
 
     cudaDeviceSynchronize();
-    if (cudaGetLastError() != cudaSuccess) throw std::runtime_error("CUDA Kernel Launch Error");
+    if (cudaGetLastError() != cudaSuccess) {
+        cudaFree(dev_lut);
+        cudaFree(dev_image);
+        cudaFree(dev_output);
+        throw std::runtime_error("CUDA Kernel Launch Error");
+    }
 
     cudaMemcpy(output.data(), dev_output, output.nbytes(), cudaMemcpyDeviceToHost);
 
-    cudaFree(dev_lut); cudaFree(dev_image); cudaFree(dev_output);
+    cudaFree(dev_lut); 
+    cudaFree(dev_image); 
+    cudaFree(dev_output);
     return output;
 }
 

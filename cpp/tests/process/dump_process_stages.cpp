@@ -77,7 +77,7 @@ int main(){
     params.camera.auto_exposure = true;
 
     // Load profiles
-    std::string root = std::string(AGX_SOURCE_DIR) + "/cpp/data/profiles/";
+    std::string root = agx::utils::get_data_path() + "agx_emulsion/data/profiles/";
     auto neg = ProfileIO::load_from_file(root + params.profiles.negative + ".json");
     auto paper = ProfileIO::load_from_file(root + params.profiles.print_paper + ".json");
 
@@ -104,7 +104,7 @@ int main(){
     sensitivity = nc::nan_to_num(sensitivity);
 
     // Hanatos LUT
-    auto lut = agx::utils::load_hanatos_spectra_lut_npy(std::string(AGX_SOURCE_DIR) + "/cpp/data/luts/spectral_upsampling/irradiance_xy_tc.npy");
+    auto lut = agx::utils::load_hanatos_spectra_lut_npy(agx::utils::get_data_path() + "agx_emulsion/data/luts/spectral_upsampling/irradiance_xy_tc.npy");
     auto image_hw_by3 = hw3_to_hw_by3(image);
 
     // Center pixel index and RGB

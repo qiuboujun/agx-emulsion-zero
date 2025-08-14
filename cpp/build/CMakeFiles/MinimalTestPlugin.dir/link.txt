@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,MinimalTestPlugin.ofx -o SimpleTestPlugin.ofx.bundle/Contents/Linux-x86-64/MinimalTestPlugin.ofx CMakeFiles/MinimalTestPlugin.dir/ofx/MinimalTestPlugin.cpp.o  -Wl,-rpath,"\\\$ORIGIN" 

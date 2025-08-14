@@ -193,18 +193,83 @@ add_custom_target(scipy_test
     COMMENT "Running scipy interpolation test"
 )
 
-# --- Test Executable for illuminants comparison ---
-# Commented out as the source file doesn't exist
-# add_executable(test_illuminants_cpp
-#     ${CMAKE_CURRENT_SOURCE_DIR}/../test_illuminants_cpp.cpp
-# )
-# target_link_libraries(test_illuminants_cpp PRIVATE agx_core)
-# set_target_properties(test_illuminants_cpp PROPERTIES
-#     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
-# )
+# --- OpenFX plugin target ---
+# Bundle layout:
+#   AgXEmulsionPlugin.ofx.bundle/Contents/Linux-x86-64/AgXEmulsionPlugin.ofx
+set(OFX_BUNDLE_NAME "AgXEmulsionPlugin.ofx.bundle")
+set(OFX_BUNDLE_PLATFORM_DIR "Contents/Linux-x86-64")
+set(OFX_BUNDLE_DIR "${CMAKE_BINARY_DIR}/${OFX_BUNDLE_NAME}/${OFX_BUNDLE_PLATFORM_DIR}")
 
+add_library(AgXEmulsionPlugin SHARED
+    ofx/AgXEmulsionPlugin.cpp
+    ofx/ofx_cuda_bridge.cu
+    external/OpenFX/Support/Library/ofxsProperty.cpp
+    external/OpenFX/Support/Library/ofxsLog.cpp
+    external/OpenFX/Support/Library/ofxsCore.cpp
+    external/OpenFX/Support/Library/ofxsMultiThread.cpp
+    external/OpenFX/Support/Library/ofxsPropertyValidation.cpp
+    external/OpenFX/Support/Library/ofxsParams.cpp
+    external/OpenFX/Support/Library/ofxsHWNDInteract.cpp
+    external/OpenFX/Support/Library/ofxsImageEffect.cpp
+    external/OpenFX/Support/Library/ofxsInteract.cpp
+)
 
+# Include OpenFX headers (SDK and Support)
+target_include_directories(AgXEmulsionPlugin PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/OpenFX/OpenFX-1.4/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/OpenFX/Support/include
+)
 
+# Link core library (our pipeline) and CUDA runtime
+target_link_libraries(AgXEmulsionPlugin PRIVATE agx_core CUDA::cudart)
+
+set_target_properties(AgXEmulsionPlugin PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    PREFIX ""                # produce AgXEmulsionPlugin.* (no lib prefix)
+    SUFFIX ".ofx"            # match Makefile output name
+    LIBRARY_OUTPUT_DIRECTORY "${OFX_BUNDLE_DIR}"
+    BUILD_RPATH "\$ORIGIN"
+    INSTALL_RPATH "\$ORIGIN"
+)
+
+# Copy runtime data assets into bundle after build
+set(REPO_ROOT "${CMAKE_SOURCE_DIR}/..")
+add_custom_command(TARGET AgXEmulsionPlugin POST_BUILD
+    # Ensure target dirs
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${OFX_BUNDLE_DIR}/agx_emulsion/data"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${OFX_BUNDLE_DIR}/data"
+    # Copy the entire Python-side data package so stocks/filters/papers are available
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${REPO_ROOT}/agx_emulsion/data"
+        "${OFX_BUNDLE_DIR}/agx_emulsion/data"
+    # Also copy spectral LUTs used by plugin directly (if any CSV/Numpy)
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/luts/spectral_upsampling/hanatos_irradiance_xy_coeffs_250304.lut"
+        "${OFX_BUNDLE_DIR}/data/hanatos_irradiance_xy_coeffs_250304.lut"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/luts/spectral_upsampling/irradiance_xy_tc.npy"
+        "${OFX_BUNDLE_DIR}/data/irradiance_xy_tc.npy"
+    # Also copy CMFS CSV into the same tree for runtime lookup
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/CIE_1931_2_Degree_CMFS.csv"
+        "${OFX_BUNDLE_DIR}/agx_emulsion/data/CIE_1931_2_Degree_CMFS.csv"
+)
+
+# Convenience target that ensures bundle directory is created with binary and data
+add_custom_target(AgXEmulsionPluginBundle ALL
+    DEPENDS AgXEmulsionPlugin
+)
+
+# Install target to copy entire bundle to the system OFX plugin directory
+add_custom_target(install_ofx
+    COMMAND ${CMAKE_COMMAND} -E make_directory "/usr/OFX/Plugins"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_BINARY_DIR}/${OFX_BUNDLE_NAME}"
+            "/usr/OFX/Plugins/${OFX_BUNDLE_NAME}"
+    DEPENDS AgXEmulsionPluginBundle
+    COMMENT "Installing ${OFX_BUNDLE_NAME} to /usr/OFX/Plugins (may require sudo)"
+)
 
 # --- Build Instructions ---
 # 1. cd cpp/build
