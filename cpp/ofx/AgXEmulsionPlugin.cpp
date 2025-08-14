@@ -203,50 +203,31 @@ public:
         }
         std::cerr << "  input array populated" << std::endl;
 
-        // Run the real process (prepare copies for async safety)
-        std::cerr << "AgXEmulsionProcessor: Preparing async process run..." << std::endl;
-        auto paramsCopy = params;                  // copy Params
-        auto inputCopy = input.copy();             // deep copy input buffer
-        std::cerr << "AgXEmulsionProcessor: Params and input copied for async" << std::endl;
+        // Run the real process synchronously to avoid allocator/thread teardown issues
+        std::cerr << "AgXEmulsionProcessor: Creating process instance..." << std::endl;
+        agx::process::Process proc(params);
+        std::cerr << "AgXEmulsionProcessor: Running process synchronously..." << std::endl;
         
         nc::NdArray<float> out; // Declare outside try block
         
-        // Add timeout mechanism (thread uses owned copies; no dangling refs on timeout)
-        std::cerr << "AgXEmulsionProcessor: Starting process with timeout (async, by-value)..." << std::endl;
+        // Timing
         std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-        const int timeout_seconds = 45; // relaxed timeout to reduce spurious aborts
         
         try {
-            // Run process in a separate thread with timeout. Capture by value to avoid dangling refs.
-            std::future<nc::NdArray<float>> future = std::async(
-                std::launch::async,
-                [paramsCopy = std::move(paramsCopy), inputCopy = std::move(inputCopy)]() mutable {
-                    agx::process::Process procLocal(paramsCopy);
-                    return procLocal.run(inputCopy);
-                }
-            );
+            // Run synchronously
+            out = proc.run(input);
+            std::cerr << "  process completed successfully" << std::endl;
+            std::cerr << "  output shape: " << out.shape().rows << "x" << out.shape().cols << std::endl;
             
-            // Wait for completion or timeout
-            if (future.wait_for(std::chrono::seconds(timeout_seconds)) == std::future_status::ready) {
-                out = future.get();
-                std::cerr << "  process completed successfully" << std::endl;
-                std::cerr << "  output shape: " << out.shape().rows << "x" << out.shape().cols << std::endl;
-                
-                // Check output range
-                float outMin = 1e6f, outMax = -1e6f;
-                for (int h = 0; h < height; ++h) {
-                    for (int w = 0; w < width; ++w) {
-                        outMin = std::min(outMin, std::min(std::min(out(h, w*3+0), out(h, w*3+1)), out(h, w*3+2)));
-                        outMax = std::max(outMax, std::max(std::max(out(h, w*3+0), out(h, w*3+1)), out(h, w*3+2)));
-                    }
+            // Check output range
+            float outMin = 1e6f, outMax = -1e6f;
+            for (int h = 0; h < height; ++h) {
+                for (int w = 0; w < width; ++w) {
+                    outMin = std::min(outMin, std::min(std::min(out(h, w*3+0), out(h, w*3+1)), out(h, w*3+2)));
+                    outMax = std::max(outMax, std::max(std::max(out(h, w*3+0), out(h, w*3+1)), out(h, w*3+2)));
                 }
-                std::cerr << "  output range: [" << outMin << ", " << outMax << "]" << std::endl;
-                
-            } else {
-                std::cerr << "ERROR: Process::run() timed out after " << timeout_seconds << " seconds (async task continues safely)" << std::endl;
-                // Drop the future without calling get; async task owns its data copies.
-                return;
             }
+            std::cerr << "  output range: [" << outMin << ", " << outMax << "]" << std::endl;
             
         } catch (const std::exception& e) {
             std::cerr << "ERROR: Process::run() threw exception: " << e.what() << std::endl;
