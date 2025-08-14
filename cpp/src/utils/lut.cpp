@@ -1,186 +1,151 @@
 #include "NumCpp.hpp"
 #include "fast_interp_lut.hpp"
-#include <functional>
+#include "lut.hpp"
+#include "spectral_upsampling.hpp"
 #include <cmath>
-#include <pybind11/pybind11.h>
-#include <pybind11/eval.h>
-#include <pybind11/stl.h>
+// pybind headers removed to use pure C++/CUDA path only
 
-namespace py = pybind11;
+namespace agx { namespace utils {
 
-namespace agx {
-namespace utils {
-
-/**
- * @brief Creates a 3D lookup table from a function using Python implementation.
- * 
- * This function uses pybind11 to call the Python _create_lut_3d function,
- * which handles the complex meshgrid and reshaping logic correctly.
- */
-nc::NdArray<float> _create_lut_3d(
-    const std::function<nc::NdArray<float>(const nc::NdArray<float>&)>& function,
-    float xmin, 
-    float xmax, 
-    int steps) {
-    
-    // Import the Python module
-    py::module_ agx_module = py::module_::import("agx_emulsion.utils.lut");
-    
-    // Get the Python _create_lut_3d function
-    py::function py_create_lut_3d = agx_module.attr("_create_lut_3d");
-    
-    // Create a Python function wrapper for the C++ function
-    auto py_function = [&function](py::array_t<float> x) -> py::array_t<float> {
-        // Convert py::array to nc::NdArray
-        auto buf = x.request();
-        if (buf.ndim != 2) {
-            throw std::runtime_error("Number of dimensions must be 2");
-        }
-        
-        nc::NdArray<float> x_nc(buf.shape[0], buf.shape[1]);
-        auto ptr = static_cast<float*>(buf.ptr);
-        for (size_t i = 0; i < buf.shape[0]; ++i) {
-            for (size_t j = 0; j < buf.shape[1]; ++j) {
-                x_nc(i, j) = ptr[i * buf.shape[1] + j];
-            }
-        }
-        
-        // Call the C++ function
-        nc::NdArray<float> result = function(x_nc);
-        
-        // Convert result back to py::array
-        std::vector<size_t> shape = {static_cast<size_t>(result.shape().rows), 
-                                    static_cast<size_t>(result.shape().cols)};
-        py::array_t<float> result_py(shape);
-        auto result_buf = result_py.request();
-        auto result_ptr = static_cast<float*>(result_buf.ptr);
-        
-        for (size_t i = 0; i < result.shape().rows; ++i) {
-            for (size_t j = 0; j < result.shape().cols; ++j) {
-                result_ptr[i * result.shape().cols + j] = result(i, j);
-            }
-        }
-        
-        return result_py;
-    };
-    
-    // Call the Python function
-    py::object result = py_create_lut_3d(py::cpp_function(py_function), xmin, xmax, steps);
-    
-    // Convert Python result back to nc::NdArray
-    py::array_t<float> result_array = result.cast<py::array_t<float>>();
-    auto buf = result_array.request();
-    
-    nc::NdArray<float> lut_nc(buf.shape[0], buf.shape[1]);
-    auto ptr = static_cast<float*>(buf.ptr);
-    for (size_t i = 0; i < buf.shape[0]; ++i) {
-        for (size_t j = 0; j < buf.shape[1]; ++j) {
-            lut_nc(i, j) = ptr[i * buf.shape[1] + j];
-        }
-    }
-    
-    return lut_nc;
+static inline float srgb_decode(float v){
+    if (v <= 0.04045f) return v / 12.92f;
+    return std::pow((v + 0.055f) / 1.055f, 2.4f);
 }
 
-/**
- * @brief Computes data transformation using a 3D LUT.
- * 
- * @param data Input data array
- * @param function Function to create the LUT from
- * @param xmin Minimum value for the input range
- * @param xmax Maximum value for the input range
- * @param steps Number of steps in each dimension
- * @return std::pair<nc::NdArray<float>, nc::NdArray<float>> Pair of (transformed_data, lut)
- */
+nc::NdArray<float> create_lut_3d_camera_rgb_to_raw(
+    int steps,
+    const nc::NdArray<float>& sensitivity,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut) {
+    const int L = steps;
+    nc::NdArray<float> lut(L*L*L, 3);
+    // Pre-project spectra
+    // We reuse rgb_to_raw_hanatos2025 for accuracy by sampling grid points
+    for (int r=0; r<L; ++r){
+        for (int g=0; g<L; ++g){
+            for (int b=0; b<L; ++b){
+                int idx = (r*L + g)*L + b;
+                nc::NdArray<float> rgb(1,3);
+                rgb(0,0) = (float)r / (L-1);
+                rgb(0,1) = (float)g / (L-1);
+                rgb(0,2) = (float)b / (L-1);
+                auto raw = rgb_to_raw_hanatos2025(rgb, sensitivity, color_space, apply_cctf_decoding, reference_illuminant, spectra_lut);
+                lut(idx,0) = raw(0,0);
+                lut(idx,1) = raw(0,1);
+                lut(idx,2) = raw(0,2);
+            }
+        }
+    }
+    return lut;
+}
+
+nc::NdArray<float> apply_lut_3d(const nc::NdArray<float>& lut_flat,
+                                const nc::NdArray<float>& rgb_hw_by3,
+                                int height,
+                                int width) {
+    return agx::apply_lut_cubic_3d(lut_flat, rgb_hw_by3, height, width);
+}
+
+std::pair<nc::NdArray<float>, nc::NdArray<float>> compute_camera_with_lut(
+    const nc::NdArray<float>& rgb_hw_by3,
+    int height,
+    int width,
+    const nc::NdArray<float>& sensitivity,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut,
+    int steps) {
+    auto lut = create_lut_3d_camera_rgb_to_raw(steps, sensitivity, color_space, apply_cctf_decoding, reference_illuminant, spectra_lut);
+    auto out = apply_lut_3d(lut, rgb_hw_by3, height, width);
+    return {out, lut};
+}
+
+// ---------------------------------------------------------------------------------
+// Generic 3D LUT helpers (parity with agx_emulsion/utils/lut.py)
+// ---------------------------------------------------------------------------------
+
+nc::NdArray<float> _create_lut_3d(
+    const std::function<nc::NdArray<float>(const nc::NdArray<float>&)>& function,
+    float xmin,
+    float xmax,
+    int steps) {
+    const int L = steps;
+    const int N = L * L * L;
+    // Build grid of inputs in [xmin, xmax]
+    nc::NdArray<float> inputs(N, 3);
+    for (int r = 0; r < L; ++r) {
+        for (int g = 0; g < L; ++g) {
+            for (int b = 0; b < L; ++b) {
+                const int idx = (r * L + g) * L + b;
+                const float rf = (L == 1) ? 0.0f : (float)r / (float)(L - 1);
+                const float gf = (L == 1) ? 0.0f : (float)g / (float)(L - 1);
+                const float bf = (L == 1) ? 0.0f : (float)b / (float)(L - 1);
+                inputs(idx, 0) = xmin + (xmax - xmin) * rf;
+                inputs(idx, 1) = xmin + (xmax - xmin) * gf;
+                inputs(idx, 2) = xmin + (xmax - xmin) * bf;
+            }
+        }
+    }
+    auto outputs = function(inputs); // Expect shape (N, C)
+    if (outputs.shape().rows != (uint32_t)N) {
+        throw std::runtime_error("_create_lut_3d: function returned unexpected number of rows");
+    }
+    // Flattened LUT is simply outputs (N x C)
+    return outputs;
+}
+
 std::pair<nc::NdArray<float>, nc::NdArray<float>> compute_with_lut(
     const nc::NdArray<float>& data,
     const std::function<nc::NdArray<float>(const nc::NdArray<float>&)>& function,
     float xmin,
     float xmax,
     int steps) {
-    
-    // Create the LUT (already flattened)
-    nc::NdArray<float> lut = _create_lut_3d(function, xmin, xmax, steps);
-    
-    // Determine the original image dimensions
-    // Assuming data is in format (H*W, 3) where H and W are height and width
-    int total_pixels = data.shape().rows;
-    int height = static_cast<int>(std::sqrt(total_pixels));  // Approximate height
-    int width = total_pixels / height;  // Approximate width
-    
-    // Apply the LUT using fast_interp_lut
-    nc::NdArray<float> transformed_data = agx::apply_lut_cubic_3d(lut, data, height, width);
-    
-    return {transformed_data, lut};
-}
-
-/**
- * @brief Performs a warmup for both 3D and 2D LUT functions.
- * This ensures that any initialization overhead is incurred only once.
- */
-void warmup_luts() {
-    const int L = 32;
-    nc::NdArray<float> grid = nc::linspace<float>(0.0f, 1.0f, L);
-    
-    // --- Warmup 3D LUT ---
-    // Create a simple 3D LUT: (R^2, G^2, B^2)
-    nc::NdArray<float> lut_3d = nc::zeros<float>(L * L * L, 3);
-    int idx = 0;
-    for (int i = 0; i < L; ++i) {
-        for (int j = 0; j < L; ++j) {
-            for (int k = 0; k < L; ++k) {
-                lut_3d(idx, 0) = grid(i, 0) * grid(i, 0);  // R^2
-                lut_3d(idx, 1) = grid(j, 0) * grid(j, 0);  // G^2
-                lut_3d(idx, 2) = grid(k, 0) * grid(k, 0);  // B^2
-                ++idx;
+    // Create LUT by sampling provided function
+    auto lut = _create_lut_3d(function, xmin, xmax, steps);
+    // Infer height/width from data shaped (H, W*3) or (N,3)
+    int height = (int)data.shape().rows;
+    int width;
+    nc::NdArray<float> image_hw_by3;
+    if ((int)data.shape().cols == 3) {
+        width = 1;
+        image_hw_by3 = data;
+    } else {
+        width = (int)data.shape().cols / 3;
+        // reshape Hx(W*3) -> (H*W) x 3
+        image_hw_by3 = nc::NdArray<float>(height * width, 3);
+        for (int i = 0; i < height; ++i) {
+            for (int w = 0; w < width; ++w) {
+                for (int c = 0; c < 3; ++c) {
+                    image_hw_by3(i*width + w, c) = data(i, w*3 + c);
+                }
             }
         }
     }
-    
-    // Create a synthetic image
-    const int height = 128, width = 128;
-    nc::NdArray<float> image_3d = nc::zeros<float>(height * width, 3);
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            int pixel_idx = i * width + j;
-            image_3d(pixel_idx, 0) = static_cast<float>(j) / width;  // X coordinate
-            image_3d(pixel_idx, 1) = static_cast<float>(i) / height; // Y coordinate
-            image_3d(pixel_idx, 2) = 0.5f;  // Fixed B value
-        }
-    }
-    
-    // Apply 3D LUT (warmup)
-    auto result_3d = agx::apply_lut_cubic_3d(lut_3d, image_3d, height, width);
-    
-    // --- Warmup 2D LUT ---
-    const int L2 = 128;
-    nc::NdArray<float> grid2 = nc::linspace<float>(0.0f, 1.0f, L2);
-    
-    // Create a 2D LUT mapping (x,y) chromaticities to RGB
-    nc::NdArray<float> lut_2d = nc::zeros<float>(L2 * L2, 3);
-    idx = 0;
-    for (int i = 0; i < L2; ++i) {
-        for (int j = 0; j < L2; ++j) {
-            lut_2d(idx, 0) = grid2(i, 0) * grid2(i, 0);           // R = x^2
-            lut_2d(idx, 1) = grid2(j, 0) * grid2(j, 0);           // G = y^2
-            lut_2d(idx, 2) = (grid2(i, 0) + grid2(j, 0)) / 2.0f; // B = (x+y)/2
-            ++idx;
-        }
-    }
-    
-    // Create a synthetic image of chromaticities (2 channels)
-    nc::NdArray<float> image_2d = nc::zeros<float>(height * width, 2);
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            int pixel_idx = i * width + j;
-            image_2d(pixel_idx, 0) = static_cast<float>(j) / width;  // X coordinate
-            image_2d(pixel_idx, 1) = static_cast<float>(i) / height; // Y coordinate
-        }
-    }
-    
-    // Apply 2D LUT (warmup)
-    auto result_2d = agx::apply_lut_cubic_2d(lut_2d, image_2d, height, width);
+    auto out_hw_by3 = agx::apply_lut_cubic_3d(lut, image_hw_by3, height, width);
+    return {out_hw_by3, lut};
 }
 
-} // namespace utils
-} // namespace agx
+void warmup_luts() {
+    // Build a tiny synthetic LUT and run a tiny application pass to warm up GPU JITs
+    int steps = 8;
+    auto lut = _create_lut_3d(
+        [](const nc::NdArray<float>& X){
+            nc::NdArray<float> Y(X.shape().rows, 3);
+            for (uint32_t i=0;i<X.shape().rows;++i){
+                float r=X(i,0), g=X(i,1), b=X(i,2);
+                Y(i,0) = 3*g + r;
+                Y(i,1) = 3*b + g;
+                Y(i,2) = 3*r + b;
+            }
+            return Y;
+        }, 0.0f, 1.0f, steps);
+    int H=16,W=16;
+    nc::NdArray<float> img(H*W,3);
+    for(int i=0;i<H*W;++i){ img(i,0)=(float)(i%W)/(W-1); img(i,1)=(float)(i/W)/(H-1); img(i,2)=0.5f; }
+    (void)agx::apply_lut_cubic_3d(lut, img, H, W);
+}
+
+} } // namespace agx::utils

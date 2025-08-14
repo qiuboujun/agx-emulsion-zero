@@ -98,10 +98,132 @@ nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc:
     return transmitted;
 }
 
+// GPU-accelerated version with CPU fallback. Returns true if GPU path executed, else false.
+bool density_to_light_gpu(const nc::NdArray<float>& density, const nc::NdArray<float>& light, nc::NdArray<float>& out) {
+#ifndef __CUDACC__
+    // CPU fallback
+    out = density_to_light(density, light);
+    return false;
+#else
+    const auto rows = density.shape().rows;
+    const auto cols = density.shape().cols;
+    out = nc::NdArray<float>(rows, cols);
+
+    // Flatten inputs
+    auto d_flat = density.flatten();
+    auto l_flat = light.flatten();
+    auto o_flat = out.flatten();
+
+    // Copy to device
+    float *d_d=nullptr, *d_l=nullptr, *d_o=nullptr;
+    cudaMalloc(&d_d, d_flat.size()*sizeof(float));
+    cudaMalloc(&d_l, l_flat.size()*sizeof(float));
+    cudaMalloc(&d_o, o_flat.size()*sizeof(float));
+    cudaMemcpy(d_d, d_flat.data(), d_flat.size()*sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_l, l_flat.data(), l_flat.size()*sizeof(float), cudaMemcpyHostToDevice);
+
+    // Kernel: out = 10^(-density) * light with simple broadcasting cases
+    const int N = static_cast<int>(rows*cols);
+    int threads = 256;
+    int blocks = (N + threads - 1) / threads;
+
+    // Prepare light mode flags
+    int lrows = static_cast<int>(light.shape().rows);
+    int lcols = static_cast<int>(light.shape().cols);
+    int lsize = static_cast<int>(l_flat.size());
+
+    struct Params { int rows, cols, lrows, lcols, lsize; } p{(int)rows,(int)cols,lrows,lcols,lsize};
+
+    __global__ void k_d2l(const float* dens, const float* light, float* out, Params p) {
+        int idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= p.rows * p.cols) return;
+        int r = idx / p.cols;
+        int c = idx % p.cols;
+        // Compute 10^(-d)
+        double t = pow(10.0, -(double)dens[idx]);
+        double L = 1.0;
+        if (p.lsize == 1) {
+            L = (double)light[0];
+        } else if (p.lrows == p.rows && p.lcols == p.cols) {
+            L = (double)light[idx];
+        } else if (p.lsize == p.cols || (p.lrows == 1 && p.lcols == p.cols) || (p.lcols == 1 && p.lrows == p.cols)) {
+            L = (double)light[c];
+        } else if (p.lsize == p.rows || (p.lrows == p.rows && p.lcols == 1) || (p.lcols == p.rows && p.lrows == 1)) {
+            L = (double)light[r];
+        } else if (p.lsize > 1 && (p.cols % p.lsize == 0)) {
+            int blockSize = p.lsize;
+            int b = c / blockSize;
+            int k = c % blockSize;
+            (void)b;
+            L = (double)light[k];
+        } else if (p.rows * p.cols == p.lsize) {
+            L = (double)light[idx];
+        } else {
+            L = (double)light[0];
+        }
+        out[idx] = (float)(t * L);
+    }
+
+    k_d2l<<<blocks, threads>>>(d_d, d_l, d_o, p);
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(o_flat.data(), d_o, o_flat.size()*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaFree(d_d); cudaFree(d_l); cudaFree(d_o);
+    return true;
+#endif
+}
+
 // Overload for single float inputs (convenience)
 float density_to_light(float density, float light) {
     float transmitted = std::pow(10.0f, -density) * light;
     return std::isnan(transmitted) ? 0.0f : transmitted;
+}
+
+bool dot_blocks_K3_gpu(const nc::NdArray<float>& A,
+                       const nc::NdArray<float>& B,
+                       int W,
+                       nc::NdArray<float>& out) {
+#ifndef __CUDACC__
+    return false;
+#else
+    const int H = static_cast<int>(A.shape().rows);
+    const int K = static_cast<int>(B.shape().rows);
+    out = nc::NdArray<float>(H, W*3);
+
+    auto a = A.flatten();
+    auto b = B.flatten();
+    auto o = out.flatten();
+    float *d_a=nullptr, *d_b=nullptr, *d_o=nullptr;
+    cudaMalloc(&d_a, a.size()*sizeof(float));
+    cudaMalloc(&d_b, b.size()*sizeof(float));
+    cudaMalloc(&d_o, o.size()*sizeof(float));
+    cudaMemcpy(d_a, a.data(), a.size()*sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, b.data(), b.size()*sizeof(float), cudaMemcpyHostToDevice);
+
+    struct Params { int H,W,K; int strideA; } p{H,W,K,(int)A.shape().cols};
+    int N = H*W*3;
+    int threads = 256;
+    int blocks = (N + threads - 1) / threads;
+    __global__ void k_dot(const float* A, const float* B, float* O, Params p) {
+        int idx = blockIdx.x * blockDim.x + threadIdx.x;
+        if (idx >= p.H * p.W * 3) return;
+        int tmp = idx;
+        int c = tmp % 3; tmp /= 3;
+        int w = tmp % p.W; tmp /= p.W;
+        int i = tmp;
+        double acc = 0.0;
+        int baseA = i * p.strideA + w * p.K;
+        for (int k=0;k<p.K;++k) {
+            acc += (double)A[baseA + k] * (double)B[k*3 + c];
+        }
+        O[i*(p.W*3) + w*3 + c] = (float)acc;
+    }
+    k_dot<<<blocks, threads>>>(d_a, d_b, d_o, p);
+    cudaDeviceSynchronize();
+    cudaMemcpy(o.data(), d_o, o.size()*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaFree(d_a); cudaFree(d_b); cudaFree(d_o);
+    return true;
+#endif
 }
 
 /**
@@ -266,3 +388,81 @@ rgb_to_raw_aces_idt(const nc::NdArray<float>& RGB,
 
 } // namespace utils
 } // namespace agx
+
+namespace agx { namespace utils {
+
+nc::NdArray<float> add_glare(const nc::NdArray<float>& xyz,
+                             const nc::NdArray<float>& illuminant_xyz,
+                             float percent) {
+    // Deterministic: add percent * illuminant_xyz uniformly to xyz
+    if (percent <= 0.0f) return xyz.copy();
+    const int H = static_cast<int>(xyz.shape().rows);
+    const int W3 = static_cast<int>(xyz.shape().cols);
+    const int W = W3 / 3;
+    auto out = xyz.copy();
+    float X = illuminant_xyz(0,0) * percent;
+    float Y = illuminant_xyz(0,1) * percent;
+    float Z = illuminant_xyz(0,2) * percent;
+    for (int i=0;i<H;++i){
+        for (int w=0; w<W; ++w){
+            out(i, w*3 + 0) += X;
+            out(i, w*3 + 1) += Y;
+            out(i, w*3 + 2) += Z;
+        }
+    }
+    return out;
+}
+
+// Simple separable Gaussian blur for a single-channel image (H x W)
+static void gaussian_blur_2d(const std::vector<float>& in, int H, int W, float sigma, std::vector<float>& out, float truncate=4.0f) {
+    if (sigma <= 0.0f) { out = in; return; }
+    int radius = std::max(1, (int)std::ceil(truncate * sigma));
+    int ksize = 2 * radius + 1;
+    std::vector<float> k(ksize);
+    float s2 = 2.0f * sigma * sigma; float sum = 0.0f;
+    for (int i=-radius;i<=radius;++i){ float v = std::exp(-(i*i)/s2); k[i+radius]=v; sum+=v; }
+    for (float &v : k) v /= sum;
+    std::vector<float> tmp(H*W, 0.0f); out.assign(H*W, 0.0f);
+    auto reflect = [](int x, int n){ while (x<0 || x>=n){ if (x<0) x=-x-1; else x = 2*n - x - 1; } return x; };
+    // horizontal
+    for (int y=0;y<H;++y){ for (int x=0;x<W;++x){ double acc=0.0; for (int t=-radius;t<=radius;++t){ int xr=reflect(x+t,W); acc += in[y*W + xr] * k[t+radius]; } tmp[y*W + x] = (float)acc; }}
+    // vertical
+    for (int y=0;y<H;++y){ for (int x=0;x<W;++x){ double acc=0.0; for (int t=-radius;t<=radius;++t){ int yr=reflect(y+t,H); acc += tmp[yr*W + x] * k[t+radius]; } out[y*W + x] = (float)acc; }}
+}
+
+nc::NdArray<float> add_random_glare(const nc::NdArray<float>& xyz,
+                                    const nc::NdArray<float>& illuminant_xyz,
+                                    float percent,
+                                    float roughness,
+                                    float blur_sigma_px,
+                                    int height,
+                                    int width,
+                                    unsigned int seed) {
+    if (percent <= 0.0f) return xyz.copy();
+    // Build deterministic lognormal field with mean=percent and std=roughness*percent
+    std::mt19937 rng(seed);
+    // Compute log-space params from mean M and std S
+    double M = std::max(1e-12, (double)percent);
+    double S = std::max(0.0, (double)roughness * (double)percent);
+    double sigma_sq = std::log(1.0 + (S*S)/(M*M));
+    double sigma = std::sqrt(sigma_sq);
+    double mu = std::log(M) - 0.5 * sigma_sq;
+    std::lognormal_distribution<double> dist(mu, sigma);
+    std::vector<float> glare(height*width);
+    for (int i=0;i<height*width;++i) glare[i] = (float)dist(rng);
+    // Blur
+    std::vector<float> glare_blur; gaussian_blur_2d(glare, height, width, blur_sigma_px, glare_blur, 4.0f);
+    // Normalize to percent in [0..1] as Python divides by 100 in model path; here percent assumed in [0..1]
+    // Combine with illuminant
+    auto out = xyz.copy();
+    float X = illuminant_xyz(0,0), Y = illuminant_xyz(0,1), Z = illuminant_xyz(0,2);
+    for (int i=0;i<height;++i){ for (int w=0; w<width; ++w){
+        float g = glare_blur[i*width + w];
+        out(i, w*3 + 0) += g * X;
+        out(i, w*3 + 1) += g * Y;
+        out(i, w*3 + 2) += g * Z;
+    }}
+    return out;
+}
+
+} } // namespace agx::utils

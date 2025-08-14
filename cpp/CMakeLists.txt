@@ -21,6 +21,7 @@ add_library(agx_core STATIC
     src/utils/crop_resize.cu
     src/utils/density_spectral.cpp
     src/utils/spectral_upsampling.cpp
+    src/utils/lut.cpp
     src/utils/spectral_upsampling.cu
     src/utils/profile_io.cpp
     src/model/reconstruct.cpp
@@ -35,6 +36,8 @@ add_library(agx_core STATIC
     src/model/density_curves.cu
     src/model/diffusion.cpp
     src/model/diffusion.cu
+    src/model/grain.cpp
+    src/model/grain.cu
     src/model/process.cpp
     # src/utils/spectral_upsampling.cu  # Temporarily excluded due to compilation issues
     # scipy.cpp is no longer needed as scipy.hpp is header-only

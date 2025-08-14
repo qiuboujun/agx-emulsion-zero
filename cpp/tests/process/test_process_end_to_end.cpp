@@ -14,6 +14,13 @@ int main(){
     params.io.input_color_space = "sRGB";
     params.io.input_cctf_decoding = false;
     params.io.output_color_space = "sRGB";
+    // Enable LUTs to test the LUT paths (camera, enlarger, scanner)
+    params.settings.use_camera_lut = true;
+    params.settings.use_enlarger_lut = true;
+    params.settings.use_scanner_lut = true;
+    params.settings.lut_resolution = 32;
+    // Enable masking couplers for this test run
+    params.settings.apply_masking_couplers = true;
 
     // Create a small fixed image (5x5 gradient)
     const int H=5, W=5;

@@ -24,6 +24,14 @@ struct IOSettings {
     bool compute_film_raw = false;
 };
 
+struct DebugSettings {
+    bool deactivate_spatial_effects = false;
+    bool deactivate_stochastic_effects = false;
+    bool return_negative_density_cmy = false;
+    bool return_print_density_cmy = false;
+    bool print_timings = false;
+};
+
 struct CameraSettings {
     float exposure_compensation_ev = 0.0f;
     bool auto_exposure = true;
@@ -63,6 +71,8 @@ struct ProcessSettings {
     bool use_scanner_lut = false;
     int lut_resolution = 17;
     bool use_fast_stats = false;
+    bool apply_paper_glare = false;
+    bool apply_masking_couplers = false;
 };
 
 struct ProfileSet {
@@ -77,6 +87,7 @@ struct Params {
     ScannerSettings scanner;
     ProcessSettings settings;
     ProfileSet profiles;
+    DebugSettings debug;
 };
 
 // Orchestrator

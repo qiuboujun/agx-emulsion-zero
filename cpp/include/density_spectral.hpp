@@ -17,6 +17,13 @@ nc::NdArray<float> compute_density_spectral(
     const nc::NdArray<float>& dye_density,
     float dye_density_min_factor);
 
+// GPU-accelerated version with CPU fallback. Returns true if GPU ran.
+bool compute_density_spectral_gpu(
+    const nc::NdArray<float>& density_cmy,
+    const nc::NdArray<float>& dye_density,
+    float dye_density_min_factor,
+    nc::NdArray<float>& out);
+
 } // namespace utils
 } // namespace agx
 

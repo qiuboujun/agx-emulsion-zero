@@ -273,24 +273,25 @@ nc::NdArray<float> rgb_to_raw_hanatos2025(
     nc::NdArray<float> lut_proj(rows, 3);
     for (int r=0;r<rows;++r){
         for (int c=0;c<3;++c){
-            double acc = 0.0;
-            for (int k=0;k<K;++k) acc += static_cast<double>(spectra_lut(r,k)) * static_cast<double>(sensitivity(k,c));
-            lut_proj(r,c) = static_cast<float>(acc);
+            float acc = 0.0f;
+            for (int k=0;k<K;++k) acc += spectra_lut(r,k) * sensitivity(k,c);
+            lut_proj(r,c) = acc;
         }
     }
     const int L = static_cast<int>(std::round(std::sqrt(rows)));
 
     auto [tc, b] = rgb_to_tc_b_cpp(rgb, color_space, apply_cctf_decoding, reference_illuminant);
     const int H = rgb.shape().rows;
-    // Match Python: use cubic interpolation with reflection boundaries
-    // Build an H×1 grid of tc coordinates and apply cubic LUT
-    nc::NdArray<float> raw = agx::apply_lut_cubic_2d(lut_proj, tc, /*height*/H, /*width*/1);
-    // Scale by b
-    for (int i=0;i<H;++i){ for (int c=0;c<3;++c) raw(i,c) *= b(i,0); }
-
-    // Midgray normalization using spectra bilinear interpolation (match Python RegularGridInterpolator default linear)
-    nc::NdArray<float> mid(1,3); mid(0,0)=0.184f; mid(0,1)=0.184f; mid(0,2)=0.184f;
-    auto [tc_m, b_m] = rgb_to_tc_b_cpp(mid, color_space, false, reference_illuminant);
+    // Interpolate raw from preprojected LUT over tc (H x 2). Treat width=1 for our flattened convention
+    auto raw = agx::apply_lut_cubic_2d(lut_proj, tc, H, 1); // returns (H*1) x 3
+    // Scale raw by b per-pixel (like Python: raw *= b[..., None])
+    for (int i = 0; i < H; ++i) {
+        float bi = b(i,0);
+        for (int c = 0; c < 3; ++c) raw(i, c) *= bi;
+    }
+    // Compute mid-gray tc and b using sRGB midgray and no decoding (as Python does)
+    nc::NdArray<float> mg_rgb(1,3); mg_rgb(0,0)=0.184f; mg_rgb(0,1)=0.184f; mg_rgb(0,2)=0.184f;
+    auto [tc_m, b_m] = rgb_to_tc_b_cpp(mg_rgb, "sRGB", false, reference_illuminant);
     const float x_m = tc_m(0,0) * (L - 1);
     const float y_m = tc_m(0,1) * (L - 1);
     std::vector<float> spectrum_mid = bilinear_interp_lut_at_2d_channels(spectra_lut, x_m, y_m);
@@ -306,6 +307,54 @@ nc::NdArray<float> rgb_to_raw_hanatos2025(
     float scale = 1.0f / std::max(1e-10f, raw_mid[1]);
     for (int i=0;i<H;++i){ for(int c=0;c<3;++c) raw(i,c)*=scale; }
     return raw;
+}
+
+nc::NdArray<float> rgb_to_raw_hanatos2025_grid(
+    const nc::NdArray<float>& rgb_hw_by3,
+    int height,
+    int width,
+    const nc::NdArray<float>& sensitivity,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut) {
+    // Project spectra LUT by sensitivity: (L*L,K) dot (K,3)
+    const int rows = spectra_lut.shape().rows;
+    const int K = spectra_lut.shape().cols;
+    if ((int)sensitivity.shape().rows != K || sensitivity.shape().cols != 3) {
+        throw std::runtime_error("rgb_to_raw_hanatos2025_grid: sensitivity shape must be (K,3)");
+    }
+    nc::NdArray<float> lut_proj(rows, 3);
+    for (int r=0;r<rows;++r){
+        for (int c=0;c<3;++c){
+            float acc = 0.0f;
+            for (int k=0;k<K;++k) acc += spectra_lut(r,k) * sensitivity(k,c);
+            lut_proj(r,c) = acc;
+        }
+    }
+    const int L = static_cast<int>(std::round(std::sqrt(rows)));
+    // Compute tc,b from RGB (height*width x 3 input expected)
+    auto [tc_flat, b_flat] = rgb_to_tc_b_cpp(rgb_hw_by3, color_space, apply_cctf_decoding, reference_illuminant);
+    // Reshape tc to HxW grid (2 channels) and apply 2D cubic LUT per pixel
+    // Our kernel expects image as (H*W, 2) with explicit height/width for neighborhood traversal
+    auto raw_flat = agx::apply_lut_cubic_2d(lut_proj, tc_flat, height, width);
+    // Multiply by b per pixel
+    for (int i = 0; i < height*width; ++i) {
+        float bi = b_flat(i,0);
+        for (int c = 0; c < 3; ++c) raw_flat(i, c) *= bi;
+    }
+    // Midgray normalization
+    nc::NdArray<float> mg_rgb(1,3); mg_rgb(0,0)=0.184f; mg_rgb(0,1)=0.184f; mg_rgb(0,2)=0.184f;
+    auto [tc_m, b_m] = rgb_to_tc_b_cpp(mg_rgb, "sRGB", false, reference_illuminant);
+    const float x_m = tc_m(0,0) * (L - 1);
+    const float y_m = tc_m(0,1) * (L - 1);
+    std::vector<float> spectrum_mid = bilinear_interp_lut_at_2d_channels(spectra_lut, x_m, y_m);
+    for (auto& v : spectrum_mid) v *= b_m(0,0);
+    float raw_mid_g = 0.0f;
+    for (int k=0;k<K;++k) raw_mid_g += spectrum_mid[k] * sensitivity(k,1);
+    float scale = 1.0f / std::max(1e-10f, raw_mid_g);
+    for (int i=0;i<height*width;++i){ for(int c=0;c<3;++c) raw_flat(i,c) *= scale; }
+    return raw_flat;
 }
 
 }} // namespace agx::utils

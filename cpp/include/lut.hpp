@@ -1,7 +1,47 @@
 #pragma once
 
 #include "NumCpp.hpp"
+#include <string>
+#include <utility>
 #include <functional>
+
+namespace agx { namespace utils {
+
+// Build a 3D LUT for camera RGB->RAW mapping using our rgb_to_raw_hanatos2025 implementation.
+// Returns a flattened (L*L*L x 3) LUT.
+nc::NdArray<float> create_lut_3d_camera_rgb_to_raw(
+    int steps,
+    const nc::NdArray<float>& sensitivity,           // K x 3
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut            // (L2*L2 x K) preloaded
+);
+
+// Apply a 3D LUT to RGB data (H*W x 3) using cubic interpolation.
+// Wrapper over apply_lut_cubic_3d in fast_interp_lut.
+nc::NdArray<float> apply_lut_3d(const nc::NdArray<float>& lut_flat,
+                                const nc::NdArray<float>& rgb_hw_by3,
+                                int height,
+                                int width);
+
+// Convenience: compute camera raw using LUT with given resolution; returns (raw, lut)
+std::pair<nc::NdArray<float>, nc::NdArray<float>> compute_camera_with_lut(
+    const nc::NdArray<float>& rgb_hw_by3,
+    int height,
+    int width,
+    const nc::NdArray<float>& sensitivity,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut,
+    int steps);
+
+} } // namespace agx::utils
+
+#pragma once
+
+#include "NumCpp.hpp"
 
 namespace agx {
 namespace utils {

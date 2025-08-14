@@ -61,6 +61,12 @@
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/utils/lut.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/lut.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/lut.cpp",
+  "output": "CMakeFiles/agx_core.dir/src/utils/lut.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
   "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu -o CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/utils/spectral_upsampling.cu",
   "output": "CMakeFiles/agx_core.dir/src/utils/spectral_upsampling.cu.o"
@@ -142,6 +148,18 @@
   "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cu -o CMakeFiles/agx_core.dir/src/model/diffusion.cu.o",
   "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/diffusion.cu",
   "output": "CMakeFiles/agx_core.dir/src/model/diffusion.cu.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/bin/c++ -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include -O3 -DNDEBUG -fPIC -o CMakeFiles/agx_core.dir/src/model/grain.cpp.o -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/grain.cpp",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/grain.cpp",
+  "output": "CMakeFiles/agx_core.dir/src/model/grain.cpp.o"
+},
+{
+  "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",
+  "command": "/usr/local/cuda-11.8/bin/nvcc -forward-unknown-to-host-compiler -DAGX_SOURCE_DIR=\\\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\\\" --options-file CMakeFiles/agx_core.dir/includes_CUDA.rsp -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC -x cu -c /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/grain.cu -o CMakeFiles/agx_core.dir/src/model/grain.cu.o",
+  "file": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/src/model/grain.cu",
+  "output": "CMakeFiles/agx_core.dir/src/model/grain.cu.o"
 },
 {
   "directory": "/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/build",

@@ -2652,4 +2652,7 @@ CMakeFiles/agx_core.dir/src/model/process.cpp.o: \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/density_spectral.hpp \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/density_curves.hpp \
  /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/diffusion.hpp \
- /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/conversions.hpp
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/couplers.hpp \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/grain.hpp \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/conversions.hpp \
+ /home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include/lut.hpp

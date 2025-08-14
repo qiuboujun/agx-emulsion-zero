@@ -349,6 +349,52 @@ Profile ProfileIO::load_from_file(const std::string& json_path) {
     } catch (...) {
         // keep defaults
     }
+    // Optional glare settings (paper)
+    try {
+        if (j.contains("glare")) {
+            const auto& gl = j.at("glare");
+            if (gl.contains("active")) p.glare.active = gl.at("active").get<bool>();
+            if (gl.contains("percent")) p.glare.percent = gl.at("percent").get<float>();
+            if (gl.contains("roughness")) p.glare.roughness = gl.at("roughness").get<float>();
+            if (gl.contains("blur")) p.glare.blur = gl.at("blur").get<float>();
+            if (gl.contains("compensation_removal_factor")) p.glare.compensation_removal_factor = gl.at("compensation_removal_factor").get<float>();
+            if (gl.contains("compensation_removal_density")) p.glare.compensation_removal_density = gl.at("compensation_removal_density").get<float>();
+            if (gl.contains("compensation_removal_transition")) p.glare.compensation_removal_transition = gl.at("compensation_removal_transition").get<float>();
+        }
+    } catch (...) { /* ignore */ }
+    // Optional halation settings (negative)
+    try {
+        if (j.contains("halation")) {
+            const auto& hl = j.at("halation");
+            if (hl.contains("active")) p.halation.active = hl.at("active").get<bool>();
+            if (hl.contains("size_um")) {
+                for (size_t i=0;i<3 && i<hl.at("size_um").size();++i) p.halation.size_um[i] = hl.at("size_um")[i].get<float>();
+            }
+            if (hl.contains("strength")) {
+                for (size_t i=0;i<3 && i<hl.at("strength").size();++i) p.halation.strength[i] = hl.at("strength")[i].get<float>();
+            }
+            if (hl.contains("scattering_size_um")) {
+                for (size_t i=0;i<3 && i<hl.at("scattering_size_um").size();++i) p.halation.scattering_size_um[i] = hl.at("scattering_size_um")[i].get<float>();
+            }
+            if (hl.contains("scattering_strength")) {
+                for (size_t i=0;i<3 && i<hl.at("scattering_strength").size();++i) p.halation.scattering_strength[i] = hl.at("scattering_strength")[i].get<float>();
+            }
+        }
+    } catch (...) { /* ignore */ }
+    // Optional masking_couplers settings (paper/negative tuning applied in factory)
+    try {
+        if (j.contains("masking_couplers")) {
+            const auto& mc = j.at("masking_couplers");
+            if (mc.contains("cross_over_points")) {
+                for (size_t i=0;i<3 && i<mc.at("cross_over_points").size();++i) p.masking_couplers.cross_over_points[i] = mc.at("cross_over_points")[i].get<float>();
+                p.masking_couplers.active = true;
+            }
+            if (mc.contains("transition_widths")) {
+                for (size_t i=0;i<3 && i<mc.at("transition_widths").size();++i) p.masking_couplers.transition_widths[i] = mc.at("transition_widths")[i].get<float>();
+                p.masking_couplers.active = true;
+            }
+        }
+    } catch (...) { /* ignore */ }
     std::cout << "ProfileIO::load_from_file: All conversions completed successfully" << std::endl;
     return p;
 }

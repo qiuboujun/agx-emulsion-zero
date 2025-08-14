@@ -613,6 +613,54 @@ src/model/diffusion.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/diffusion.cu.s
 .PHONY : src/model/diffusion.cu.s
 
+src/model/grain.o: src/model/grain.cpp.o
+.PHONY : src/model/grain.o
+
+# target to build an object file
+src/model/grain.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/grain.cpp.o
+.PHONY : src/model/grain.cpp.o
+
+src/model/grain.i: src/model/grain.cpp.i
+.PHONY : src/model/grain.i
+
+# target to preprocess a source file
+src/model/grain.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/grain.cpp.i
+.PHONY : src/model/grain.cpp.i
+
+src/model/grain.s: src/model/grain.cpp.s
+.PHONY : src/model/grain.s
+
+# target to generate assembly for a file
+src/model/grain.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/grain.cpp.s
+.PHONY : src/model/grain.cpp.s
+
+src/model/grain.o: src/model/grain.cu.o
+.PHONY : src/model/grain.o
+
+# target to build an object file
+src/model/grain.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/grain.cu.o
+.PHONY : src/model/grain.cu.o
+
+src/model/grain.i: src/model/grain.cu.i
+.PHONY : src/model/grain.i
+
+# target to preprocess a source file
+src/model/grain.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/grain.cu.i
+.PHONY : src/model/grain.cu.i
+
+src/model/grain.s: src/model/grain.cu.s
+.PHONY : src/model/grain.s
+
+# target to generate assembly for a file
+src/model/grain.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/model/grain.cu.s
+.PHONY : src/model/grain.cu.s
+
 src/model/illuminants.o: src/model/illuminants.cpp.o
 .PHONY : src/model/illuminants.o
 
@@ -924,6 +972,30 @@ src/utils/io.s: src/utils/io.cpp.s
 src/utils/io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/io.cpp.s
 .PHONY : src/utils/io.cpp.s
+
+src/utils/lut.o: src/utils/lut.cpp.o
+.PHONY : src/utils/lut.o
+
+# target to build an object file
+src/utils/lut.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/lut.cpp.o
+.PHONY : src/utils/lut.cpp.o
+
+src/utils/lut.i: src/utils/lut.cpp.i
+.PHONY : src/utils/lut.i
+
+# target to preprocess a source file
+src/utils/lut.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/lut.cpp.i
+.PHONY : src/utils/lut.cpp.i
+
+src/utils/lut.s: src/utils/lut.cpp.s
+.PHONY : src/utils/lut.s
+
+# target to generate assembly for a file
+src/utils/lut.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/lut.cpp.s
+.PHONY : src/utils/lut.cpp.s
 
 src/utils/measure.o: src/utils/measure.cpp.o
 .PHONY : src/utils/measure.o
@@ -1413,6 +1485,12 @@ help:
 	@echo "... src/model/diffusion.o"
 	@echo "... src/model/diffusion.i"
 	@echo "... src/model/diffusion.s"
+	@echo "... src/model/grain.o"
+	@echo "... src/model/grain.i"
+	@echo "... src/model/grain.s"
+	@echo "... src/model/grain.o"
+	@echo "... src/model/grain.i"
+	@echo "... src/model/grain.s"
 	@echo "... src/model/illuminants.o"
 	@echo "... src/model/illuminants.i"
 	@echo "... src/model/illuminants.s"
@@ -1452,6 +1530,9 @@ help:
 	@echo "... src/utils/io.o"
 	@echo "... src/utils/io.i"
 	@echo "... src/utils/io.s"
+	@echo "... src/utils/lut.o"
+	@echo "... src/utils/lut.i"
+	@echo "... src/utils/lut.s"
 	@echo "... src/utils/measure.o"
 	@echo "... src/utils/measure.i"
 	@echo "... src/utils/measure.s"

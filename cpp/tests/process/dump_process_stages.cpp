@@ -239,15 +239,24 @@ int main(){
         m_neutral * agx::config::ENLARGER_STEPS + params.enlarger.m_filter_shift,
         c_neutral * agx::config::ENLARGER_STEPS);
 
-    auto density_spec = agx::utils::compute_density_spectral(density_cmy, neg.data.dye_density, neg.data.dye_density_min_factor);
-    auto light = agx::utils::density_to_light(density_spec, enlarger_ill);
+    nc::NdArray<float> density_spec;
+    if (!agx::utils::compute_density_spectral_gpu(density_cmy, neg.data.dye_density, neg.data.dye_density_min_factor, density_spec)) {
+        density_spec = agx::utils::compute_density_spectral(density_cmy, neg.data.dye_density, neg.data.dye_density_min_factor);
+    }
+    nc::NdArray<float> light;
+    if (!agx::utils::density_to_light_gpu(density_spec, enlarger_ill, light)) {
+        light = agx::utils::density_to_light(density_spec, enlarger_ill);
+    }
 
     nc::NdArray<float> paper_sens(paper.data.log_sensitivity.shape().rows, paper.data.log_sensitivity.shape().cols);
     for (uint32_t i=0;i<paper.data.log_sensitivity.shape().rows;++i)
         for (uint32_t j=0;j<paper.data.log_sensitivity.shape().cols;++j)
             paper_sens(i,j) = std::pow(10.0f, paper.data.log_sensitivity(i,j));
     paper_sens = nc::nan_to_num(paper_sens);
-    auto cmy = dot_blocks_K3(light, paper_sens, W);
+    nc::NdArray<float> cmy;
+    if (!agx::utils::dot_blocks_K3_gpu(light, paper_sens, W, cmy)) {
+        cmy = dot_blocks_K3(light, paper_sens, W);
+    }
     // Save pre-exposure, pre-midgray CMY
     auto cmy_pre_dump = cmy;
     cmy *= params.enlarger.print_exposure;
@@ -264,8 +273,14 @@ int main(){
     }
     nc::NdArray<float> density_cmy_mid(1,3);
     for (int j=0;j<3;++j) density_cmy_mid(0,j)=static_cast<float>(density_cmy_mid_mat(0,j));
-    auto density_spec_mid = agx::utils::compute_density_spectral(density_cmy_mid, neg.data.dye_density, neg.data.dye_density_min_factor);
-    auto light_mid = agx::utils::density_to_light(density_spec_mid, enlarger_ill);
+    nc::NdArray<float> density_spec_mid;
+    if (!agx::utils::compute_density_spectral_gpu(density_cmy_mid, neg.data.dye_density, neg.data.dye_density_min_factor, density_spec_mid)) {
+        density_spec_mid = agx::utils::compute_density_spectral(density_cmy_mid, neg.data.dye_density, neg.data.dye_density_min_factor);
+    }
+    nc::NdArray<float> light_mid;
+    if (!agx::utils::density_to_light_gpu(density_spec_mid, enlarger_ill, light_mid)) {
+        light_mid = agx::utils::density_to_light(density_spec_mid, enlarger_ill);
+    }
     auto raw_mid_print = nc::dot(light_mid, paper_sens);
     float midgray_factor = 1.0f / std::max(1e-10f, raw_mid_print(0,1));
     cmy *= midgray_factor;
@@ -295,10 +310,20 @@ int main(){
 
     // Scan
     auto scan_ill = agx::model::standard_illuminant(paper.info.viewing_illuminant).flatten();
-    auto dens_spec_scan = agx::utils::compute_density_spectral(density_print, paper.data.dye_density, paper.data.dye_density_min_factor);
-    auto light_scan = agx::utils::density_to_light(dens_spec_scan, scan_ill);
+    nc::NdArray<float> dens_spec_scan;
+    if (!agx::utils::compute_density_spectral_gpu(density_print, paper.data.dye_density, paper.data.dye_density_min_factor, dens_spec_scan)) {
+        dens_spec_scan = agx::utils::compute_density_spectral(density_print, paper.data.dye_density, paper.data.dye_density_min_factor);
+    }
+    nc::NdArray<float> light_scan;
+    if (!agx::utils::density_to_light_gpu(dens_spec_scan, scan_ill, light_scan)) {
+        light_scan = agx::utils::density_to_light(dens_spec_scan, scan_ill);
+    }
     float norm = 0.0f; for(uint32_t i=0;i<agx::config::SPECTRAL_SHAPE.wavelengths.size();++i) norm += agx::config::STANDARD_OBSERVER_CMFS(i,1) * scan_ill[i];
-    auto xyz_hw3 = dot_blocks_K3(light_scan, agx::config::STANDARD_OBSERVER_CMFS, W) / norm;
+    nc::NdArray<float> xyz_hw3;
+    if (!agx::utils::dot_blocks_K3_gpu(light_scan, agx::config::STANDARD_OBSERVER_CMFS, W, xyz_hw3)) {
+        xyz_hw3 = dot_blocks_K3(light_scan, agx::config::STANDARD_OBSERVER_CMFS, W);
+    }
+    xyz_hw3 = xyz_hw3 / norm;
     auto xyz_flat = hw3_to_hw_by3(xyz_hw3);
     nc::NdArray<float> illuminant_xy(1,2); illuminant_xy(0,0)=0.3127f; illuminant_xy(0,1)=0.3290f;
     auto rgb_flat = colour::XYZ_to_RGB(xyz_flat, params.io.output_color_space, params.io.output_cctf_encoding, illuminant_xy, "CAT02");
@@ -340,6 +365,8 @@ int main(){
     j["b_center"] = b_center(0,0);
     j["raw_pre_center"] = std::vector<float>{ raw_pre_center_nc(0,0), raw_pre_center_nc(0,1), raw_pre_center_nc(0,2) };
     j["raw_pre_scaled_center"] = std::vector<float>{ raw_pre_scaled(0,0), raw_pre_scaled(0,1), raw_pre_scaled(0,2) };
+
+
     j["midgray_raw_center"] = std::vector<float>{ raw_mid_center[0], raw_mid_center[1], raw_mid_center[2] };
     j["ev"] = ev;
     j["raw_center"] = at3(raw);

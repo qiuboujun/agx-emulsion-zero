@@ -23,6 +23,30 @@ struct ProfileInfo {
     std::array<float, 3> density_midscale_neutral;
 };
 
+struct GlareSettings {
+    bool active = false;
+    float percent = 0.0f;
+    float roughness = 0.0f;
+    float blur = 0.0f;
+    float compensation_removal_factor = 0.0f;
+    float compensation_removal_density = 1.2f;
+    float compensation_removal_transition = 0.3f;
+};
+
+struct HalationSettings {
+    bool active = false;
+    std::array<float,3> size_um{{0.f,0.f,0.f}};
+    std::array<float,3> strength{{0.f,0.f,0.f}};
+    std::array<float,3> scattering_size_um{{0.f,0.f,0.f}};
+    std::array<float,3> scattering_strength{{0.f,0.f,0.f}};
+};
+
+struct MaskingCouplersSettings {
+    bool active = false;
+    std::array<float,3> cross_over_points{{0.f,0.f,0.f}};
+    std::array<float,3> transition_widths{{1.f,1.f,1.f}};
+};
+
 struct ProfileData {
     nc::NdArray<float> log_sensitivity;        // [N,3]
     nc::NdArray<float> density_curves;         // [M,3]
@@ -37,6 +61,9 @@ struct ProfileData {
 struct Profile {
     ProfileInfo info;
     ProfileData data;
+    GlareSettings glare;
+    HalationSettings halation;
+    MaskingCouplersSettings masking_couplers;
 };
 
 class ProfileIO {

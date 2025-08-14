@@ -78,6 +78,17 @@ nc::NdArray<float> rgb_to_raw_hanatos2025(
     const std::string& reference_illuminant,
     const nc::NdArray<float>& spectra_lut);
 
+// Grid-aware variant that takes height and width to match Python's image layout for LUT application
+nc::NdArray<float> rgb_to_raw_hanatos2025_grid(
+    const nc::NdArray<float>& rgb_hw_by3,
+    int height,
+    int width,
+    const nc::NdArray<float>& sensitivity,
+    const std::string& color_space,
+    bool apply_cctf_decoding,
+    const std::string& reference_illuminant,
+    const nc::NdArray<float>& spectra_lut);
+
 } } // namespace agx::utils
 #endif
 

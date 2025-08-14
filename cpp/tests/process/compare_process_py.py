@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from agx_emulsion.profiles.factory import apply_masking_couplers as py_apply_masking_couplers
 from agx_emulsion.model.process import photo_params, photo_process
 from agx_emulsion.utils.autoexposure import measure_autoexposure_ev
 
@@ -28,6 +29,13 @@ def main():
     params.io.output_color_space = 'sRGB'
     params.io.output_cctf_encoding = True
     params.camera.auto_exposure = True
+    # Enable LUTs on Python side to match C++ LUT paths
+    params.settings.use_camera_lut = True
+    params.settings.use_enlarger_lut = True
+    params.settings.use_scanner_lut = True
+    params.settings.lut_resolution = 32
+    # Enable masking couplers to match C++ settings (explicitly mutate profile dye densities)
+    py_apply_masking_couplers(params.negative, control_plot=False, effectiveness=1.0, model='erf')
 
     # Disable scanner blur & unsharp and paper glare to match C++
     params.scanner.lens_blur = 0.0
