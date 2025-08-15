@@ -78,13 +78,10 @@ compute_exposure_correction_dir_couplers_cuda(
     const std::vector<std::vector<std::array<double, 3>>> &density_cmy,
     const std::array<double, 3> &density_max,
     const std::array<std::array<double, 3>, 3> &dir_couplers_matrix,
-    int diffusion_size_pixel,
-    double high_exposure_couplers_shift = 0.0) {
+    double diffusion_size_pixel,
+    double high_exposure_couplers_shift) {
 #ifndef __CUDACC__
-    // CUDA not available; fall back to CPU implementation
-    return Couplers::compute_exposure_correction_dir_couplers(
-        log_raw, density_cmy, density_max, dir_couplers_matrix,
-        diffusion_size_pixel, high_exposure_couplers_shift);
+    throw std::runtime_error("compute_exposure_correction_dir_couplers_cuda requires CUDA");
 #else
     // The GPU implementation follows the same steps as the CPU
     // reference: compute per‑pixel inhibitors then optionally blur
@@ -122,7 +119,7 @@ compute_exposure_correction_dir_couplers_cuda(
         }
     }
     // If no diffusion requested we can subtract directly
-    if (diffusion_size_pixel <= 0) {
+    if (diffusion_size_pixel <= 0.0) {
         std::vector<std::vector<std::array<double, 3>>> result(H,
             std::vector<std::array<double, 3>>(W));
         for (int i = 0; i < H; ++i) {
@@ -135,7 +132,7 @@ compute_exposure_correction_dir_couplers_cuda(
         return result;
     }
     // Build Gaussian kernel on host
-    double sigma = static_cast<double>(diffusion_size_pixel);
+    double sigma = diffusion_size_pixel;
     // Create the kernel manually since make_gaussian_kernel_2d is not accessible from CUDA
     std::vector<std::vector<double>> kernel2d;
     if (sigma <= 0.0) {

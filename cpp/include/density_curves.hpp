@@ -94,6 +94,14 @@ bool gpu_interpolate_exposure_to_density(
     const std::array<double,3>& gamma_factor,
     Matrix& out);
 
+// Enforced GPU variant: throws if CUDA path is unavailable
+bool gpu_interpolate_exposure_to_density_cuda(
+    const Matrix& log_exposure_rgb,
+    const Matrix& density_curves,
+    const std::vector<double>& log_exposure,
+    const std::array<double,3>& gamma_factor,
+    Matrix& out);
+
 /**
  * apply_gamma_shift_correction:
  * For each channel i:

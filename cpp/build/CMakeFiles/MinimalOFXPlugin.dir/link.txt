@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,MinimalOFXPlugin.ofx -o MinimalOFXPlugin.ofx.bundle/Contents/Linux-x86-64/MinimalOFXPlugin.ofx CMakeFiles/MinimalOFXPlugin.dir/ofx/MinimalOFXPlugin.cpp.o  -Wl,-rpath,"\\\$ORIGIN" 

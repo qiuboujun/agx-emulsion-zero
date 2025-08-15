@@ -73,6 +73,16 @@ struct ProcessSettings {
     bool use_fast_stats = false;
     bool apply_paper_glare = false;
     bool apply_masking_couplers = false;
+    // Debug/toggles
+    bool disable_halation = false; // when true, skip halation/scattering stage
+    bool disable_grain = false;    // when true, skip grain stage
+    // DIR couplers controls (match Python GUI defaults)
+    bool apply_dir_couplers = true;
+    double dir_amount = 1.0;                           // overall amount
+    std::array<double,3> dir_ratio_rgb {1.0,1.0,1.0};  // per-channel ratio
+    double dir_diffusion_size_um = 10.0;               // spatial diffusion in micrometres
+    double dir_diffusion_interlayer = 2.0;             // diffusion between layers
+    double dir_high_exposure_shift = 0.0;              // high exposure shift
 };
 
 struct ProfileSet {

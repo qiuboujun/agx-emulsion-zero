@@ -343,7 +343,7 @@ nc::NdArray<float> apply_lut_cubic_2d(const nc::NdArray<float>& lut, const nc::N
     auto output = nc::NdArray<float>(height * width, lut_channels);
 
     // Validate dimensions to prevent CUDA launch errors
-    if (width <= 0 || height <= 0 || width > 65535 || height > 65535) {
+    if (width <= 0 || height <= 0) {
         throw std::runtime_error("Invalid image dimensions for CUDA kernel: " + std::to_string(width) + "x" + std::to_string(height));
     }
 
@@ -388,7 +388,7 @@ nc::NdArray<float> apply_lut_cubic_3d(const nc::NdArray<float>& lut, const nc::N
     auto output = nc::NdArray<float>(height * width, lut_channels);
 
     // Validate dimensions to prevent CUDA launch errors
-    if (width <= 0 || height <= 0 || width > 65535 || height > 65535) {
+    if (width <= 0 || height <= 0) {
         throw std::runtime_error("Invalid image dimensions for CUDA kernel: " + std::to_string(width) + "x" + std::to_string(height));
     }
 

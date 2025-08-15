@@ -607,6 +607,9 @@ Python_INCLUDE_DIR:FILEPATH=/home/jimmyqiu/miniconda3/include/python3.13
 //Python Library
 Python_LIBRARY:FILEPATH=/home/jimmyqiu/miniconda3/lib/libpython3.13.so
 
+//No help, variable specified on the command line.
+USE_CUDA:UNINITIALIZED=ON
+
 //Path to a file.
 VERSION_FILE:FILEPATH=/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/NumCpp/include/NumCpp/Core/Internal/Version.hpp
 

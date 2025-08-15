@@ -169,25 +169,8 @@ std::pair<nc::NdArray<float>, nc::NdArray<float>> compute_with_lut(
         
         // Use try-catch around the CUDA LUT application
         nc::NdArray<float> out_hw_by3;
-        try {
-            out_hw_by3 = agx::apply_lut_cubic_3d(lut, image_hw_by3, height, width);
-            std::cout << "[LUT] CUDA LUT application successful" << std::endl;
-        } catch (const std::exception& e) {
-            std::cout << "[LUT] CUDA LUT failed: " << e.what() << ", falling back to CPU..." << std::endl;
-            // Fallback: manually apply LUT using the function
-            out_hw_by3 = nc::NdArray<float>(height * width, 3);
-            for (int i = 0; i < height * width; ++i) {
-                nc::NdArray<float> pixel(1, 3);
-                for (int c = 0; c < 3; ++c) {
-                    pixel(0, c) = image_hw_by3(i, c);
-                }
-                auto result = function(pixel);
-                for (int c = 0; c < 3; ++c) {
-                    out_hw_by3(i, c) = result(0, c);
-                }
-            }
-            std::cout << "[LUT] CPU fallback completed" << std::endl;
-        }
+        out_hw_by3 = agx::apply_lut_cubic_3d(lut, image_hw_by3, height, width);
+        std::cout << "[LUT] CUDA LUT application successful" << std::endl;
         
         std::cout << "[LUT] compute_with_lut completed successfully" << std::endl;
         return {out_hw_by3, lut};

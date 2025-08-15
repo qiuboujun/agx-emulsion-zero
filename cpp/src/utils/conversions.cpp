@@ -99,79 +99,9 @@ nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc:
 }
 
 // GPU-accelerated version with CPU fallback. Returns true if GPU path executed, else false.
-bool density_to_light_gpu(const nc::NdArray<float>& density, const nc::NdArray<float>& light, nc::NdArray<float>& out) {
-#ifndef __CUDACC__
-    // CPU fallback
-    out = density_to_light(density, light);
-    return false;
-#else
-    const auto rows = density.shape().rows;
-    const auto cols = density.shape().cols;
-    out = nc::NdArray<float>(rows, cols);
-
-    // Flatten inputs
-    auto d_flat = density.flatten();
-    auto l_flat = light.flatten();
-    auto o_flat = out.flatten();
-
-    // Copy to device
-    float *d_d=nullptr, *d_l=nullptr, *d_o=nullptr;
-    cudaMalloc(&d_d, d_flat.size()*sizeof(float));
-    cudaMalloc(&d_l, l_flat.size()*sizeof(float));
-    cudaMalloc(&d_o, o_flat.size()*sizeof(float));
-    cudaMemcpy(d_d, d_flat.data(), d_flat.size()*sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_l, l_flat.data(), l_flat.size()*sizeof(float), cudaMemcpyHostToDevice);
-
-    // Kernel: out = 10^(-density) * light with simple broadcasting cases
-    const int N = static_cast<int>(rows*cols);
-    int threads = 256;
-    int blocks = (N + threads - 1) / threads;
-
-    // Prepare light mode flags
-    int lrows = static_cast<int>(light.shape().rows);
-    int lcols = static_cast<int>(light.shape().cols);
-    int lsize = static_cast<int>(l_flat.size());
-
-    struct Params { int rows, cols, lrows, lcols, lsize; } p{(int)rows,(int)cols,lrows,lcols,lsize};
-
-    __global__ void k_d2l(const float* dens, const float* light, float* out, Params p) {
-        int idx = blockIdx.x * blockDim.x + threadIdx.x;
-        if (idx >= p.rows * p.cols) return;
-        int r = idx / p.cols;
-        int c = idx % p.cols;
-        // Compute 10^(-d)
-        double t = pow(10.0, -(double)dens[idx]);
-        double L = 1.0;
-        if (p.lsize == 1) {
-            L = (double)light[0];
-        } else if (p.lrows == p.rows && p.lcols == p.cols) {
-            L = (double)light[idx];
-        } else if (p.lsize == p.cols || (p.lrows == 1 && p.lcols == p.cols) || (p.lcols == 1 && p.lrows == p.cols)) {
-            L = (double)light[c];
-        } else if (p.lsize == p.rows || (p.lrows == p.rows && p.lcols == 1) || (p.lcols == p.rows && p.lrows == 1)) {
-            L = (double)light[r];
-        } else if (p.lsize > 1 && (p.cols % p.lsize == 0)) {
-            int blockSize = p.lsize;
-            int b = c / blockSize;
-            int k = c % blockSize;
-            (void)b;
-            L = (double)light[k];
-        } else if (p.rows * p.cols == p.lsize) {
-            L = (double)light[idx];
-        } else {
-            L = (double)light[0];
-        }
-        out[idx] = (float)(t * L);
-    }
-
-    k_d2l<<<blocks, threads>>>(d_d, d_l, d_o, p);
-    cudaDeviceSynchronize();
-
-    cudaMemcpy(o_flat.data(), d_o, o_flat.size()*sizeof(float), cudaMemcpyDeviceToHost);
-    cudaFree(d_d); cudaFree(d_l); cudaFree(d_o);
-    return true;
-#endif
-}
+// GPU entry points are implemented in conversions.cu
+bool density_to_light_gpu(const nc::NdArray<float>&, const nc::NdArray<float>&, nc::NdArray<float>&);
+bool density_to_light_cuda(const nc::NdArray<float>&, const nc::NdArray<float>&, nc::NdArray<float>&);
 
 // Overload for single float inputs (convenience)
 float density_to_light(float density, float light) {

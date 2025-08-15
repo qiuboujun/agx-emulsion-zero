@@ -177,4 +177,18 @@ bool gpu_interpolate_exposure_to_density(
 #endif
 }
 
+// Enforced GPU variant: throws if CUDA not available
+bool gpu_interpolate_exposure_to_density_cuda(
+    const Matrix& log_exposure_rgb,
+    const Matrix& density_curves,
+    const std::vector<double>& log_exposure,
+    const std::array<double,3>& gamma_factor,
+    Matrix& out)
+{
+#ifndef __CUDACC__
+    throw std::runtime_error("gpu_interpolate_exposure_to_density_cuda requires CUDA");
+#else
+    return gpu_interpolate_exposure_to_density(log_exposure_rgb, density_curves, log_exposure, gamma_factor, out);
+#endif
+}
 } // namespace agx_emulsion 

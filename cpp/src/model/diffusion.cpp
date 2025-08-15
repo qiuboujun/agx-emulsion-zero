@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <stdexcept>
+#include <iostream>
 
 namespace agx_emulsion {
 
@@ -107,8 +108,6 @@ void Diffusion::apply_gaussian_blur(const std::vector<float>& image,
     // Build kernel
     std::vector<float> k;
     gaussian_kernel_1d(sigma, truncate, k);
-
-#if defined(__CUDACC__) || defined(CUDA_VERSION)
     if (try_cuda) {
         output.resize(image.size());
         if (diffusion_cuda::gaussian_blur_rgb(image.data(), output.data(),
@@ -118,8 +117,48 @@ void Diffusion::apply_gaussian_blur(const std::vector<float>& image,
         }
         // else: fall back to CPU
     }
-#endif
     blur_all_channels_cpu(image, height, width, sigma, truncate, output);
+}
+
+void Diffusion::apply_gaussian_blur_planar(const std::vector<float>& plane,
+                                           int height,
+                                           int width,
+                                           float sigma,
+                                           std::vector<float>& output,
+                                           float truncate,
+                                           bool try_cuda) {
+    if (sigma <= 0.f) { output = plane; return; }
+    std::vector<float> k; gaussian_kernel_1d(sigma, truncate, k);
+    output.resize(height * width);
+    if (try_cuda) {
+        if (diffusion_cuda::gaussian_blur_planar(plane.data(), output.data(), height, width, k.data(), (int)k.size())) {
+            return;
+        }
+    }
+    std::vector<float> tmp(height * width);
+    const int radius = (int)k.size() / 2;
+    // Horizontal
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            float acc = 0.f;
+            for (int t = -radius; t <= radius; ++t) {
+                int xr = reflect(x + t, width);
+                acc += plane[y * width + xr] * k[t + radius];
+            }
+            tmp[y * width + x] = acc;
+        }
+    }
+    // Vertical
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            float acc = 0.f;
+            for (int t = -radius; t <= radius; ++t) {
+                int yr = reflect(y + t, height);
+                acc += tmp[yr * width + x] * k[t + radius];
+            }
+            output[y * width + x] = acc;
+        }
+    }
 }
 
 void Diffusion::apply_gaussian_blur_um(const std::vector<float>& image,
@@ -157,36 +196,32 @@ void Diffusion::apply_halation_um(std::vector<float>& raw,
 
     // Work buffers
     std::vector<float> chan_in(width * height);
-    std::vector<float> chan_out_img; // blurred RGB image
     std::vector<float> chan_blur(width * height);
 
-    // Halation (truncate=7)
+    // Halation (truncate=7). Use efficient planar blur per channel.
     for (int c = 0; c < 3; ++c) {
         float strength = halation.strength[c];
         float sigma_um = halation.size_um[c];
         if (strength <= 0.f || sigma_um <= 0.f) continue;
 
         float sigma_px = sigma_um / pixel_size_um;
+        
+        // Clamp extremely large kernels to prevent hangs
+        const float max_sigma_px = 50.0f; // Reasonable maximum
+        if (sigma_px > max_sigma_px) {
+            std::cerr << "Warning: Halation sigma_px=" << sigma_px << " clamped to " << max_sigma_px << std::endl;
+            sigma_px = max_sigma_px;
+        }
 
-        // Extract channel (after any previous modifications)
+        // Extract channel to planar buffer
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x)
                 chan_in[y * width + x] = raw[idx_rgb(y,x,width,c)];
 
-        // Blur just this channel using the same RGB blur infra by building a 3-channel image
-        std::vector<float> single_rgb(height * width * 3, 0.f);
-        for (int y = 0; y < height; ++y)
-            for (int x = 0; x < width; ++x)
-                single_rgb[idx_rgb(y,x,width,c)] = chan_in[y * width + x];
+        // Use efficient planar blur (CUDA if available, CPU fallback)
+        apply_gaussian_blur_planar(chan_in, height, width, sigma_px, chan_blur, /*truncate=*/7.0f, /*try_cuda=*/true);
 
-        Diffusion::apply_gaussian_blur(single_rgb, height, width, sigma_px, chan_out_img, /*truncate=*/7.0f);
-
-        // Pull back blurred channel
-        for (int y = 0; y < height; ++y)
-            for (int x = 0; x < width; ++x)
-                chan_blur[y * width + x] = chan_out_img[idx_rgb(y,x,width,c)];
-
-        // raw[:,:,c] = (raw[:,:,c] + s * blur) / (1 + s)
+        // Apply: raw[:,:,c] = (raw[:,:,c] + s * blur) / (1 + s)
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x) {
                 size_t i = idx_rgb(y,x,width,c);
@@ -204,21 +239,19 @@ void Diffusion::apply_halation_um(std::vector<float>& raw,
         if (strength <= 0.f || sigma_um <= 0.f) continue;
 
         float sigma_px = sigma_um / pixel_size_um;
+        
+        // Clamp scattering kernels too
+        const float max_sigma_px = 20.0f; // Smaller limit for scattering
+        if (sigma_px > max_sigma_px) {
+            std::cerr << "Warning: Scattering sigma_px=" << sigma_px << " clamped to " << max_sigma_px << std::endl;
+            sigma_px = max_sigma_px;
+        }
 
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x)
                 chan_in[y * width + x] = raw[idx_rgb(y,x,width,c)];
 
-        std::vector<float> single_rgb(height * width * 3, 0.f);
-        for (int y = 0; y < height; ++y)
-            for (int x = 0; x < width; ++x)
-                single_rgb[idx_rgb(y,x,width,c)] = chan_in[y * width + x];
-
-        Diffusion::apply_gaussian_blur(single_rgb, height, width, sigma_px, chan_out_img, /*truncate=*/7.0f);
-
-        for (int y = 0; y < height; ++y)
-            for (int x = 0; x < width; ++x)
-                chan_blur[y * width + x] = chan_out_img[idx_rgb(y,x,width,c)];
+        apply_gaussian_blur_planar(chan_in, height, width, sigma_px, chan_blur, /*truncate=*/7.0f, /*try_cuda=*/true);
 
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x) {
@@ -229,6 +262,31 @@ void Diffusion::apply_halation_um(std::vector<float>& raw,
                 raw[i] = v;
             }
     }
+}
+
+void Diffusion::apply_gaussian_blur_cuda_only(const std::vector<float>& image,
+                                              int height,
+                                              int width,
+                                              float sigma,
+                                              std::vector<float>& output,
+                                              float truncate) {
+    if (sigma <= 0.f) { output = image; return; }
+    std::vector<float> k; gaussian_kernel_1d(sigma, truncate, k);
+    output.resize(image.size());
+    if (!diffusion_cuda::gaussian_blur_rgb(image.data(), output.data(), height, width, k.data(), (int)k.size())) {
+        throw std::runtime_error("CUDA gaussian_blur_rgb failed");
+    }
+}
+
+void Diffusion::apply_gaussian_blur_um_cuda_only(const std::vector<float>& image,
+                                                 int height,
+                                                 int width,
+                                                 float sigma_um,
+                                                 float pixel_size_um,
+                                                 std::vector<float>& output,
+                                                 float truncate) {
+    float sigma_px = (pixel_size_um > 0.f) ? (sigma_um / pixel_size_um) : 0.f;
+    apply_gaussian_blur_cuda_only(image, height, width, sigma_px, output, truncate);
 }
 
 } // namespace agx_emulsion 

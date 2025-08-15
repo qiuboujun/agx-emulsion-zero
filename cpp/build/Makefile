@@ -1156,6 +1156,30 @@ src/utils/conversions.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cpp.s
 .PHONY : src/utils/conversions.cpp.s
 
+src/utils/conversions.o: src/utils/conversions.cu.o
+.PHONY : src/utils/conversions.o
+
+# target to build an object file
+src/utils/conversions.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cu.o
+.PHONY : src/utils/conversions.cu.o
+
+src/utils/conversions.i: src/utils/conversions.cu.i
+.PHONY : src/utils/conversions.i
+
+# target to preprocess a source file
+src/utils/conversions.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cu.i
+.PHONY : src/utils/conversions.cu.i
+
+src/utils/conversions.s: src/utils/conversions.cu.s
+.PHONY : src/utils/conversions.s
+
+# target to generate assembly for a file
+src/utils/conversions.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/conversions.cu.s
+.PHONY : src/utils/conversions.cu.s
+
 src/utils/crop_resize.o: src/utils/crop_resize.cpp.o
 .PHONY : src/utils/crop_resize.o
 
@@ -1227,6 +1251,30 @@ src/utils/density_spectral.s: src/utils/density_spectral.cpp.s
 src/utils/density_spectral.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral.cpp.s
 .PHONY : src/utils/density_spectral.cpp.s
+
+src/utils/density_spectral_gpu.o: src/utils/density_spectral_gpu.cu.o
+.PHONY : src/utils/density_spectral_gpu.o
+
+# target to build an object file
+src/utils/density_spectral_gpu.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral_gpu.cu.o
+.PHONY : src/utils/density_spectral_gpu.cu.o
+
+src/utils/density_spectral_gpu.i: src/utils/density_spectral_gpu.cu.i
+.PHONY : src/utils/density_spectral_gpu.i
+
+# target to preprocess a source file
+src/utils/density_spectral_gpu.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral_gpu.cu.i
+.PHONY : src/utils/density_spectral_gpu.cu.i
+
+src/utils/density_spectral_gpu.s: src/utils/density_spectral_gpu.cu.s
+.PHONY : src/utils/density_spectral_gpu.s
+
+# target to generate assembly for a file
+src/utils/density_spectral_gpu.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/agx_core.dir/build.make CMakeFiles/agx_core.dir/src/utils/density_spectral_gpu.cu.s
+.PHONY : src/utils/density_spectral_gpu.cu.s
 
 src/utils/fast_interp_lut.o: src/utils/fast_interp_lut.cu.o
 .PHONY : src/utils/fast_interp_lut.o
@@ -1854,6 +1902,9 @@ help:
 	@echo "... src/utils/conversions.o"
 	@echo "... src/utils/conversions.i"
 	@echo "... src/utils/conversions.s"
+	@echo "... src/utils/conversions.o"
+	@echo "... src/utils/conversions.i"
+	@echo "... src/utils/conversions.s"
 	@echo "... src/utils/crop_resize.o"
 	@echo "... src/utils/crop_resize.i"
 	@echo "... src/utils/crop_resize.s"
@@ -1863,6 +1914,9 @@ help:
 	@echo "... src/utils/density_spectral.o"
 	@echo "... src/utils/density_spectral.i"
 	@echo "... src/utils/density_spectral.s"
+	@echo "... src/utils/density_spectral_gpu.o"
+	@echo "... src/utils/density_spectral_gpu.i"
+	@echo "... src/utils/density_spectral_gpu.s"
 	@echo "... src/utils/fast_interp_lut.o"
 	@echo "... src/utils/fast_interp_lut.i"
 	@echo "... src/utils/fast_interp_lut.s"

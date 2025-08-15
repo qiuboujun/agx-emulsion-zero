@@ -227,6 +227,9 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     } else {
         ev = params_.camera.exposure_compensation_ev;
     }
+    std::cout << "Auto exposure EV: " << ev << " (auto=" << (params_.camera.auto_exposure ? "yes" : "no") 
+              << ", method=" << params_.camera.auto_exposure_method 
+              << ", compensation=" << params_.camera.exposure_compensation_ev << ")" << std::endl;
 
     // Resize and pixel size
     float film_format_mm = params_.camera.film_format_mm;
@@ -235,6 +238,9 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::cout << "Input image shape: " << image.shape().rows << "x" << image.shape().cols << "\n";
     const int Himg = static_cast<int>(image.shape().rows);
     const int Wimg = static_cast<int>(image.shape().cols) / 3;
+    const int cy = std::max(0, Himg / 2);
+    const int cx = std::max(0, Wimg / 2);
+    auto print_center = [&](const char* /*tag*/, const nc::NdArray<float>& /*imgHW3*/, int /*H*/, int /*W*/){ /* disabled */ };
     float prf = params_.io.preview_resize_factor * params_.io.upscale_factor;
     if (prf != 1.0f) {
         int newH = static_cast<int>(std::round(image.shape().rows * prf));
@@ -243,6 +249,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         pixel_size_um /= prf;
         std::cout << "Resized image shape: " << image.shape().rows << "x" << image.shape().cols << "\n";
     }
+    
 
     // Apply band-pass filter to sensitivity
     nc::NdArray<float> sensitivity(neg.data.log_sensitivity.shape().rows, neg.data.log_sensitivity.shape().cols);
@@ -264,6 +271,10 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     // RGB->RAW (Hanatos 2025) and exposure
     auto lut = agx::utils::load_hanatos_spectra_lut_npy(agx::utils::get_data_path() + "agx_emulsion/data/luts/spectral_upsampling/irradiance_xy_tc.npy");
     std::cout << "Spectra LUT shape: " << lut.shape().rows << "x" << lut.shape().cols << "\n";
+    
+    // Debug: show sensitivity curves
+    
+    
     // Reshape to (H*W) x 3 for per-pixel processing
     auto image_hw_by3 = hw3_to_hw_by3(image);
     nc::NdArray<float> raw_hw_by3;
@@ -282,25 +293,37 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         raw_hw_by3 = raw_lut_out;
         (void)camera_lut; // can be stored for debug if needed
     } else {
+        // If input is ACES2065-1, treat as linear ACES; rgb_to_raw_hanatos2025 expects color-managed input
+        std::cout << "RGB->RAW conversion: using direct hanatos2025 method" << std::endl;
         raw_hw_by3 = agx::utils::rgb_to_raw_hanatos2025(image_hw_by3, sensitivity, params_.io.input_color_space, params_.io.input_cctf_decoding, neg.info.reference_illuminant, lut);
+        
+        
     }
     std::cout << "Raw (film) shape (HWx3): " << raw_hw_by3.shape().rows << "x" << raw_hw_by3.shape().cols << "\n";
     // Back to H x (W*3)
     nc::NdArray<float> raw = hw_by3_to_hw3(raw_hw_by3, Himg, Wimg);
     raw *= std::pow(2.0f, ev);
+    std::cout << "Applied exposure: 2^" << ev << " = " << std::pow(2.0f, ev) << std::endl;
+    
 
     // Lens blur (Gaussian) and halation/scattering
     std::cout << "Lens blur (um): " << params_.camera.lens_blur_um
               << ", Halation active: " << (params_.io.full_image && neg.halation.active ? 1 : 0)
               << ", pixel_size_um: " << pixel_size_um << "\n";
     if (params_.camera.lens_blur_um > 0.0f) {
+        auto t_blur0 = std::chrono::steady_clock::now();
         std::vector<float> raw_vec(raw.size()); std::copy(raw.begin(), raw.end(), raw_vec.begin());
         std::vector<float> out(raw.size());
-        agx_emulsion::Diffusion::apply_gaussian_blur_um(raw_vec, image.shape().rows, image.shape().cols, params_.camera.lens_blur_um, pixel_size_um, out);
+        agx_emulsion::Diffusion::apply_gaussian_blur_um_cuda_only(raw_vec, Himg, Wimg, params_.camera.lens_blur_um, pixel_size_um, out);
         std::copy(out.begin(), out.end(), raw.begin());
+        auto t_blur1 = std::chrono::steady_clock::now();
+        std::cout << "  Lens blur applied in "
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(t_blur1 - t_blur0).count() << " ms\n";
     }
     // Apply halation/scattering if active in profile and full image mode (match Python debug switches)
-    if (params_.io.full_image && neg.halation.active) {
+    if (params_.io.full_image && neg.halation.active && !params_.settings.disable_halation) {
+        std::cout << "  Halation: start" << std::endl;
+        auto t_hal0 = std::chrono::steady_clock::now();
         std::vector<float> raw_vec(raw.size()); std::copy(raw.begin(), raw.end(), raw_vec.begin());
         agx_emulsion::HalationParams hp;
         hp.active = true;
@@ -308,8 +331,11 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         hp.strength = neg.halation.strength;
         hp.scattering_size_um = neg.halation.scattering_size_um;
         hp.scattering_strength = neg.halation.scattering_strength;
-        agx_emulsion::Diffusion::apply_halation_um(raw_vec, image.shape().rows, image.shape().cols, hp, pixel_size_um);
+        agx_emulsion::Diffusion::apply_halation_um(raw_vec, Himg, Wimg, hp, pixel_size_um);
         std::copy(raw_vec.begin(), raw_vec.end(), raw.begin());
+        auto t_hal1 = std::chrono::steady_clock::now();
+        std::cout << "  Halation: done in "
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(t_hal1 - t_hal0).count() << " ms" << std::endl;
     }
 
     // Develop film (log_raw -> density_cmy)
@@ -332,58 +358,43 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     {
         std::cout << "  P (pixels): " << log_raw.rows << ", N (curve points): " << le_neg.size() << "\n";
         auto t0 = std::chrono::steady_clock::now();
-        bool gpu_ok = false;
-        try {
-            gpu_ok = agx_emulsion::gpu_interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma, density_cmy_mat);
-        } catch (const std::exception& e) {
-            std::cout << "  GPU interpolate threw: " << e.what() << "\n";
-            gpu_ok = false;
-        } catch (...) {
-            std::cout << "  GPU interpolate threw unknown exception" << "\n";
-            gpu_ok = false;
-        }
+        bool gpu_ok = agx_emulsion::gpu_interpolate_exposure_to_density_cuda(log_raw, dc_neg, le_neg, gamma, density_cmy_mat);
         auto t1 = std::chrono::steady_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-        std::cout << "  GPU interpolate done: ok=" << (gpu_ok?1:0) << ", time=" << ms << " ms" << "\n";
-        if (!gpu_ok) {
-            auto c0 = std::chrono::steady_clock::now();
-            density_cmy_mat = agx_emulsion::interpolate_exposure_to_density(log_raw, dc_neg, le_neg, gamma);
-            auto c1 = std::chrono::steady_clock::now();
-            auto cms = std::chrono::duration_cast<std::chrono::milliseconds>(c1 - c0).count();
-            std::cout << "  CPU interpolate time=" << cms << " ms" << "\n";
-        }
+        std::cout << "  GPU interpolate time=" << ms << " ms" << "\n";
+        if (!gpu_ok) { throw std::runtime_error("gpu_interpolate_exposure_to_density failed"); }
+        
     }
     // DIR couplers: compute corrected curves and corrected log_raw, then re-interpolate (Python parity)
-    // Only apply if profile has dir_couplers active
-    if (true) {
+    // Driven by UI settings; ignore JSON amounts so UI takes effect
+    if (params_.settings.apply_dir_couplers) {
+        auto t_dir0 = std::chrono::steady_clock::now();
         try {
             auto j = agx::profiles::parse_json_with_specials(root + params_.profiles.negative + ".json");
-            if (j.contains("dir_couplers") && j["dir_couplers"].contains("active") && j["dir_couplers"]["active"].get<bool>()) {
+            if ((j.contains("dir_couplers") && j["dir_couplers"].contains("active") && j["dir_couplers"]["active"].get<bool>()) || params_.settings.apply_dir_couplers) {
+                std::cout << "  DIR couplers: start" << std::endl;
                 auto dc_cpp = neg.data.density_curves;
                 std::vector<std::vector<double>> dc_vec(dc_cpp.shape().rows, std::vector<double>(3));
                 for (uint32_t i=0;i<dc_cpp.shape().rows;++i){ for(int c=0;c<3;++c) dc_vec[i][c]=dc_cpp(i,c); }
                 std::vector<double> le_vec(neg.data.log_exposure.size()); for(uint32_t i=0;i<le_vec.size();++i) le_vec[i]=neg.data.log_exposure[i];
-                std::array<double,3> amount_rgb{1.0,1.0,1.0};
-                double layer_diffusion = 1.0;
-                double diffusion_size_um = 0.0;
-                double high_shift = 0.0;
-                if (j["dir_couplers"].contains("amount")) {
-                    double a = j["dir_couplers"]["amount"].get<double>();
-                    std::array<double,3> ratio{1.0,1.0,1.0};
-                    if (j["dir_couplers"].contains("ratio_rgb")) {
-                        for (int c=0;c<3;++c) ratio[c] = j["dir_couplers"]["ratio_rgb"][c].get<double>();
-                    }
-                    for (int c=0;c<3;++c) amount_rgb[c] = a * ratio[c];
-                }
-                if (j["dir_couplers"].contains("diffusion_interlayer")) layer_diffusion = j["dir_couplers"]["diffusion_interlayer"].get<double>();
-                if (j["dir_couplers"].contains("diffusion_size_um")) diffusion_size_um = j["dir_couplers"]["diffusion_size_um"].get<double>();
-                if (j["dir_couplers"].contains("high_exposure_shift")) high_shift = j["dir_couplers"]["high_exposure_shift"].get<double>();
-                auto M = agx_emulsion::Couplers::compute_dir_couplers_matrix(amount_rgb, layer_diffusion);
+                // Build inhibitors from UI controls
+                std::array<double,3> amount_rgb_ui{ params_.settings.dir_amount * params_.settings.dir_ratio_rgb[0],
+                                                    params_.settings.dir_amount * params_.settings.dir_ratio_rgb[1],
+                                                    params_.settings.dir_amount * params_.settings.dir_ratio_rgb[2] };
+                double layer_diffusion = params_.settings.dir_diffusion_interlayer;
+                double diffusion_size_um = params_.settings.dir_diffusion_size_um;
+                double high_shift = params_.settings.dir_high_exposure_shift;
+                auto M = agx_emulsion::Couplers::compute_dir_couplers_matrix(amount_rgb_ui, layer_diffusion);
                 auto dc0 = agx_emulsion::Couplers::compute_density_curves_before_dir_couplers(dc_vec, le_vec, M, high_shift);
                 // density_max per channel
                 std::array<double,3> dmax{0.0,0.0,0.0};
                 for (int c=0;c<3;++c){ double m=-1e30; for(uint32_t i=0;i<dc_cpp.shape().rows;++i){ m = std::max(m, (double)dc_cpp(i,c)); } dmax[c]=m; }
-                int diffusion_px = (int)std::round(diffusion_size_um / pixel_size_um);
+                double diffusion_px = diffusion_size_um / pixel_size_um; // allow fractional sigma like SciPy
+                std::cout << "  DIR params: amount=" << params_.settings.dir_amount
+                          << ", ratioRGB=[" << params_.settings.dir_ratio_rgb[0] << ","
+                          << params_.settings.dir_ratio_rgb[1] << "," << params_.settings.dir_ratio_rgb[2]
+                          << "], diff_um=" << diffusion_size_um << ", diff_px=" << diffusion_px
+                          << ", interlayer=" << layer_diffusion << ", high_shift=" << high_shift << std::endl;
                 // reshape inputs for correction: (H*W) x 3 to H x W x 3 grid
                 int H = Himg, W = Wimg;
                 std::vector<std::vector<std::array<double,3>>> log_raw_grid(H, std::vector<std::array<double,3>>(W));
@@ -392,7 +403,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
                     log_raw_grid[i][w][c] = log_raw(i*W + w, c);
                     dens_grid[i][w][c]    = density_cmy_mat(i*W + w, c);
                 } } }
-                auto log_raw_corr = agx_emulsion::Couplers::compute_exposure_correction_dir_couplers(log_raw_grid, dens_grid, dmax, M, diffusion_px, high_shift);
+                auto log_raw_corr = agx_emulsion::compute_exposure_correction_dir_couplers_cuda(log_raw_grid, dens_grid, dmax, M, diffusion_px, high_shift);
                 // flatten back to (H*W) x 3
                 for (int i=0;i<H;++i){ for(int w=0; w<W; ++w){ for(int c=0;c<3;++c){
                     log_raw(i*W + w, c) = (double)log_raw_corr[i][w][c];
@@ -401,19 +412,25 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
                 agx_emulsion::Matrix dc0_mat(dc_cpp.shape().rows, 3);
                 for (uint32_t i=0;i<dc_cpp.shape().rows;++i){ for(int c=0;c<3;++c) dc0_mat(i,c) = (double)dc0[i][c]; }
                 agx_emulsion::Matrix density_cmy_mat2;
-                if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_raw, dc0_mat, le_neg, gamma, density_cmy_mat2)) {
-                    density_cmy_mat2 = agx_emulsion::interpolate_exposure_to_density(log_raw, dc0_mat, le_neg, gamma);
+                if (!agx_emulsion::gpu_interpolate_exposure_to_density_cuda(log_raw, dc0_mat, le_neg, gamma, density_cmy_mat2)) {
+                    throw std::runtime_error("gpu_interpolate_exposure_to_density (DIR) failed");
                 }
                 density_cmy_mat = density_cmy_mat2;
+                
+                auto t_dir1 = std::chrono::steady_clock::now();
+                std::cout << "  DIR couplers: done in "
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(t_dir1 - t_dir0).count() << " ms" << std::endl;
             }
         } catch(...) { /* ignore couplers on error */ }
     }
     auto density_cmy = hw_by3_to_hw3(fromMat(density_cmy_mat), Himg, Wimg);
     // Apply grain only in full-image mode (matches Python behavior). Deterministic by default for tests.
-    if (params_.io.full_image) {
+    if (params_.io.full_image && !params_.settings.disable_grain) {
         try {
             auto jneg = agx::profiles::parse_json_with_specials(root + params_.profiles.negative + ".json");
             if (jneg.contains("grain") && jneg["grain"].contains("active") && jneg["grain"]["active"].get<bool>()) {
+                std::cout << "Grain: start" << std::endl;
+                auto t_grain0 = std::chrono::steady_clock::now();
                 // Build Image2D from density_cmy
                 agx_emulsion::Image2D img(Wimg, Himg, 3);
                 for (int i=0;i<Himg;++i){ for(int w=0; w<Wimg; ++w){ for(int c=0;c<3;++c){ img.at(w,i,c) = density_cmy(i, w*3+c); } } }
@@ -431,6 +448,9 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
                 int n_sub_layers = jneg["grain"].contains("n_sub_layers") ? jneg["grain"]["n_sub_layers"].get<int>() : 1;
                 auto out_img = agx_emulsion::Grain::apply_grain_to_density(img, pixel_size_um, agx_particle_area_um2, agx_particle_scale, density_min, density_max_curves, grain_uniformity, grain_blur, n_sub_layers, /*fixed_seed*/true);
                 for (int i=0;i<Himg;++i){ for(int w=0; w<Wimg; ++w){ for(int c=0;c<3;++c){ density_cmy(i, w*3+c) = out_img.at(w,i,c); } } }
+                auto t_grain1 = std::chrono::steady_clock::now();
+                std::cout << "Grain: done in "
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(t_grain1 - t_grain0).count() << " ms" << std::endl;
             }
         } catch (...) { /* ignore grain on error */ }
     }
@@ -455,6 +475,8 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     } catch (...) {
         // Fallback to params if DB not found
     }
+    std::cout << "Enlarger neutral YMC: [" << y_neutral << ", " << m_neutral << ", " << c_neutral
+              << "]; shifts: [" << params_.enlarger.y_filter_shift << ", " << params_.enlarger.m_filter_shift << "]\n";
     auto enlarger_ill = agx::model::color_enlarger(light_src_K,
         y_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.y_filter_shift,
         m_neutral * agx::config::ENLARGER_STEPS + params_.enlarger.m_filter_shift,
@@ -481,6 +503,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     agx_emulsion::Matrix log_cmy_mat; // (H*W) x 3
     if (params_.settings.use_enlarger_lut) {
         std::cout << "Enlarger path: using LUT, resolution=" << params_.settings.lut_resolution << "\n";
+        std::cout << "DEBUG: Starting enlarger path processing...\n";
         // Precompute paper sensitivity and midgray factor and preflash raw once
         nc::NdArray<float> paper_sens(paper.data.log_sensitivity.shape().rows, paper.data.log_sensitivity.shape().cols);
         for (uint32_t i=0;i<paper.data.log_sensitivity.shape().rows;++i){
@@ -497,23 +520,46 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         auto raw_mid = agx::utils::rgb_to_raw_hanatos2025(rgb_mid, sensitivity, "sRGB", false, neg.info.reference_illuminant, lut);
         agx_emulsion::Matrix log_raw_mid_mat(1,3);
         for (int j=0;j<3;++j){ double v = static_cast<double>(raw_mid(0,j)); if (v<0.0) v=0.0; log_raw_mid_mat(0,j)=std::log10(v+1e-10); }
+        std::cout << "DEBUG: About to call gpu_interpolate_exposure_to_density_cuda for midgray...\n";
         agx_emulsion::Matrix density_cmy_mid_mat;
-        if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma, density_cmy_mid_mat)) {
-            density_cmy_mid_mat = agx_emulsion::interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma);
+        if (!agx_emulsion::gpu_interpolate_exposure_to_density_cuda(log_raw_mid_mat, dc_neg, le_neg, gamma, density_cmy_mid_mat)) {
+            std::cout << "DEBUG: gpu_interpolate_exposure_to_density_cuda FAILED for midgray\n";
+            throw std::runtime_error("gpu_interpolate_exposure_to_density (midgray) failed");
         }
+        std::cout << "DEBUG: gpu_interpolate_exposure_to_density_cuda SUCCESS for midgray\n";
         auto density_cmy_mid = fromMat(density_cmy_mid_mat);
+        std::cout << "MIDGRAY: Starting midgray calculation...\n";
+        std::cout << "MIDGRAY: density_cmy_mid shape: " << density_cmy_mid.shape().rows << "x" << density_cmy_mid.shape().cols << "\n";
+        std::cout << "MIDGRAY: dye_density shape: " << neg.data.dye_density.shape().rows << "x" << neg.data.dye_density.shape().cols << "\n";
         nc::NdArray<float> density_spec_mid;
-        if (!agx::utils::compute_density_spectral_gpu(density_cmy_mid, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor, density_spec_mid)) {
-            density_spec_mid = agx::utils::compute_density_spectral(density_cmy_mid, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor);
+        std::cout << "MIDGRAY: About to call compute_density_spectral_cuda...\n";
+        if (!agx::utils::compute_density_spectral_cuda(density_cmy_mid, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor, density_spec_mid)) {
+            std::cout << "MIDGRAY: compute_density_spectral_cuda FAILED\n";
+            throw std::runtime_error("compute_density_spectral_gpu (midgray) failed");
         }
+        std::cout << "MIDGRAY: compute_density_spectral_cuda SUCCESS\n";
+        std::cout << "MIDGRAY: density_spec_mid shape: " << density_spec_mid.shape().rows << "x" << density_spec_mid.shape().cols << "\n";
         nc::NdArray<float> light_mid;
-        if (!agx::utils::density_to_light_gpu(density_spec_mid, enlarger_ill, light_mid)) {
-            light_mid = agx::utils::density_to_light(density_spec_mid, enlarger_ill);
+        std::cout << "MIDGRAY: enlarger_ill shape: " << enlarger_ill.shape().rows << "x" << enlarger_ill.shape().cols << "\n";
+        // Use CUDA kernel now that it has been moved to conversions.cu
+        if (!agx::utils::density_to_light_cuda(density_spec_mid, enlarger_ill, light_mid)) {
+            throw std::runtime_error("density_to_light_cuda (midgray) failed");
         }
+        std::cout << "MIDGRAY: light_mid shape: " << light_mid.shape().rows << "x" << light_mid.shape().cols << "\n";
+        std::cout << "MIDGRAY: light_mid values [0-4]: ";
+        for (int i = 0; i < std::min(5, (int)light_mid.shape().cols); ++i) {
+            std::cout << light_mid(0, i) << " ";
+        }
+        std::cout << "\n";
+        std::cout << "MIDGRAY: paper_sens shape: " << paper_sens.shape().rows << "x" << paper_sens.shape().cols << "\n";
         auto raw_mid_print = nc::dot(light_mid, paper_sens);
+        std::cout << "MIDGRAY: raw_mid_print shape: " << raw_mid_print.shape().rows << "x" << raw_mid_print.shape().cols << "\n";
+        std::cout << "MIDGRAY: raw_mid_print values: [" << raw_mid_print(0,0) << ", " << raw_mid_print(0,1) << ", " << raw_mid_print(0,2) << "]\n";
         float mid_g = raw_mid_print(0,1);
         if (!std::isfinite(mid_g)) mid_g = 1e-10f;
         float exposure_factor = 1.0f / std::max(1e-10f, mid_g);
+        std::cout << "Enlarger midgray G raw: " << mid_g << ", exposure_factor: " << exposure_factor
+                  << ", print_exposure: " << params_.enlarger.print_exposure << "\n";
 
         // Precompute preflash raw
         nc::NdArray<float> raw_pre(1,3); raw_pre.fill(0.0f);
@@ -582,6 +628,9 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         // Evaluate via LUT
         auto dnorm_flat = hw3_to_hw_by3(dnorm);
         std::cout << "  compute_with_lut (enlarger) start" << std::endl;
+        // Note: LUT resolution reduced from 32 to 17 by default (17³ = 4,913 vs 32³ = 32,768 samples)
+        // This dramatically reduces LUT build time while maintaining quality
+        
         auto [log_raw_flat, lut3d] = agx::utils::compute_with_lut(dnorm_flat, spectral_fn, 0.0f, 1.0f, params_.settings.lut_resolution, Himg, Wimg);
         std::cout << "  compute_with_lut (enlarger) done" << std::endl;
         
@@ -612,12 +661,12 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         // Direct spectral path (existing implementation)
         nc::NdArray<float> density_spec;
         if (!agx::utils::compute_density_spectral_gpu(density_cmy, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor, density_spec)) {
-            density_spec = agx::utils::compute_density_spectral(density_cmy, neg.data.dye_density, /*min factor*/ neg.data.dye_density_min_factor);
+            throw std::runtime_error("compute_density_spectral_gpu failed");
         }
         std::cout << "Density spectral shape: " << density_spec.shape().rows << "x" << density_spec.shape().cols << "\n";
         nc::NdArray<float> light;
         if (!agx::utils::density_to_light_gpu(density_spec, enlarger_ill, light)) {
-            light = agx::utils::density_to_light(density_spec, enlarger_ill);
+            throw std::runtime_error("density_to_light_gpu failed");
         }
         std::cout << "Light (enlarger) shape: " << light.shape().rows << "x" << light.shape().cols << "\n";
         nc::NdArray<float> paper_sens(paper.data.log_sensitivity.shape().rows, paper.data.log_sensitivity.shape().cols);
@@ -637,7 +686,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         agx_emulsion::Matrix log_raw_mid_mat(1,3);
         for (int j=0;j<3;++j){ double v = static_cast<double>(raw_mid(0,j)); if (v < 0.0) v = 0.0; log_raw_mid_mat(0,j) = std::log10(v + 1e-10); }
         agx_emulsion::Matrix density_cmy_mid_mat;
-        if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma, density_cmy_mid_mat)) {
+        if (!agx_emulsion::gpu_interpolate_exposure_to_density_cuda(log_raw_mid_mat, dc_neg, le_neg, gamma, density_cmy_mid_mat)) {
             density_cmy_mid_mat = agx_emulsion::interpolate_exposure_to_density(log_raw_mid_mat, dc_neg, le_neg, gamma);
         }
         auto density_cmy_mid = fromMat(density_cmy_mid_mat);
@@ -653,6 +702,8 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
             float mid_g = raw_mid_print(0,1);
             if (!std::isfinite(mid_g)) mid_g = 1e-10f;
             float factor = 1.0f / std::max(1e-10f, mid_g);
+            std::cout << "Direct path midgray G raw: " << mid_g << ", factor: " << factor
+                      << ", print_exposure: " << params_.enlarger.print_exposure << "\n";
             cmy *= factor;
         } else { for (uint32_t i=0;i<cmy.shape().rows;++i) for (uint32_t j=0;j<cmy.shape().cols;++j) cmy(i,j) = 0.0f; }
         if (params_.enlarger.preflash_exposure > 0.0f) {
@@ -685,8 +736,8 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
     std::vector<double> le_paper(paper.data.log_exposure.size());
     for (uint32_t i=0;i<paper.data.log_exposure.size();++i){ le_paper[i]=paper.data.log_exposure[i]; }
     agx_emulsion::Matrix density_print_mat;
-    if (!agx_emulsion::gpu_interpolate_exposure_to_density(log_cmy_mat, dc_paper, le_paper, gamma_paper, density_print_mat)) {
-        density_print_mat = agx_emulsion::interpolate_exposure_to_density(log_cmy_mat, dc_paper, le_paper, gamma_paper);
+    if (!agx_emulsion::gpu_interpolate_exposure_to_density_cuda(log_cmy_mat, dc_paper, le_paper, gamma_paper, density_print_mat)) {
+        throw std::runtime_error("gpu_interpolate_exposure_to_density (paper) failed");
     }
     auto density_print = hw_by3_to_hw3(fromMat(density_print_mat), Himg, Wimg);
     std::cout << "Density print shape: " << density_print.shape().rows << "x" << density_print.shape().cols << "\n";
@@ -758,6 +809,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         xyz_hw3 = nc::nan_to_num(xyz_hw3);
     }
     std::cout << "XYZ (H x W*3) shape: " << xyz_hw3.shape().rows << "x" << xyz_hw3.shape().cols << std::endl;
+    
         
         // Convert XYZ -> output RGB, compute viewing illuminant xy from scan SPD to match Python
         std::cout << "Computing viewing illuminant..." << std::endl;
@@ -797,9 +849,8 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         
         std::cout << "Converting XYZ to RGB..." << std::endl;
         auto rgb_hw_by3 = colour::XYZ_to_RGB(xyz_hw_by3, params_.io.output_color_space, params_.io.output_cctf_encoding, illuminant_xy, "CAT02");
-        std::cout << "XYZ to RGB conversion completed" << std::endl;
-        
         auto rgb_hw3 = hw_by3_to_hw3(rgb_hw_by3, Himg, Wimg);
+        std::cout << "XYZ to RGB conversion completed" << std::endl;
         std::cout << "RGB reshaped to " << rgb_hw3.shape().rows << "x" << rgb_hw3.shape().cols << std::endl;
         
         // Scanner lens blur and unsharp (post-conversion), matching Python order
@@ -807,7 +858,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
             std::cout << "Applying scanner lens blur..." << std::endl;
             std::vector<float> rgb_vec(rgb_hw3.size()); std::copy(rgb_hw3.begin(), rgb_hw3.end(), rgb_vec.begin());
             std::vector<float> rgb_blur;
-            agx_emulsion::Diffusion::apply_gaussian_blur(rgb_vec, Himg, Wimg, params_.scanner.lens_blur, rgb_blur, /*truncate*/4.0f, /*try_cuda*/true);
+            agx_emulsion::Diffusion::apply_gaussian_blur_cuda_only(rgb_vec, Himg, Wimg, params_.scanner.lens_blur, rgb_blur, /*truncate*/4.0f);
             std::copy(rgb_blur.begin(), rgb_blur.end(), rgb_hw3.begin());
             std::cout << "Scanner lens blur applied" << std::endl;
         }
@@ -823,13 +874,7 @@ nc::NdArray<float> Process::run(const nc::NdArray<float>& image_in) {
         if (params_.debug.return_negative_density_cmy) return density_cmy;
         if (params_.debug.return_print_density_cmy) return density_print;
         
-        // Final clamp to [0,1] to match Python's np.clip after optional CCTF encoding
-        std::cout << "Applying final clamp..." << std::endl;
-        for (auto &v : rgb_hw3) {
-            if (v < 0.0f) v = 0.0f;
-            else if (v > 1.0f) v = 1.0f;
-        }
-        std::cout << "Final clamp completed" << std::endl;
+        // No final clamp: keep float outputs as-is for Resolve HDR pipeline
         
         std::cout << "Output RGB shape: " << rgb_hw3.shape().rows << "x" << rgb_hw3.shape().cols << std::endl;
         std::cout << "Process::run() completed successfully" << std::endl;

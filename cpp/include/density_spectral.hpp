@@ -24,6 +24,13 @@ bool compute_density_spectral_gpu(
     float dye_density_min_factor,
     nc::NdArray<float>& out);
 
+// Enforced CUDA variant (no CPU fallback). Returns true if CUDA succeeded.
+bool compute_density_spectral_cuda(
+    const nc::NdArray<float>& density_cmy,
+    const nc::NdArray<float>& dye_density,
+    float dye_density_min_factor,
+    nc::NdArray<float>& out);
+
 } // namespace utils
 } // namespace agx
 

@@ -99,8 +99,18 @@ public:
         const std::vector<std::vector<std::array<double, 3>>> &density_cmy,
         const std::array<double, 3> &density_max,
         const std::array<std::array<double, 3>, 3> &dir_couplers_matrix,
-        int diffusion_size_pixel,
+        double diffusion_size_pixel,
         double high_exposure_couplers_shift = 0.0);
 };
+
+// GPU-accelerated variant (defined in couplers.cu). Enforces GPU path.
+std::vector<std::vector<std::array<double, 3>>>
+compute_exposure_correction_dir_couplers_cuda(
+    const std::vector<std::vector<std::array<double, 3>>> &log_raw,
+    const std::vector<std::vector<std::array<double, 3>>> &density_cmy,
+    const std::array<double, 3> &density_max,
+    const std::array<std::array<double, 3>, 3> &dir_couplers_matrix,
+    double diffusion_size_pixel,
+    double high_exposure_couplers_shift = 0.0);
 
 } // namespace agx_emulsion

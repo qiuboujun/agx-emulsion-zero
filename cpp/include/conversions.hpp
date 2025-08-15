@@ -9,6 +9,9 @@ nc::NdArray<float> density_to_light(const nc::NdArray<float>& density, const nc:
 // GPU-accelerated version with CPU fallback. Returns true if GPU path executed, else false.
 bool density_to_light_gpu(const nc::NdArray<float>& density, const nc::NdArray<float>& light, nc::NdArray<float>& out);
 
+// Enforced CUDA variant (no CPU fallback)
+bool density_to_light_cuda(const nc::NdArray<float>& density, const nc::NdArray<float>& light, nc::NdArray<float>& out);
+
 // GPU-accelerated blocked dot: A is H x (W*K), B is K x 3, out is H x (W*3)
 // Returns true if GPU path executed; else false and 'out' is untouched.
 bool dot_blocks_K3_gpu(const nc::NdArray<float>& A,

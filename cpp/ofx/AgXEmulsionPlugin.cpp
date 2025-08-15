@@ -54,12 +54,12 @@ public:
 
         // Expect float RGBA from host
         std::cerr << "AgXEmulsionProcessor: Checking pixel format..." << std::endl;
-        std::cerr << "  dst depth: " << dst->getPixelDepth() << " (expected: " << kOfxBitDepthFloat << ")" << std::endl;
-        std::cerr << "  dst components: " << dst->getPixelComponents() << " (expected: " << kOfxImageComponentRGBA << ")" << std::endl;
-        std::cerr << "  src depth: " << src->getPixelDepth() << " (expected: " << kOfxBitDepthFloat << ")" << std::endl;
+        std::cerr << "  dst depth: " << dst->getPixelDepth() << " (expected: " << OFX::eBitDepthFloat << ")" << std::endl;
+        std::cerr << "  dst components: " << dst->getPixelComponents() << " (expected: " << OFX::ePixelComponentRGBA << ")" << std::endl;
+        std::cerr << "  src depth: " << src->getPixelDepth() << " (expected: " << OFX::eBitDepthFloat << ")" << std::endl;
         
-        assert(dst->getPixelDepth() == kOfxBitDepthFloat && dst->getPixelComponents() == kOfxImageComponentRGBA);
-        assert(src->getPixelDepth() == kOfxBitDepthFloat);
+        assert(dst->getPixelDepth() == OFX::eBitDepthFloat && dst->getPixelComponents() == OFX::ePixelComponentRGBA);
+        assert(src->getPixelDepth() == OFX::eBitDepthFloat);
         std::cerr << "AgXEmulsionProcessor: Pixel format validation passed" << std::endl;
 
         // Gather into contiguous RGBA buffer
@@ -107,19 +107,20 @@ public:
         // Build Params from OFX controls
         std::cerr << "AgXEmulsionProcessor: Building process parameters..." << std::endl;
         agx::process::Params params;
-        params.io.input_color_space = "sRGB";
-        params.io.input_cctf_decoding = false;
-        params.io.output_color_space = "sRGB";
-        params.io.output_cctf_encoding = false;
+        // Default; may be overridden by UI (inputColorSpace)
+        params.io.input_color_space = "ACES2065-1";
+        params.io.input_cctf_decoding = false; // keep linear by default (parity)
+        // Default output color space to ACES2065-1 linear
+        params.io.output_color_space = "ACES2065-1";
+        params.io.output_cctf_encoding = false; // linear
         params.io.full_image = true;
         
-        // Re-enable LUTs after fixing CUDA launch issues
-        bool enable_luts = true; // Re-enabled after fixing grid dimension calculation
-        params.settings.use_camera_lut = enable_luts;
-        params.settings.use_enlarger_lut = enable_luts;
-        params.settings.use_scanner_lut = enable_luts;
+        // LUT toggles controlled by UI (defaults set below in describeInContext)
+        params.settings.use_camera_lut = false;
+        params.settings.use_enlarger_lut = false;
+        params.settings.use_scanner_lut = false;
         params.settings.apply_masking_couplers = true;
-        std::cerr << "  base params set (LUTs " << (enable_luts ? "enabled" : "DISABLED for debugging") << ")" << std::endl;
+        std::cerr << "  base params set (LUTs controlled by UI)" << std::endl;
 
         // Fetch OFX params
         std::cerr << "AgXEmulsionProcessor: Fetching OFX parameters..." << std::endl;
@@ -128,6 +129,25 @@ public:
         ChoiceParam* film = fetchChoiceParam("filmStock");
         ChoiceParam* paper = fetchChoiceParam("printPaper");
         BooleanParam* paperGlare = fetchBooleanParam("paperGlare");
+        // New toggles and input color space
+        BooleanParam* halationToggle = fetchBooleanParam("halation");
+        BooleanParam* grainToggle = fetchBooleanParam("grain");
+        ChoiceParam* inputCS = fetchChoiceParam("inputColorSpace");
+        // LUT toggles
+        BooleanParam* cameraLUT = fetchBooleanParam("useCameraLUT");
+        BooleanParam* enlargerLUT = fetchBooleanParam("useEnlargerLUT");
+        BooleanParam* scannerLUT = fetchBooleanParam("useScannerLUT");
+        ChoiceParam* outputCS = fetchChoiceParam("outputColorSpace");
+        // DIR couplers UI
+        BooleanParam* enableCouplers = fetchBooleanParam("enableCouplers");
+        DoubleParam* dirAmount = fetchDoubleParam("dirAmount");
+        DoubleParam* dirRatioR = fetchDoubleParam("dirRatioR");
+        DoubleParam* dirRatioG = fetchDoubleParam("dirRatioG");
+        DoubleParam* dirRatioB = fetchDoubleParam("dirRatioB");
+        DoubleParam* dirDiffSize = fetchDoubleParam("dirDiffusionUm");
+        DoubleParam* dirDiffInter = fetchDoubleParam("dirDiffusionInterlayer");
+        DoubleParam* dirHighShift = fetchDoubleParam("dirHighExposureShift");
+        // remove deprecated disable* params if present in older bundles
         DoubleParam* exposureEV = fetchDoubleParam("exposureEV");
         BooleanParam* autoExposure = fetchBooleanParam("autoExposure");
         DoubleParam* printExposure = fetchDoubleParam("printExposure");
@@ -140,11 +160,37 @@ public:
                   << ", film=" << (film ? "valid" : "null")
                   << ", paper=" << (paper ? "valid" : "null") << std::endl;
 
-        int lutR = 32; if (lutRes) lutRes->getValue(lutR); params.settings.lut_resolution = lutR;
+        int lutR = 17; if (lutRes) lutRes->getValue(lutR); params.settings.lut_resolution = lutR;  // Reduced from 32 to 17 (17³ = 4,913 vs 32³ = 32,768)
         bool doPrint = true; if (enablePrint) enablePrint->getValue(doPrint);
         int filmIdx = 1; if (film) film->getValue(filmIdx);
         int paperIdx = 0; if (paper) paper->getValue(paperIdx);
         bool glareOn = false; if (paperGlare) paperGlare->getValue(glareOn);
+        // Map toggles: unchecked disables
+        bool halOn = false; if (halationToggle) halationToggle->getValue(halOn); params.settings.disable_halation = !halOn;
+        bool grainOn = false; if (grainToggle) grainToggle->getValue(grainOn); params.settings.disable_grain = !grainOn;
+        // LUTs
+        bool camL = false; if (cameraLUT) cameraLUT->getValue(camL); params.settings.use_camera_lut = camL;
+        bool enlL = true; if (enlargerLUT) enlargerLUT->getValue(enlL); params.settings.use_enlarger_lut = enlL;
+        bool scnL = true; if (scannerLUT) scannerLUT->getValue(scnL); params.settings.use_scanner_lut = scnL;
+        int csIdx = 0; if (inputCS) inputCS->getValue(csIdx);
+        if (csIdx == 0) {
+            params.io.input_color_space = "ACES2065-1";
+            params.io.input_cctf_decoding = false; // linear
+        } else {
+            params.io.input_color_space = "sRGB";
+            params.io.input_cctf_decoding = false; // parity with Python runs
+        }
+        // DIR couplers
+        params.settings.apply_dir_couplers = true; if (enableCouplers) { bool ec=true; enableCouplers->getValue(ec); params.settings.apply_dir_couplers = ec; }
+        if (dirAmount) { double v; dirAmount->getValue(v); params.settings.dir_amount = v; }
+        if (dirRatioR) { double v; dirRatioR->getValue(v); params.settings.dir_ratio_rgb[0] = v; }
+        if (dirRatioG) { double v; dirRatioG->getValue(v); params.settings.dir_ratio_rgb[1] = v; }
+        if (dirRatioB) { double v; dirRatioB->getValue(v); params.settings.dir_ratio_rgb[2] = v; }
+        if (dirDiffSize) { double v; dirDiffSize->getValue(v); params.settings.dir_diffusion_size_um = v; }
+        if (dirDiffInter) { double v; dirDiffInter->getValue(v); params.settings.dir_diffusion_interlayer = v; }
+        if (dirHighShift) { double v; dirHighShift->getValue(v); params.settings.dir_high_exposure_shift = v; }
+        params.settings.disable_halation = !halOn;
+        params.settings.disable_grain = !grainOn;
         double ev = 0.0; if (exposureEV) exposureEV->getValue(ev); params.camera.exposure_compensation_ev = (float)ev;
         bool ae = true; if (autoExposure) autoExposure->getValue(ae); params.camera.auto_exposure = ae;
         double pexp = 1.0; if (printExposure) printExposure->getValue(pexp); params.enlarger.print_exposure = (float)pexp;
@@ -156,6 +202,16 @@ public:
                   << ", filmIdx=" << filmIdx << ", paperIdx=" << paperIdx 
                   << ", glareOn=" << glareOn << ", ev=" << ev << ", ae=" << ae 
                   << ", pexp=" << pexp << ", pec=" << pec << ", yfs=" << yfs << ", mfs=" << mfs << std::endl;
+        int ocsIdx = 0; if (outputCS) outputCS->getValue(ocsIdx);
+        params.io.output_color_space = (ocsIdx==0?"ACES2065-1":"sRGB");
+        params.io.output_cctf_encoding = (ocsIdx==1); // encode gamma only for sRGB
+        std::cerr << "  toggles: halation=" << (halOn?1:0) << ", grain=" << (grainOn?1:0)
+                  << ", inputCS=" << (csIdx==0?"ACES2065-1":"sRGB")
+                  << ", outputCS=" << (ocsIdx==0?"ACES2065-1":"sRGB")
+                  << ", cameraLUT=" << (camL?1:0) << ", enlargerLUT=" << (enlL?1:0) << ", scannerLUT=" << (scnL?1:0)
+                  << std::endl;
+        std::cerr << "  toggles: halation=" << (halOn?1:0)
+                  << ", grain=" << (grainOn?1:0) << std::endl;
 
         static const char* filmOptions[] = {
             "kodak_portra_160_auc","kodak_portra_400_auc","kodak_portra_800_auc",
@@ -219,7 +275,7 @@ public:
             std::cerr << "  process completed successfully" << std::endl;
             std::cerr << "  output shape: " << out.shape().rows << "x" << out.shape().cols << std::endl;
             
-            // Check output range
+            // Check output range and sample pixels
             float outMin = 1e6f, outMax = -1e6f;
             for (int h = 0; h < height; ++h) {
                 for (int w = 0; w < width; ++w) {
@@ -228,6 +284,17 @@ public:
                 }
             }
             std::cerr << "  output range: [" << outMin << ", " << outMax << "]" << std::endl;
+            
+            // Sample a few pixels for debugging
+            if (height > 10 && width > 10) {
+                std::cerr << "  sample pixels:" << std::endl;
+                for (int i = 0; i < 3; ++i) {
+                    int h = height / 4 + i * height / 8;
+                    int w = width / 4 + i * width / 8;
+                    std::cerr << "    [" << h << "," << w << "] = (" 
+                              << out(h, w*3+0) << ", " << out(h, w*3+1) << ", " << out(h, w*3+2) << ")" << std::endl;
+                }
+            }
             
         } catch (const std::exception& e) {
             std::cerr << "ERROR: Process::run() threw exception: " << e.what() << std::endl;
@@ -241,14 +308,15 @@ public:
         std::cerr << "  process execution time: " << elapsed.count() << "ms" << std::endl;
 
         std::cerr << "AgXEmulsionProcessor: Scattering output data..." << std::endl;
-        // Scatter back RGB to RGBA buffer, keep original A
+        
+        // Scatter back RGB to RGBA buffer; force opaque alpha to avoid host compositing issues
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
                 size_t pi = (static_cast<size_t>(h) * width + static_cast<size_t>(w)) * 4;
                 outRGBA[pi + 0] = out(h, w*3 + 0);
                 outRGBA[pi + 1] = out(h, w*3 + 1);
                 outRGBA[pi + 2] = out(h, w*3 + 2);
-                outRGBA[pi + 3] = inRGBA[pi + 3];
+                outRGBA[pi + 3] = 1.0f;
             }
         }
         std::cerr << "  output buffer populated" << std::endl;
@@ -274,6 +342,10 @@ public:
             }
         }
         std::cerr << "  writeback completed: " << writtenPixels << " pixels written, " << failedWrites << " failed" << std::endl;
+        
+        // Release images per OFX API (delete the Image wrappers)
+        if (src) { delete src.release(); }
+        if (dst) { delete dst.release(); }
         
         std::cerr << "AgXEmulsionProcessor: render() completed successfully" << std::endl;
     }
@@ -310,9 +382,9 @@ public:
         desc.addSupportedContext(eContextGeneral);
         desc.addSupportedBitDepth(eBitDepthFloat);
         desc.setSingleInstance(false);
-        desc.setHostFrameThreading(false);
+        desc.setHostFrameThreading(true);
         desc.setSupportsMultiResolution(false);
-        desc.setSupportsTiles(true);
+        desc.setSupportsTiles(false);
         desc.setTemporalClipAccess(false);
         desc.setRenderTwiceAlways(false);
         desc.setSupportsMultipleClipPARs(false);
@@ -324,12 +396,12 @@ public:
         ClipDescriptor *srcClip = desc.defineClip(kOfxImageEffectSimpleSourceClipName);
         srcClip->addSupportedComponent(ePixelComponentRGBA);
         srcClip->setTemporalClipAccess(false);
-        srcClip->setSupportsTiles(true);
+        srcClip->setSupportsTiles(false);
         srcClip->setIsMask(false);
 
         ClipDescriptor *dstClip = desc.defineClip(kOfxImageEffectOutputClipName);
         dstClip->addSupportedComponent(ePixelComponentRGBA);
-        dstClip->setSupportsTiles(true);
+        dstClip->setSupportsTiles(false);
 
         // Parameters
         {
@@ -370,14 +442,83 @@ public:
         {
             auto *lutRes = desc.defineIntParam("lutResolution");
             lutRes->setLabel("LUT Resolution");
-            lutRes->setDefault(32);
-            lutRes->setRange(8, 64);
+            lutRes->setDefault(17);  // Reduced from 32 to 17 (17³ = 4,913 vs 32³ = 32,768)
+            lutRes->setRange(8, 32); // Reduced max from 64 to 32
+        }
+        {
+            auto *p = desc.defineBooleanParam("useCameraLUT");
+            p->setLabel("Use Camera LUT");
+            p->setDefault(false);
+        }
+        {
+            auto *p = desc.defineBooleanParam("useEnlargerLUT");
+            p->setLabel("Use Enlarger LUT");
+            p->setDefault(true);
+        }
+        {
+            auto *p = desc.defineBooleanParam("useScannerLUT");
+            p->setLabel("Use Scanner LUT");
+            p->setDefault(true);
         }
         {
             auto *glare = desc.defineBooleanParam("paperGlare");
             glare->setLabel("Paper Glare");
             glare->setDefault(false);
         }
+        {
+            auto *hal = desc.defineBooleanParam("halation");
+            hal->setLabel("Halation");
+            hal->setDefault(false); // unchecked = disabled by default
+        }
+        {
+            auto *gr = desc.defineBooleanParam("grain");
+            gr->setLabel("Grain");
+            gr->setDefault(false); // unchecked = disabled by default
+        }
+        {
+            auto *ics = desc.defineChoiceParam("inputColorSpace");
+            ics->setLabel("Input Color Space");
+            ics->appendOption("ACES2065-1 (linear)");
+            ics->appendOption("sRGB");
+            ics->setDefault(0); // default to ACES2065-1 linear
+        }
+        {
+            auto *ocs = desc.defineChoiceParam("outputColorSpace");
+            ocs->setLabel("Output Color Space");
+            ocs->appendOption("ACES2065-1 (linear)");
+            ocs->appendOption("sRGB");
+            ocs->setDefault(0); // default ACES2065-1 linear
+        }
+        {
+            auto *ec = desc.defineBooleanParam("enableCouplers");
+            ec->setLabel("Enable Couplers");
+            ec->setDefault(true);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirAmount");
+            p->setLabel("DIR Amount");
+            p->setDefault(1.0);
+            p->setDisplayRange(0.0, 3.0);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirRatioR"); p->setLabel("DIR Ratio R"); p->setDefault(1.0); p->setDisplayRange(0.0, 3.0);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirRatioG"); p->setLabel("DIR Ratio G"); p->setDefault(1.0); p->setDisplayRange(0.0, 3.0);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirRatioB"); p->setLabel("DIR Ratio B"); p->setDefault(1.0); p->setDisplayRange(0.0, 3.0);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirDiffusionUm"); p->setLabel("DIR Diffusion (um)"); p->setDefault(10.0); p->setDisplayRange(0.0, 100.0);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirDiffusionInterlayer"); p->setLabel("DIR Diffusion Interlayer"); p->setDefault(2.0); p->setDisplayRange(0.0, 10.0);
+        }
+        {
+            auto *p = desc.defineDoubleParam("dirHighExposureShift"); p->setLabel("DIR High Exposure Shift"); p->setDefault(0.0); p->setDisplayRange(0.0, 5.0);
+        }
+        // removed deprecated disableHalation/disableGrain params
         {
             auto *expEV = desc.defineDoubleParam("exposureEV");
             expEV->setLabel("Exposure EV");

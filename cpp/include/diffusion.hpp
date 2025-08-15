@@ -46,6 +46,32 @@ public:
                                    float amount,
                                    std::vector<float>& output);
 
+    // CUDA-only Gaussian blur (pixel sigma). Throws on failure; no CPU fallback.
+    static void apply_gaussian_blur_cuda_only(const std::vector<float>& image,
+                                              int height,
+                                              int width,
+                                              float sigma,
+                                              std::vector<float>& output,
+                                              float truncate = 4.0f);
+
+    // CUDA-only Gaussian blur (micrometre sigma). Throws on failure; no CPU fallback.
+    static void apply_gaussian_blur_um_cuda_only(const std::vector<float>& image,
+                                                 int height,
+                                                 int width,
+                                                 float sigma_um,
+                                                 float pixel_size_um,
+                                                 std::vector<float>& output,
+                                                 float truncate = 4.0f);
+
+    // Planar single-channel Gaussian blur helper (used to accelerate halation).
+    static void apply_gaussian_blur_planar(const std::vector<float>& plane,
+                                           int height,
+                                           int width,
+                                           float sigma,
+                                           std::vector<float>& output,
+                                           float truncate = 7.0f,
+                                           bool try_cuda = true);
+
     // In-place halation/scattering in micrometres (matches diffusion.py):
     //   raw[:,:,i] += strength[i] * G(raw[:,:,i], size_pixel[i]); raw[:,:,i] /= (1+strength[i])
     // Then repeat for scattering_* with truncate=7 in both cases.
@@ -75,6 +101,9 @@ namespace diffusion_cuda {
     bool gaussian_blur_rgb(const float* in, float* out,
                            int height, int width,
                            const float* k1d, int ksize);
+    bool gaussian_blur_planar(const float* in, float* out,
+                              int height, int width,
+                              const float* k1d, int ksize);
 } // namespace diffusion_cuda
 
 } // namespace agx_emulsion 

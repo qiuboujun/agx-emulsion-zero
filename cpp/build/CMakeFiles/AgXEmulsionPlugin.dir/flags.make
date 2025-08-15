@@ -3,13 +3,13 @@
 
 # compile CUDA with /usr/local/cuda-11.8/bin/nvcc
 # compile CXX with /usr/bin/c++
-CUDA_DEFINES = -DAGX_SOURCE_DIR=\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\" -DAgXEmulsionPlugin_EXPORTS
+CUDA_DEFINES = -DAGX_SOURCE_DIR=\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\" -DAGX_WITH_CUDA=1 -DAgXEmulsionPlugin_EXPORTS -DTBB_USE_GLIBC_MALLOC=1
 
 CUDA_INCLUDES = --options-file CMakeFiles/AgXEmulsionPlugin.dir/includes_CUDA.rsp
 
 CUDA_FLAGS = -O3 -DNDEBUG -std=c++17 --generate-code=arch=compute_52,code=[compute_52,sm_52] -Xcompiler=-fPIC
 
-CXX_DEFINES = -DAGX_SOURCE_DIR=\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\" -DAgXEmulsionPlugin_EXPORTS
+CXX_DEFINES = -DAGX_SOURCE_DIR=\"/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/..\" -DAGX_WITH_CUDA=1 -DAgXEmulsionPlugin_EXPORTS -DTBB_USE_GLIBC_MALLOC=1
 
 CXX_INCLUDES = -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/OpenFX-1.4/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/OpenFX/Support/include -I/home/jimmyqiu/cursor/agx-emulsion-zero/cpp/external/json/include -isystem /usr/local/cuda-11.8/include
 

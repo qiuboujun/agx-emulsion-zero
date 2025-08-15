@@ -22,7 +22,11 @@ static nc::NdArray<float> rgb_to_xyz(const nc::NdArray<float>& image_hwc, bool d
         {0.0193339f, 0.1191920f, 0.9503041f}
     };
     const int H = static_cast<int>(image_hwc.shape().rows);
-    const int W = static_cast<int>(image_hwc.shape().cols);
+    const int W3 = static_cast<int>(image_hwc.shape().cols);
+    if (W3 % 3 != 0) {
+        throw std::runtime_error("image_hwc must have 3 channels packed in last dim");
+    }
+    const int W = W3 / 3;
     nc::NdArray<float> xyz(H, W * 3);
     for (int y = 0; y < H; ++y) {
         for (int x = 0; x < W; ++x) {
@@ -57,8 +61,7 @@ static float compute_center_weighted_Y(const nc::NdArray<float>& image_Y) {
     double sum_w = 0.0;
     double sum_yw = 0.0;
     for (int y = 0; y < H; ++y) {
-        float yy = (static_cast<float>(y) / W) - 0.5f; // base on width? Match Python: y / H
-        yy = (static_cast<float>(y) / H) - 0.5f;
+        float yy = (static_cast<float>(y) / H) - 0.5f;
         yy *= sy;
         for (int x = 0; x < W; ++x) {
             float xx = (static_cast<float>(x) / W) - 0.5f;

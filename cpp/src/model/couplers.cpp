@@ -262,7 +262,7 @@ Couplers::compute_exposure_correction_dir_couplers(
     const std::vector<std::vector<std::array<double, 3>>> &density_cmy,
     const std::array<double, 3> &density_max,
     const std::array<std::array<double, 3>, 3> &dir_couplers_matrix,
-    int diffusion_size_pixel,
+    double diffusion_size_pixel,
     double high_exposure_couplers_shift) {
     // Validate shapes
     const std::size_t H = log_raw.size();
@@ -306,8 +306,8 @@ Couplers::compute_exposure_correction_dir_couplers(
         }
     }
     // Apply spatial diffusion if requested
-    if (diffusion_size_pixel > 0) {
-        double sigma = static_cast<double>(diffusion_size_pixel);
+    if (diffusion_size_pixel > 0.0) {
+        double sigma = diffusion_size_pixel;
         std::vector<std::vector<double>> kernel = make_gaussian_kernel_2d(sigma);
         int ksize = static_cast<int>(kernel.size());
         int half = ksize / 2;

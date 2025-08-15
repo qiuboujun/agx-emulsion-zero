@@ -14,12 +14,14 @@ add_library(agx_core STATIC
     src/utils/fast_interp_lut.cu
     src/utils/io.cpp
     src/utils/conversions.cpp
+    src/utils/conversions.cu
     src/utils/measure.cpp
     src/utils/autoexposure.cpp
     src/utils/autoexposure.cu
     src/utils/crop_resize.cpp
     src/utils/crop_resize.cu
     src/utils/density_spectral.cpp
+    src/utils/density_spectral_gpu.cu
     src/utils/spectral_upsampling.cpp
     src/utils/lut.cpp
     src/utils/spectral_upsampling.cu
@@ -52,6 +54,7 @@ target_link_libraries(agx_core PUBLIC CUDA::cudart)
 # Ensure headers that use AGX_SOURCE_DIR get the repo root path
 # Point AGX_SOURCE_DIR to the repository root (parent of cpp/)
 target_compile_definitions(agx_core PUBLIC AGX_SOURCE_DIR="${CMAKE_SOURCE_DIR}/..")
+target_compile_definitions(agx_core PUBLIC AGX_WITH_CUDA=1)
 
 # --- Standalone test for parametric model ---
 add_executable(independent_parametric_test tests/parametric/independent_parametric_test.cpp)
@@ -222,6 +225,8 @@ target_include_directories(AgXEmulsionPlugin PRIVATE
 )
 
 # Link core library (our pipeline) and CUDA runtime
+# Force TBB to use glibc malloc to avoid allocator conflicts with Resolve
+target_compile_definitions(AgXEmulsionPlugin PRIVATE TBB_USE_GLIBC_MALLOC=1)
 target_link_libraries(AgXEmulsionPlugin PRIVATE agx_core CUDA::cudart)
 
 set_target_properties(AgXEmulsionPlugin PROPERTIES

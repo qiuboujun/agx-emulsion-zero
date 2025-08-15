@@ -1,2 +1,0 @@
-/usr/bin/ar qc libOfxSupport.a CMakeFiles/OfxSupport.dir/ofxsCore.cpp.o CMakeFiles/OfxSupport.dir/ofxsHWNDInteract.cpp.o CMakeFiles/OfxSupport.dir/ofxsImageEffect.cpp.o CMakeFiles/OfxSupport.dir/ofxsInteract.cpp.o CMakeFiles/OfxSupport.dir/ofxsLog.cpp.o CMakeFiles/OfxSupport.dir/ofxsMultiThread.cpp.o CMakeFiles/OfxSupport.dir/ofxsParams.cpp.o CMakeFiles/OfxSupport.dir/ofxsProperty.cpp.o CMakeFiles/OfxSupport.dir/ofxsPropertyValidation.cpp.o
-/usr/bin/ranlib libOfxSupport.a
